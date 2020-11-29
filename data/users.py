@@ -16,6 +16,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     password = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     date_of_birth = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     gender = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    role = sqlalchemy.Column(sqlalchemy.String, default="user")
 
     def __repr__(self):
         return f'{self.id}, {self.name}, {self.email}'

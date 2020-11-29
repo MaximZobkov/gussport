@@ -53,11 +53,11 @@ class DigitError(Exception):
     error = 'В пароле должна быть хотя бы одна цифра!'
 
 
-'''@app.route('/profile')
+@app.route('/profile')
 def profile():
     if current_user.is_authenticated:
         return render_template("profile.html")
-    return redirect('/')'''
+    return redirect('/')
 
 
 @app.route('/logout')
