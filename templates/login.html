@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block content %}
+
+<div class="container; mt-4">
+    <div class="card mb-4" style="width: 100%; border-radius: 10px;">
+        <div class="card-title">
+            <h1 align="center">Авторизация</h1>
+        </div>
+        <div class="card-body">
+            <form action="" method="post">
+                {{ form.hidden_tag() }}
+                <p>
+                    {{ form.email.label }}
+                    {{ form.email(class="form-control", type="login") }}
+                    {% for error in form.email.errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error }}
+                    </div>
+                    {% endfor %}
+                </p>
+                <p>
+                    {{ form.password.label }}
+                    {{ form.password(class="form-control", type="password") }}
+                    {% for error in form.password.errors %}
+                    <div class="alert alert-danger" role="alert">
+                        {{ error }}
+                    </div>
+                    {% endfor %}
+                </p>
+                <p> {{ form.remember_me() }} {{ form.remember_me.label }} </p>
+                <p> {{ form.submit(type="submit", class="btn btn-primary") }} </p>
+                <div> {{ message }}</div>
+            </form>
+        </div>
+    </div>
+</div>
+{% endblock %}
