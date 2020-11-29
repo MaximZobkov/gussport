@@ -154,7 +154,6 @@ def index():
 def main():
     global count_items
     sessions = db_session.create_session()
-    # count_items += len(list(sessions.query(items.Items)))
     sessions.close()
     app.run()
 
