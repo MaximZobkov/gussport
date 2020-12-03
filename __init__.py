@@ -41,6 +41,29 @@ class RegisterForm(FlaskForm):
     submit = SubmitField('Зарегистрироваться')
 
 
+class CreateCompetitionForm(FlaskForm):
+    name = StringField('Название соревнования', validators=[DataRequired()])
+    event_date_start = DateField('Дата проведения соревнования')
+    event_time_start = DateField('Время начала соревнования')
+    registration_start = DateField('Дата начала регистрации')
+    registration_end = DateField('Дата окончания регистрации')
+    type = SelectField('Тип соревнования', validators=[DataRequired()],
+                         choices=[('1', 'Триатлон'), ('2', "Дуатлон"), ('3', "Лыжный Масс-старт"),
+                                  ('4', "Веломарафон")])
+    group_count = IntegerField('Количество групп', validators=[DataRequired()])
+    submit = SubmitField('Перейти к созданию групп')
+
+
+class CreateGroupsForm(FlaskForm):
+    age_range_start = IntegerField('Минмальный возраст', validators=[DataRequired()])
+    age_range_end = IntegerField('Максимальный возраст', validators=[DataRequired()])
+    players_count = IntegerField('Максимальное количество участников в группе', validators=[DataRequired()])
+    group_time_start = DateField('Время старта группы')
+    payment = SelectField('Оплата участия', validators=[DataRequired()],
+                          choices=[('1', 'Есть'), ('2', "Нет")])
+    payments_value = IntegerField('Размер оплаты', validators=[DataRequired()])
+
+
 class LengthError(Exception):
     error = 'Пароль должен от 8 до 15 символов!'
 
