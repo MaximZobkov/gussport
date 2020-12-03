@@ -2,64 +2,68 @@
 
 
 {% block content %}
-<div class="container; mt-4">
-    <div class="card mb-4 card_register">
-        <div class="card-title">
-            <h1 align="center">Регистрация</h1>
-        </div>
-        <div class="card-body">
-            <form action="" method="post">
-                {{ form.hidden_tag() }}
-                {{ form.csrf_token }}
-                <p>
-                    {{ form.email.label }}<br>
-                    {{ form.email(class="form-control", type="email") }}
-                    {% for error in form.email.errors %}
-                </p>
-                <p class="alert alert-danger" role="alert">
-                    {{ error }}
-                    {% endfor %}
-                    {% if email_error != "OK" %}
-                    <a class="alert alert-danger" role="alert">{{ email_error }}</a>
-                    {% endif %}
-                </p>
-                <p>
-                    {{ form.password.label }}<br>
-                    {{ form.password(class="form-control", type="password") }}
-                    {% if password_error != "OK" %}
-                <div class="alert alert-danger" role="alert">{{ password_error }}</div>
-                {% endif %}
-                </p>
+    <div class="container mt-4">
+        <div class="card mb-4 card_register">
+            <div class="card-title">
+                <h1 align="center">Регистрация</h1>
+            </div>
+            <div class="card-body">
+                <form action="" method="post">
+                    {{ form.hidden_tag() }}
+                    {{ form.csrf_token }}
+                    <p>
+                        {{ form.email.label }}<br>
+                        {{ form.email(class="form-control", type="email") }}
+                        {% for error in form.email.errors %}
+                            </p>
+                            <p class="alert alert-danger" role="alert">
+                            {{ error }}
+                        {% endfor %}
+                        {% if email_error != "OK" %}
+                            <a class="alert alert-danger" role="alert">{{ email_error }}</a>
+                        {% endif %}
+                        </p>
+                    <p>
+                        {{ form.password.label }}<br>
+                        {{ form.password(class="form-control", type="password") }}
+                        {% if password_error != "OK" %}
+                            <div class="alert alert-danger" role="alert">{{ password_error }}</div>
+                        {% endif %}
+                    </p>
 
-                <p>
-                    {{ form.password_again.label }}<br>
-                    {{ form.password_again(class="form-control", type="password") }}
-                    {% if again_password_error != "OK" %}
-                <p class="alert alert-danger" role="alert">{{ again_password_error }}</p>
-                {% endif %}
-                </p>
-                <p>
-                    {{ form.name.label }}
-                    {{ form.name(class="form-control") }}
-                </p>
-                <p>
-                    {{ form.surname.label }}
-                    {{ form.surname(class="form-control") }}
-                </p>
-                <p>
-                    {{ form.date_of_birth.label }}
-                    {{ form.date_of_birth(type="date", class="form-control") }}
-                    {% if date_error != "OK" %}
-                        <a class="alert alert-danger" role="alert">{{ date_error }}</a>
-                    {% endif %}
-                </p>
-                <p>
-                    {{ form.gender.label }} <br>
-                    {{ form.gender(class="form-control") }} <br>
-                </p>
-                <p>{{ form.submit(type="submit", class="btn btn-outline-dark") }}</p>
-            </form>
+                    <p>
+                        {{ form.password_again.label }}<br>
+                        {{ form.password_again(class="form-control", type="password") }}
+                        {% if again_password_error != "OK" %}
+                            <p class="alert alert-danger" role="alert">{{ again_password_error }}</p>
+                        {% endif %}
+                    </p>
+                    <p>
+                        {{ form.name.label }}
+                        {{ form.name(class="form-control") }}
+                    </p>
+                    <p>
+                        {{ form.surname.label }}
+                        {{ form.surname(class="form-control") }}
+                    </p>
+                    <p>
+                        {{ form.middle_name.label }}
+                        {{ form.middle_name(class="form-control") }}
+                    </p>
+                    <p>
+                        {{ form.date_of_birth.label }}
+                        {{ form.date_of_birth(type="date", class="form-control") }}
+                        {% if date_error != "OK" %}
+                            <a class="alert alert-danger" role="alert">{{ date_error }}</a>
+                        {% endif %}
+                    </p>
+                    <p>
+                        {{ form.gender.label }} <br>
+                        {{ form.gender(class="form-control") }} <br>
+                    </p>
+                    <p>{{ form.submit(type="submit", class="btn btn-outline-dark") }}</p>
+                </form>
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}
