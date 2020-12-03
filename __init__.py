@@ -132,6 +132,15 @@ def register():
                            password_error="OK", again_password_error="OK", date_error='OK')
 
 
+@app.route('/create_competition', methods=['GET', 'POST'])
+def create_competition():
+    form = CreateCompetitionForm()
+    if form.validate_on_submit():
+        pass
+    return render_template('create_competition.html', title="Создание соревнования", form=form,
+                           date_error='OK', time_error='OK')
+
+
 def check_password(password):
     flags = [0, 0]
     for element in password:
@@ -179,7 +188,6 @@ def index():
 def main():
     global count_items
     sessions = db_session.create_session()
-    # count_items += len(list(sessions.query(items.Items)))
     sessions.close()
     app.run()
 

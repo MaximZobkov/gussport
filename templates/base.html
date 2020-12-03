@@ -31,6 +31,9 @@
             {% else %}
             <a class="btn btn-light" href="/profile"> Личный кабинет </a>
             {% endif %}
+            {% if current_user.role=='administrator' %}
+            <a class="btn btn-primary" href="/create_competition">Создать соревнование</a>
+            {%endif%}
         </div>
     </nav>
         {% block content %}
