@@ -32,6 +32,7 @@ class LoginForm(FlaskForm):
 class RegisterForm(FlaskForm):
     name = StringField('Имя', validators=[DataRequired()])
     surname = StringField('Фамилия', validators=[DataRequired()])
+    middle_name = StringField('Отчество', validators=[DataRequired()])
     email = StringField("Электронная почта", validators=[DataRequired()])
     password = PasswordField('Пароль', validators=[DataRequired()])
     password_again = PasswordField('Повторите пароль', validators=[DataRequired()])
@@ -117,6 +118,7 @@ def register():
         user.email = form.email.data.lower()
         user.name = form.name.data
         user.surname = form.surname.data
+        user.middle_name = form.middle_name.data
         user.date_of_birth = form.date_of_birth.data
         user.set_password(form.password.data)
         sessions.add(user)
