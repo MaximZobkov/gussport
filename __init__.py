@@ -4,10 +4,11 @@ import os
 from flask import Flask, render_template, redirect, request
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, DateField, BooleanField, IntegerField, SelectField
+from wtforms import StringField, PasswordField, SubmitField, DateField, BooleanField, IntegerField,\
+    SelectField, TimeField
 from wtforms.validators import DataRequired
 
-from data import db_session, users
+from data import db_session, users, competitions, news
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'GusStory.ru'
@@ -45,13 +46,13 @@ class RegisterForm(FlaskForm):
 class CreateCompetitionForm(FlaskForm):
     name = StringField('Название соревнования', validators=[DataRequired()])
     event_date_start = DateField('Дата проведения соревнования')
-    event_time_start = DateField('Время начала соревнования')
+    event_time_start = TimeField('Время начала соревнования')
     registration_start = DateField('Дата начала регистрации')
     registration_end = DateField('Дата окончания регистрации')
     type = SelectField('Тип соревнования', validators=[DataRequired()],
                          choices=[('1', 'Триатлон'), ('2', "Дуатлон"), ('3', "Лыжный Масс-старт"),
                                   ('4', "Веломарафон")])
-    group_count = IntegerField('Количество групп', validators=[DataRequired()])
+    groups_count = IntegerField('Количество групп', validators=[DataRequired()])
     submit = SubmitField('Перейти к созданию групп')
 
 
@@ -59,7 +60,7 @@ class CreateGroupsForm(FlaskForm):
     age_range_start = IntegerField('Минмальный возраст', validators=[DataRequired()])
     age_range_end = IntegerField('Максимальный возраст', validators=[DataRequired()])
     players_count = IntegerField('Максимальное количество участников в группе', validators=[DataRequired()])
-    group_time_start = DateField('Время старта группы')
+    group_time_start = TimeField('Время старта группы')
     payment = SelectField('Оплата участия', validators=[DataRequired()],
                           choices=[('1', 'Есть'), ('2', "Нет")])
     payments_value = IntegerField('Размер оплаты', validators=[DataRequired()])
@@ -121,6 +122,12 @@ def register():
         user.middle_name = form.middle_name.data
         user.date_of_birth = form.date_of_birth.data
         user.set_password(form.password.data)
+        if str(request.files["file"]) != "<FileStorage: '' ('application/octet-stream')>":
+            file = request.files["file"]
+            name = "static/images/avatar_image/avatar_" + \
+                   str(1 + len(os.listdir("static/images/avatar_image"))) + ".jpg"
+            file.save(name)
+            user.image = "/" + name
         sessions.add(user)
         if form.gender.data == '1':
             user.gender = 'Мужской'
@@ -134,11 +141,31 @@ def register():
 
 @app.route('/create_competition', methods=['GET', 'POST'])
 def create_competition():
+    sessions = db_session.create_session()
     form = CreateCompetitionForm()
     if form.validate_on_submit():
-        pass
+        competition = competitions.Competitions()
+        competition.name = form.name.data
+        competition.type = form.type.data
+        competition.event_time_start = form.event_time_start.data
+        competition.event_date_start = form.event_date_start.data
+        competition.registration_start = form.registration_start.data
+        competition.registration_end = form.registration_end.data
+        competition.groups_count = form.groups_count.data
+        sessions.add(competition)
+        sessions.commit()
+        print(1)
+        print('/groups_description/' + str(competition.id) + "/" + str(form.groups_count.data))
+        return redirect('/groups_description/' + str(competition.id) + "/" + str(form.groups_count.data))
     return render_template('create_competition.html', title="Создание соревнования", form=form,
                            date_error='OK', time_error='OK')
+
+
+@app.route("/groups_description/<int:id>/<int:count>", methods=['GET', 'POST'])
+def groups_description(id, count):
+    mas = [CreateGroupsForm() for i in range(count)]
+
+    return render_template("groups_description.html", mas=mas, kol=1)
 
 
 def check_password(password):

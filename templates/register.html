@@ -8,7 +8,7 @@
                 <h1 align="center">Регистрация</h1>
             </div>
             <div class="card-body">
-                <form action="" method="post">
+                <form action="" method="post" enctype="multipart/form-data">
                     {{ form.hidden_tag() }}
                     {{ form.csrf_token }}
                     <p>
@@ -61,6 +61,9 @@
                         {{ form.gender.label }} <br>
                         {{ form.gender(class="form-control") }} <br>
                     </p>
+                    <div class="form-group">
+                        <input type="file" class="form-control-file" id="photo" name="file">
+                    </div>
                     <p>{{ form.submit(type="submit", class="btn btn-outline-dark") }}</p>
                 </form>
             </div>

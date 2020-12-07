@@ -17,6 +17,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     date_of_birth = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     gender = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     role = sqlalchemy.Column(sqlalchemy.String, default="user")
+    image = sqlalchemy.Column(sqlalchemy.String, default="/static/images/avatar_image/unknown.jpg")
     middle_name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
     def __repr__(self):
