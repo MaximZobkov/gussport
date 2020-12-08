@@ -4,7 +4,7 @@ import os
 from flask import Flask, render_template, redirect, request
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, DateField, BooleanField, IntegerField,\
+from wtforms import StringField, PasswordField, SubmitField, DateField, BooleanField, IntegerField, \
     SelectField, TimeField
 from wtforms.validators import DataRequired
 
@@ -50,8 +50,8 @@ class CreateCompetitionForm(FlaskForm):
     registration_start = DateField('Дата начала регистрации')
     registration_end = DateField('Дата окончания регистрации')
     type = SelectField('Тип соревнования', validators=[DataRequired()],
-                         choices=[('1', 'Триатлон'), ('2', "Дуатлон"), ('3', "Лыжный Масс-старт"),
-                                  ('4', "Веломарафон")])
+                       choices=[('1', 'Триатлон'), ('2', "Дуатлон"), ('3', "Лыжный Масс-старт"),
+                                ('4', "Веломарафон")])
     groups_count = IntegerField('Количество групп', validators=[DataRequired()])
     submit = SubmitField('Перейти к созданию групп')
 
@@ -59,7 +59,8 @@ class CreateCompetitionForm(FlaskForm):
 class CreateGroupsForm(FlaskForm):
     age_range_start = IntegerField('Минмальный возраст', validators=[DataRequired()])
     age_range_end = IntegerField('Максимальный возраст', validators=[DataRequired()])
-    players_count = IntegerField('Максимальное количество участников в группе', validators=[DataRequired()])
+    players_count = IntegerField('Максимальное количество участников в группе',
+                                 validators=[DataRequired()])
     group_time_start = TimeField('Время старта группы')
     payment = SelectField('Оплата участия', validators=[DataRequired()],
                           choices=[('1', 'Есть'), ('2', "Нет")])
@@ -100,11 +101,13 @@ def register():
         if result != 'OK':
             return render_template('register.html',
                                    title='Регистрация',
-                                   form=form, email_error="OK", again_password_error="OK", date_error="OK",
+                                   form=form, email_error="OK", again_password_error="OK",
+                                   date_error="OK",
                                    password_error=result)
         if form.password.data != form.password_again.data:
             return render_template('register.html', title='Регистрация',
-                                   form=form, email_error="OK", password_error="OK", date_error="OK",
+                                   form=form, email_error="OK", password_error="OK",
+                                   date_error="OK",
                                    again_password_error="Пароли не совпадают")
         sessions = db_session.create_session()
         if sessions.query(users.User).filter(users.User.email == form.email.data).first():
@@ -143,7 +146,7 @@ def register():
 def create_competition():
     sessions = db_session.create_session()
     form = CreateCompetitionForm()
-    if form.validate_on_submit():
+    if request.method == "POST":
         competition = competitions.Competitions()
         competition.name = form.name.data
         competition.type = form.type.data
@@ -154,18 +157,36 @@ def create_competition():
         competition.groups_count = form.groups_count.data
         sessions.add(competition)
         sessions.commit()
-        print(1)
         print('/groups_description/' + str(competition.id) + "/" + str(form.groups_count.data))
-        return redirect('/groups_description/' + str(competition.id) + "/" + str(form.groups_count.data))
+        return redirect(
+            '/groups_description/' + str(competition.id) + "/" + str(
+                form.groups_count.data) + "/0")
     return render_template('create_competition.html', title="Создание соревнования", form=form,
                            date_error='OK', time_error='OK')
 
 
-@app.route("/groups_description/<int:id>/<int:count>", methods=['GET', 'POST'])
-def groups_description(id, count):
-    mas = [CreateGroupsForm() for i in range(count)]
-
-    return render_template("groups_description.html", mas=mas, kol=1)
+@app.route("/groups_description/<int:id>/<int:count>/<int:number>", methods=['GET', 'POST'])
+def groups_description(id, count, number):
+    sessions = db_session.create_session()
+    form = CreateGroupsForm()
+    if request.method == "POST":
+        competition = sessions.query(competitions.Competitions).filter(
+            competitions.Competitions.id == id).first()
+        competition.groups_description += "%%" + "$$".join([str(form.age_range_start.data),
+                                                            str(form.age_range_end.data),
+                                                            str(form.players_count.data),
+                                                            str(form.group_time_start.data),
+                                                            str(form.payments_value.data)])
+        sessions.merge(competition)
+        sessions.commit()
+        number += 1
+        if number == count:
+            return redirect('/')
+        else:
+            return redirect(
+                '/groups_description/' + str(competition.id) + "/" + str(count) + "/" + str(
+                number))
+    return render_template("groups_description.html", form=form, count=count, number=number)
 
 
 def check_password(password):
