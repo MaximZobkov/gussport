@@ -10,7 +10,7 @@ class News(SqlAlchemyBase, SerializerMixin):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     content = sqlalchemy.Column(sqlalchemy.TEXT, nullable=True)
-    image = sqlalchemy.Column(sqlalchemy.VARCHAR, default="/static/images")
+    image = sqlalchemy.Column(sqlalchemy.VARCHAR, default="/static/images/news_image/default_news.html")
     created_date = sqlalchemy.Column(sqlalchemy.DATE)
 
 

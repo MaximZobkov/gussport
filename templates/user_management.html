@@ -1,10 +1,44 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+
+{% block content %}
+<div class="container; mt-4">
+    <div class="card mb-4 card_register">
+        <div class="card-title">
+            <h1 align="center">Все пользователи</h1>
+        </div>
+        <table>
+            <tr>
+                <th>ID</th>
+                <th>Имя</th>
+                <th>Фамилия</th>
+                <th>Отчество</th>
+                <th>Email</th>
+                <th>Дата рождения</th>
+                <th>Пол</th>
+                <th>Роль</th>
+                <th>Переназначить роль</th>
+            </tr>
+            {% for user in table %}
+            <tr>
+                <td>{{user[0]}}</td>
+                <td>{{user[1]}}</td>
+                <td>{{user[2]}}</td>
+                <td>{{user[3]}}</td>
+                <td>{{user[4]}}</td>
+                <td>{{user[5]}}</td>
+                <td>{{user[6]}}</td>
+                <td>{{user[7]}}</td>
+                <td>
+                    {% if user[7] == "user" %}
+                    <a href="/redefine_role/admin/{{user[0]}}" class="btn btn-primary">Назначить администратором</a>
+                    {% else %}
+                    <a href="/redefine_role/user/{{user[0]}}" class="btn btn-primary">Назначить пользователем</a>
+                    {% endif %}
+                </td>
+            </tr>
+            {% endfor %}
+        </table>
+    </div>
+</div>
+{% endblock %}

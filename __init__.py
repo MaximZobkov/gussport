@@ -67,6 +67,11 @@ class CreateGroupsForm(FlaskForm):
     payments_value = IntegerField('Размер оплаты', validators=[DataRequired()])
 
 
+class CreateNewsForm(FlaskForm):
+    name = StringField()
+    content = StringField()
+
+
 class LengthError(Exception):
     error = 'Пароль должен от 8 до 15 символов!'
 
@@ -143,7 +148,10 @@ def register():
 
 
 @app.route('/create_competition', methods=['GET', 'POST'])
+@login_required
 def create_competition():
+    if current_user.role != "admin":
+        return redirect("/")
     sessions = db_session.create_session()
     form = CreateCompetitionForm()
     if request.method == "POST":
@@ -166,7 +174,10 @@ def create_competition():
 
 
 @app.route("/groups_description/<int:id>/<int:count>/<int:number>", methods=['GET', 'POST'])
+@login_required
 def groups_description(id, count, number):
+    if current_user.role != "admin":
+        return redirect("/")
     sessions = db_session.create_session()
     form = CreateGroupsForm()
     if request.method == "POST":
@@ -187,6 +198,40 @@ def groups_description(id, count, number):
                 '/groups_description/' + str(competition.id) + "/" + str(count) + "/" + str(
                 number))
     return render_template("groups_description.html", form=form, count=count, number=number)
+
+
+@app.route("/user_management", methods=['GET', 'POST'])
+@login_required
+def user_management():
+    if current_user.role != "admin":
+        return redirect("/")
+    sessions = db_session.create_session()
+    table = []
+    users_list = sessions.query(users.User)
+    for user in users_list:
+        row = [user.id, user.name, user.surname, user.middle_name, user.email, user.date_of_birth,
+               user.gender, user.role]
+        table += [row]
+    return render_template("user_management.html", table=table)
+
+
+@app.route("/redefine_role/<string:role>/<int:id>")
+@login_required
+def redefine_role(role, id):
+    if current_user.role != "admin":
+        return redirect("/")
+    sessions = db_session.create_session()
+    user = sessions.query(users.User).filter(users.User.id == id).first()
+    user.role = role
+    sessions.merge(user)
+    sessions.commit()
+    return redirect("/user_management")
+
+
+@app.route("/create_news", methods=['GET', 'POST'])
+def create_news():
+    pass
+    return render_template("create_news.html")
 
 
 def check_password(password):
@@ -231,6 +276,16 @@ def login():
 @app.route('/')
 def index():
     return render_template("index.html")
+
+
+@app.errorhandler(404)  # функция ошибки
+def not_found(error):
+    return render_template("not_found.html")
+
+
+@app.errorhandler(401)  # функция ошибки
+def not_found(error):
+    return render_template("not_authorized.html")
 
 
 def main():
