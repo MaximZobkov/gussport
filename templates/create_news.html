@@ -5,7 +5,7 @@
 <div class="container; mt-4">
     <div class="card mb-4 card_register">
         <div class="card-title">
-            <h1 align="center">Создание соревнования</h1>
+            <h1 align="center">Создание новостей</h1>
         </div>
         <div class="card-body">
             <form action="" method="post">
@@ -16,41 +16,12 @@
                     {{ form.name(class="form-control") }}
                 </p>
                 <p>
-                    {{ form.type.label }}
-                    {{ form.type(class="form-control") }}
+                    {{ form.content.label }}
+                    {{ form.content(class="form-control") }}
                 </p>
-                <p>
-                    {{ form.event_date_start.label }}
-                    {{ form.event_date_start(type="date", class="form-control") }}
-                    {% if date_error != "OK" %}
-                        <a class="alert alert-danger" role="alert">{{ date_error }}</a>
-                    {% endif %}
-                </p>
-                <p>
-                    {{ form.event_time_start.label }}
-                    {{ form.event_time_start(type="time", class="form-control") }}
-                    {% if time_error != "OK" %}
-                        <a class="alert alert-danger" role="alert">{{ time_error }}</a>
-                    {% endif %}
-                </p>
-                <p>
-                    {{ form.registration_start.label }}
-                    {{ form.registration_start(type="date", class="form-control") }}
-                    {% if date_error != "OK" %}
-                        <a class="alert alert-danger" role="alert">{{ date_error }}</a>
-                    {% endif %}
-                </p>
-                <p>
-                    {{ form.registration_end.label }}
-                    {{ form.registration_end(type="date", class="form-control") }}
-                    {% if date_error != "OK" %}
-                        <a class="alert alert-danger" role="alert">{{ date_error }}</a>
-                    {% endif %}
-                </p>
-                <p>
-                    {{ form.group_count.label }} <br>
-                    {{ form.group_count(class="form-control") }} <br>
-                </p>
+                <div class="form-group">
+                    <input type="file" class="form-control-file" id="photo" name="file">
+                </div>
                 <p>{{ form.submit(type="submit", class="btn btn-outline-dark") }}</p>
             </form>
         </div>

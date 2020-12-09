@@ -2,6 +2,7 @@
 
 
 {% block content %}
+<script src="../static/js/maps.js" type="text/javascript"></script>
     <div class="container mt-4">
         <div class="card mb-4 card_register">
             <div class="card-title">
@@ -60,6 +61,14 @@
                     <p>
                         {{ form.gender.label }} <br>
                         {{ form.gender(class="form-control") }} <br>
+                    </p>
+                    <p>
+                        {{ form.residence_type.label }} <br>
+                        {{ form.residence_type(class="form-control") }} <br>
+                    </p>
+                    <p>
+                        {{ form.residence_name.label }} <br>
+                        {{ form.residence_name(class="form-control") }} <br>
                     </p>
                     <div class="form-group">
                         <input type="file" class="form-control-file" id="photo" name="file">

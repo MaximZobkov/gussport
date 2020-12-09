@@ -19,6 +19,8 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     role = sqlalchemy.Column(sqlalchemy.String, default="user")
     image = sqlalchemy.Column(sqlalchemy.String, default="/static/images/avatar_image/unknown.jpg")
     middle_name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
+    residence_type = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    residence_name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
 
     def __repr__(self):
         return f'{self.id}, {self.name}, {self.email}'
