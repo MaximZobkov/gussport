@@ -1,24 +1,27 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="container mt-4">
-        <div class="card" style="border-radius: 10px;">
-            <div class="border border-left border-right border-top border-bottom border-{{ colors }} border-rounded">
-                <p style="font-size: 20pt; margin: 10px;">
-                    <img class="img-fluid rounded-circle" src="{{ current_user.image }}" alt="" height="250"
-                         width="250" align="left" style="margin-right: 20px;">
-                    {{ current_user.name }} {{ current_user.surname }}<br>
-                </p>
-            </div>
+<div class="container mt-4">
+    <div class="card" style="border-radius: 10px;  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2)">
+        <div class="border border-left border-right border-top border-bottom border-{{ colors }} border-rounded">
+            <p style="font-size: 20pt; margin: 10px;">
+                <img class="img-fluid rounded-circle" src="{{ current_user.image }}"
+                     align="left" style="margin-right: 20px; width: 15vw; height: 30vh;">
+                {{ current_user.name }} {{ current_user.surname }}<br>
+            </p>
         </div>
     </div>
-    <div>
-            {% if current_user.competitions == "" %}
-                <h1> Вы еще нигде не участвовали </h1>
-            {% else %}
-                {% for competition in current_user.competitions %}
-                    1
-                {% endfor %}
-            {% endif %}
-    </div>
+</div>
+<div>
+    {% set vars = {'flag': True} %}
+    {% for competition in current_user.competitions %}
+        {% if vars.update({'flag': False}) %} {% endif %}
+        {{ competition }}
+    {% endfor %}
+    {% if vars.flag %}
+        <h1 align="center" style="margin-top: 300px;">
+            Вы еще нигде не участвовали!
+        </h1>
+    {% endif %}
+</div>
 {% endblock %}

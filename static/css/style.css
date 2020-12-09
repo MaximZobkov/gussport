@@ -2,6 +2,7 @@
     margin: 20px;
     width: 90%;
 }
+
 .navbar_margin {
     margin: 0;
 }
@@ -9,17 +10,26 @@
 .btn-group-vertical {
     background-color: #00BFFF;
 }
+
 card {
     margin: auto;
 }
+
 .table-user {
     padding: 20px;
     border: 1px solid grey;
 }
+
 td {
     border: 1px solid grey;
 }
+
 th {
     font-size: 20px;
     border: 1px solid grey;
+}
+.img-fluid {
+    object-fit: cover;
+    width: 200px;
+    height: 150px;
 }
