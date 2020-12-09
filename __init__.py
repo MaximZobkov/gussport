@@ -57,7 +57,7 @@ class CreateCompetitionForm(FlaskForm):
 
 
 class CreateGroupsForm(FlaskForm):
-    age_range_start = IntegerField('Минмальный возраст', validators=[DataRequired()])
+    age_range_start = IntegerField('Минимальный возраст', validators=[DataRequired()])
     age_range_end = IntegerField('Максимальный возраст', validators=[DataRequired()])
     players_count = IntegerField('Максимальное количество участников в группе',
                                  validators=[DataRequired()])

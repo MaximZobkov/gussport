@@ -9,3 +9,17 @@
 .btn-group-vertical {
     background-color: #00BFFF;
 }
+card {
+    margin: auto;
+}
+.table-user {
+    padding: 20px;
+    border: 1px solid grey;
+}
+td {
+    border: 1px solid grey;
+}
+th {
+    font-size: 20px;
+    border: 1px solid grey;
+}
