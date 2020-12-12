@@ -2,29 +2,24 @@
 
 
 {% block content %}
-<div class="container mt-4">
-    <div class="card mb-4 card_register">
-        <div class="card-title">
-            <h1 align="center">Создание новостей</h1>
+    <h1>{{ title }}</h1>
+    <form action="" method="post" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        {{ form.csrf_token }}
+        <a>
+            {{ form.name.label }} <br>
+            {{ form.name(class="form-control") }} <br>
+        </a>
+        <a>
+            {{ form.content.label }} <br>
+            {{ form.content(class="form-control") }} <br>
+        </a>
+        <div class="form-group">
+            <input type="file" class="form-control-file" id="photo" name="file1">
         </div>
-        <div class="card-body">
-            <form action="" method="post">
-                {{ form.hidden_tag() }}
-                {{ form.csrf_token }}
-                <p>
-                    {{ form.name.label }}<br>
-                    {{ form.name(class="form-control") }}
-                </p>
-                <p>
-                    {{ form.content.label }}
-                    {{ form.content(class="form-control") }}
-                </p>
-                <div class="form-group">
-                    <input type="file" class="form-control-file" id="photo" name="file">
-                </div>
-                <p>{{ form.submit(type="submit", class="btn btn-outline-dark") }}</p>
-            </form>
-        </div>
-    </div>
-</div>
+        <form enctype="multipart/form-data" method="post">
+            <input type="submit" value="Отправить">
+        </form>
+        {{ message }}
+    </form>
 {% endblock %}
