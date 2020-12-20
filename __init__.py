@@ -1,20 +1,18 @@
 import datetime
 import os, json
 
-from flask import Flask, render_template, redirect, request
+from flask import Flask, render_template, redirect, url_for, request
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, DateField, BooleanField, IntegerField, \
     SelectField, TimeField
 from wtforms.validators import DataRequired
-from dadata import DadataAsync
 
 from data import db_session, users, competitions, news
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'GusStory.ru'
 db_session.global_init("db/blogs.sqlite")
-Token = "2ec81e520102ba1f8e3bc0d9fc1b74e656bc1e6a" #токен с dadata
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -42,7 +40,7 @@ class RegisterForm(FlaskForm):
     date_of_birth = DateField('Дата рождения')
     gender = SelectField('Пол', validators=[DataRequired()],
                          choices=[('1', 'Мужской'), ('2', "Женский")])
-    residence_type =SelectField('Тип населённого пункта', validators=[DataRequired()],
+    residence_type = SelectField('Тип населённого пункта', validators=[DataRequired()],
                          choices=[('1', 'Город'), ('2', "Село"), ('3', "Деревня"),
                                   ('4', "Посёлок"), ('5', "Посёлок городского типа")])
     residence_name = StringField('Название населённого пункта', validators=[DataRequired()])
@@ -107,7 +105,9 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
-    if form.validate_on_submit():
+    print(4, form.validate_on_submit())
+    if request.method == "POST":
+        print(3)
         result = check_password(form.password.data)
         date_check = check_date(form.date_of_birth.data)
         if result != 'OK':
@@ -136,15 +136,10 @@ def register():
         user.surname = form.surname.data
         user.middle_name = form.middle_name.data
         user.date_of_birth = form.date_of_birth.data
-        '''async def check(name):
-            dadataas = DadataAsync(Token)
-            result = await dadataas.suggest("city", name)
-            print(result)
-            print(result["suggestions"])
-
-        coroutine_start(check, form.residence_name.data)'''
-        user.residence_type = form.residence_type.data
-        user.residence_name = form.residence_name.data
+        user.residence_type = request.form["typecode"]
+        user.residence_name = request.form["city"]
+        print(request.form["city"])
+        print(request.form["typecode"])
         user.set_password(form.password.data)
         if str(request.files["file"]) != "<FileStorage: '' ('application/octet-stream')>":
             file = request.files["file"]
@@ -159,17 +154,9 @@ def register():
             user.gender = 'Женский'
         sessions.commit()
         return redirect('/login')
-    return render_template('register.html', title='Регистрация', form=form, email_error="OK",
-                           password_error="OK", again_password_error="OK", date_error='OK')
+    return render_template('register.html', form=form, email_error="OK", again_password_error="OK",
+                                   date_error="OK", password_error="OK")
 
-
-'''from collections import deque
-current = deque()
-def coroutine_start(run, *args, **kwargs):
-    coro = run(*args, **kwargs)
-    current.append(coro)
-    coro.send(None)
-'''
 
 @app.route('/create_competition', methods=['GET', 'POST'])
 @login_required

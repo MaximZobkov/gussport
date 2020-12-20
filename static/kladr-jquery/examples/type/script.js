@@ -1,20 +1,17 @@
-(function () {
-    var $container = $(document.getElementById('type_code'));
-
-    var $city = $container.find('[name="city"]'),
-        $typeCode = $container.find('[name="typecode"]');
+$(function () {
+    var $city = $('[name="city"]'),
+        $typeCode = $('[name="typecode"]');
 
     $city.fias({
         type: $.fias.type.city,
+        'withParents': true
     });
-
-    $city.fias('withParents', true);
 
     $typeCode.change(function () {
         changeTypeCode($(this).val());
     });
 
-    changeTypeCode($container.find('[name="typecode"]:checked').val());
+    changeTypeCode($('[name="typecode"]:checked').val());
 
     function changeTypeCode(value) {
         var typeCode = null;
@@ -25,14 +22,16 @@
                 break;
 
             case 'settlement':
-                typeCode = $.fias.typeCode.city + $.fias.typeCode.settlement;
+                typeCode = $.fias.typeCode.settlement;
+                //typeCode = $.fias.typeCode.city + $.fias.typeCode.settlement;
                 break;
 
             case 'all':
-                typeCode = $.fias.typeCode.city + $.fias.typeCode.settlement + $.fias.typeCode.village;
+                typeCode = $.fias.typeCode.village;
+                //typeCode = $.fias.typeCode.city + $.fias.typeCode.settlement + $.fias.typeCode.village;
                 break;
         }
 
         $city.fias('typeCode', typeCode);
     }
-})();
+});
