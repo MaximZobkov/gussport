@@ -5,14 +5,16 @@ from flask import Flask, render_template, redirect, url_for, request
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, DateField, BooleanField, IntegerField, \
-    SelectField, TimeField
+    SelectField, TimeField, TextAreaField
 from wtforms.validators import DataRequired
+from dadata import DadataAsync
 
 from data import db_session, users, competitions, news
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'GusStory.ru'
 db_session.global_init("db/blogs.sqlite")
+Token = "2ec81e520102ba1f8e3bc0d9fc1b74e656bc1e6a" #токен с dadata
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -73,7 +75,7 @@ class CreateGroupsForm(FlaskForm):
 
 class CreateNewsForm(FlaskForm):
     name = StringField("Заголовок новости", validators=[DataRequired()])
-    content = StringField("Новость:", validators=[DataRequired()])
+    content = TextAreaField("Новость:", validators=[DataRequired()])
     submit = SubmitField("Завершить создание новости")
 
 
@@ -154,8 +156,8 @@ def register():
             user.gender = 'Женский'
         sessions.commit()
         return redirect('/login')
-    return render_template('register.html', form=form, email_error="OK", again_password_error="OK",
-                                   date_error="OK", password_error="OK")
+    return render_template('register.html', title='Регистрация', form=form, email_error="OK",
+                           password_error="OK", again_password_error="OK", date_error='OK')
 
 
 @app.route('/create_competition', methods=['GET', 'POST'])
@@ -207,7 +209,7 @@ def groups_description(id, count, number):
         else:
             return redirect(
                 '/groups_description/' + str(competition.id) + "/" + str(count) + "/" + str(
-                number))
+                    number))
     return render_template("groups_description.html", form=form, count=count, number=number)
 
 
@@ -244,17 +246,16 @@ def create_news():
     if current_user.role != "admin":
         return redirect("/")
     form = CreateNewsForm()
-    sessions = db_session.create_session()
     if request.method == "POST":
+        sessions = db_session.create_session()
         new = news.News()
         new.name = form.name.data
         new.content = form.content.data
-        if str(request.files["file"]) != "<FileStorage: '' ('application/octet-stream')>":
-            file = request.files["file"]
-            name = "static/images/avatar_image/avatar_" + \
-                   str(1 + len(os.listdir("static/images/avatar_image"))) + ".jpg"
-            file.save(name)
-            new.image = "/" + name
+        photo = request.files['file1']
+        photo.save("static/images/news_image/news_" + \
+                   str(1 + len(os.listdir("static/images/news_image"))) + ".jpg")
+        new.image = "static/images/news_image/news_" + \
+                   str(len(os.listdir("static/images/news_image"))) + ".jpg"
         sessions.add(new)
         sessions.commit()
         return redirect('/')
@@ -304,10 +305,7 @@ def login():
 def index():
     sessions = db_session.create_session()
     all_news = sessions.query(news.News)
-    news_list = []
-    for new in all_news:
-        news_list += [new]
-    return render_template("index.html", news_list=news_list)
+    return render_template("index.html", news_list=all_news)
 
 
 @app.errorhandler(404)  # функция ошибки

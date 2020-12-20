@@ -1,31 +1,23 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div style="display: flex;">
-    <div style="margin-left: 4%;">
-        <div class="btn btn-group-vertical">
-            <p>Hi</p>
-        </div>
-    </div>
-</div>
-<div class="container mt-4">
-    <div class="card mb-4" style="width: 100%; border-radius: 10px;">
+    <div class="mt-4">
         <div class="card-body">
             <h2 class="card-title" align="center"> Новости: </h2>
-                <div class="row">
-                    {% for new in news %}
+            <div class="row">
+                {% for new in news_list %}
                     <div class="col-xl-3 col-lg-4 col-sm-6 col-xs-12">
-                        <div class="card mb-4" style="width: 100%; border-radius: 10px;">
-                            <div class="card-body" style="min-height: 250px">
-                                <img src="{{new.image}}">
-                                <h5 class="card-title" align="center">{{new.name}}</h5>
-                                <p>{{new.content}}</p>
+                        <div class="card bg-light mb-4" style="border-radius: 10px;">
+                            <img class="card-img-top" style="border-radius: 10px;" src='{{ new.image }}'>
+                            <div class="card-body">
+                                <h5 align="center" style="height: 35px;"
+                                    class="card-title">{{ new.name }}</h5>
+                                <h5> {{ new.content }}</h5>
                             </div>
                         </div>
                     </div>
-                    {% endfor %}
-                </div>
+                {% endfor %}
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}
