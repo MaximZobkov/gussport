@@ -13,6 +13,9 @@
                                 <h5 align="center" style="height: 35px;"
                                     class="card-title">{{ new.name }}</h5>
                                 <h5> {{ new.content }}</h5>
+                                {% if current_user.role == "admin" %}
+                                <a class="btn btn-danger" href="/delete_new/{{ new.id }}">Удалить новость</a>
+                                {% endif %}
                             </div>
                         </div>
                     </div>
