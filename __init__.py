@@ -7,14 +7,13 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, DateField, BooleanField, IntegerField, \
     SelectField, TimeField, TextAreaField
 from wtforms.validators import DataRequired
-from dadata import DadataAsync
 
 from data import db_session, users, competitions, news
 
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'GusStory.ru'
 db_session.global_init("db/blogs.sqlite")
-Token = "2ec81e520102ba1f8e3bc0d9fc1b74e656bc1e6a" #токен с dadata
+Token = "2ec81e520102ba1f8e3bc0d9fc1b74e656bc1e6a"  # токен с dadata
 login_manager = LoginManager()
 login_manager.init_app(app)
 
@@ -43,8 +42,8 @@ class RegisterForm(FlaskForm):
     gender = SelectField('Пол', validators=[DataRequired()],
                          choices=[('1', 'Мужской'), ('2', "Женский")])
     residence_type = SelectField('Тип населённого пункта', validators=[DataRequired()],
-                         choices=[('1', 'Город'), ('2', "Село"), ('3', "Деревня"),
-                                  ('4', "Посёлок"), ('5', "Посёлок городского типа")])
+                                 choices=[('1', 'Город'), ('2', "Село"), ('3', "Деревня"),
+                                          ('4', "Посёлок"), ('5', "Посёлок городского типа")])
     residence_name = StringField('Название населённого пункта', validators=[DataRequired()])
     submit = SubmitField('Зарегистрироваться')
 
@@ -176,6 +175,13 @@ def create_competition():
         competition.registration_start = form.registration_start.data
         competition.registration_end = form.registration_end.data
         competition.groups_count = form.groups_count.data
+        with open("static/json/competition.json") as file:
+            data = json.load(file)
+        count = len(data.keys())
+        data["failed_competitions"].update([("competition" + str(count), {})])
+        with open("static/json/competition.json", "w") as file:
+            json.dump(data, file)
+        competition.url = "competition" + str(count)
         sessions.add(competition)
         sessions.commit()
         print('/groups_description/' + str(competition.id) + "/" + str(form.groups_count.data))
@@ -201,6 +207,12 @@ def groups_description(id, count, number):
                                                             str(form.players_count.data),
                                                             str(form.group_time_start.data),
                                                             str(form.payments_value.data)])
+        with open("static/json/competition.json") as file:
+            data = json.load(file)
+        group_name_to_dict = str(form.age_range_start.data) + ":" + str(form.age_range_end.data) + ":" + str(form.players_count.data)
+        data["failed_competitions"][competition.url].update([(group_name_to_dict, [])])
+        with open("static/json/competition.json", "w") as file:
+            json.dump(data, file)
         sessions.merge(competition)
         sessions.commit()
         number += 1
@@ -211,6 +223,45 @@ def groups_description(id, count, number):
                 '/groups_description/' + str(competition.id) + "/" + str(count) + "/" + str(
                     number))
     return render_template("groups_description.html", form=form, count=count, number=number)
+
+
+@app.route("/register_to_competition/<string:name>/<int:id>")
+@login_required
+def register_to_competition(name, id):
+    session = db_session.create_session()
+    with open("static/json/competition.json") as file:
+        data = json.load(file)
+    competition = session.query(competitions.Competitions).filter(
+        competitions.Competitions.url == name).first()
+    age = get_age(competition.event_date_start)
+    keys = data["failed_competitions"][name].keys()
+    right_key = ""
+    for key in keys:
+        if int(key.split(':')[0]) <= age <= int(key.split(':')[1]):
+            right_key = key
+            break
+    if right_key == "":
+        # пользователь не может зарегестрироватбся на это соревнование, т.к. нет подходящей возрастной категории
+        return
+    data["failed_competitions"][name][right_key] += [id]
+    with open("static/json/competition.json", "w") as file:
+        json.dump(data, file)
+    return redirect('/')
+
+
+def get_age(data):
+    # data = data.split("-")
+    # Если будут вылеты, то все проблемы в следующих 3х строках кода
+    year = data.year
+    month = data.month
+    day = data.day
+    today_year = datetime.datetime.now().year
+    today_month = datetime.datetime.now().month
+    today_day = datetime.datetime.now().day
+    if (today_month < month) or (today_month == month and today_day < day):
+        return today_year - year - 1
+    else:
+        return today_year - year
 
 
 @app.route("/user_management", methods=['GET', 'POST'])
@@ -255,7 +306,7 @@ def create_news():
         photo.save("static/images/news_image/news_" + \
                    str(1 + len(os.listdir("static/images/news_image"))) + ".jpg")
         new.image = "static/images/news_image/news_" + \
-                   str(len(os.listdir("static/images/news_image"))) + ".jpg"
+                    str(len(os.listdir("static/images/news_image"))) + ".jpg"
         sessions.add(new)
         sessions.commit()
         return redirect('/')

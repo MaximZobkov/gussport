@@ -16,4 +16,5 @@ class Competitions(SqlAlchemyBase, SerializerMixin):
     registration_end = sqlalchemy.Column(sqlalchemy.DATE)
     groups_count = sqlalchemy.Column(sqlalchemy.Integer)
     groups_description = sqlalchemy.Column(sqlalchemy.TEXT, default="")
+    url = sqlalchemy.Column(sqlalchemy.TEXT)
 
