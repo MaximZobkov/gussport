@@ -332,6 +332,15 @@ def delete_news(id):
     return redirect("/")
 
 
+@app.route("/delete_new/<int:id>")
+def delete_news(id):
+    session = db_session.create_session()
+    new = session.query(news.News).filter(news.News.id == id).first()
+    session.delete(new)
+    session.commit()
+    return redirect("/")
+
+
 def check_password(password):
     flags = [0, 0]
     for element in password:
