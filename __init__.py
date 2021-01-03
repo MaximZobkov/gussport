@@ -209,7 +209,8 @@ def groups_description(id, count, number):
                                                             str(form.payments_value.data)])
         with open("static/json/competition.json") as file:
             data = json.load(file)
-        group_name_to_dict = str(form.age_range_start.data) + ":" + str(form.age_range_end.data) + ":" + str(form.players_count.data)
+        group_name_to_dict = str(form.age_range_start.data) + ":" + str(form.age_range_end.data) + ":" + str(
+            form.players_count.data)
         data["failed_competitions"][competition.url].update([(group_name_to_dict, [])])
         with open("static/json/competition.json", "w") as file:
             json.dump(data, file)
@@ -241,7 +242,7 @@ def register_to_competition(name, id):
             right_key = key
             break
     if right_key == "":
-        # пользователь не может зарегестрироватбся на это соревнование, т.к. нет подходящей возрастной категории
+        # пользователь не может зарегистрироваться на это соревнование, т.к. нет подходящей возрастной категории
         return
     data["failed_competitions"][name][right_key] += [id]
     with open("static/json/competition.json", "w") as file:
@@ -278,6 +279,13 @@ def user_management():
         table += [row]
     return render_template("user_management.html", table=table)
 
+@app.route("/competitions", methods=['GET', 'POST'])
+@login_required
+def all_competitions():
+    sessions = db_session.create_session()
+    competitions_list = sessions.query(competitions.Competitions)
+    return render_template("competitions.html", competitions_list=competitions_list)
+
 
 @app.route("/redefine_role/<string:role>/<int:id>")
 @login_required
@@ -311,6 +319,17 @@ def create_news():
         sessions.commit()
         return redirect('/')
     return render_template("create_news.html", form=form)
+
+@login_required
+@app.route("/delete_new/<int:id>")
+def delete_news(id):
+    if current_user.role != "admin":
+        return redirect("/")
+    session = db_session.create_session()
+    new = session.query(news.News).filter(news.News.id == id).first()
+    session.delete(new)
+    session.commit()
+    return redirect("/")
 
 
 def check_password(password):
