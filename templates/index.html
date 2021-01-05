@@ -12,9 +12,11 @@
                             <div class="card-body">
                                 <h5 align="center" style="height: 35px;"
                                     class="card-title">{{ new.name }}</h5>
-                                <h5> {{ new.content }}</h5>
+                                {% for content in new.content.split('\n') %}
+                                    <p style="text-indent: 20px">{{ content }}</p>
+                                {% endfor %}
                                 {% if current_user.role == "admin" %}
-                                <a class="btn btn-danger" href="/delete_new/{{ new.id }}">Удалить новость</a>
+                                    <a class="btn btn-dark" href="/delete_new/{{ new.id }}">Удалить новость</a>
                                 {% endif %}
                             </div>
                         </div>
@@ -22,5 +24,8 @@
                 {% endfor %}
             </div>
         </div>
+        {% if current_user.role == "admin" %}
+            <a class="btn btn-success" href="/create_news">Добавить новость</a>
+        {% endif %}
     </div>
 {% endblock %}
