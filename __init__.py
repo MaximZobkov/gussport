@@ -173,8 +173,16 @@ def create_competition():
         competition = competitions.Competitions()
         competition.name = form.name.data
         competition.short_description = form.short_description.data
-        competition.type = form.type.data
+        if form.type.data == '1':
+            competition.type = 'Триатлон'
+        elif form.type.data == '2':
+            competition.type = 'Дуатлон'
+        elif form.type.data == '3':
+            competition.type = 'Лыжный масс-старт'
+        elif form.type.data == '4':
+            competition.type = 'Веломарафон'
         competition.event_time_start = form.event_time_start.data
+        print(type(form.event_time_start.data))
         competition.event_date_start = form.event_date_start.data
         competition.registration_start = form.registration_start.data
         competition.registration_end = form.registration_end.data
@@ -222,7 +230,8 @@ def groups_description(id, count, number):
                                                             str(form.payments_value.data)])
         with open("static/json/competition.json") as file:
             data = json.load(file)
-        group_name_to_dict = str(form.age_range_start.data) + ":" + str(form.age_range_end.data) + ":" + str(form.players_count.data) + ":" + str(form.distance.data)
+        group_name_to_dict = str(form.age_range_start.data) + ":" + str(form.age_range_end.data) + ":" + str(
+            form.players_count.data) + ":" + str(form.distance.data)
         data["failed_competitions"][competition.url].update([(group_name_to_dict, [])])
         with open("static/json/competition.json", "w") as file:
             json.dump(data, file)
@@ -238,7 +247,7 @@ def groups_description(id, count, number):
     return render_template("groups_description.html", form=form, count=count, number=number)
 
 
-#Нужно переделать, добавив выбор дистанции
+# Нужно переделать, добавив выбор дистанции
 @app.route("/register_to_competition/<string:name>/<int:id>")
 @login_required
 def register_to_competition(name, id):
@@ -261,6 +270,13 @@ def register_to_competition(name, id):
     with open("static/json/competition.json", "w") as file:
         json.dump(data, file)
     return redirect('/')
+
+
+@app.route('/competitions')
+def all_competitions():
+    session = db_session.create_session()
+    competitions_list = session.query(competitions.Competitions)
+    return render_template('competitions.html', competitions_list=competitions_list)
 
 
 def get_age(data):

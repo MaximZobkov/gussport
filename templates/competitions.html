@@ -1,14 +1,21 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="container">
-        <div class="card-body">
-                {% for competition in competitions_list %}
-                    <p>
-                        {{ competition.name }}
-                    </p>
-                {% endfor %}
+    <div class="container mt-4">
+        {% for competition in competitions_list %}
+            <div>
+                <div class="card">
+                    <div>
+                        <img class="card-img-left" style="border-radius: 5px; padding-right: 5px;" src='{{ competition.image }}'>
+                        <h5 align="center"
+                            class="card-title">{{ competition.name }}</h5>
+                        Вид спорта: {{ competition.type }} <br>
+                        Дата проведения: {{ competition.event_date_start }} {{ competition.event_time_start }} <br>
+                        Регистрация на соревнования открыта с {{ competition.registration_start }}
+                        до {{ competition.registration_end }}
+                    </div>
+                </div>
             </div>
-        </div>
+        {% endfor %}
     </div>
 {% endblock %}

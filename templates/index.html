@@ -1,12 +1,11 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="mt-4">
+    <div class="container mt-4">
         <div class="card-body">
-            <h2 class="card-title" align="center"> Новости: </h2>
             <div class="row">
                 {% for new in news_list %}
-                    <div class="col-xl-3 col-lg-4 col-sm-6 col-xs-12">
+                    <div>
                         <div class="card bg-light mb-4" style="border-radius: 10px;">
                             <img class="card-img-top" style="border-radius: 10px;" src='{{ new.image }}'>
                             <div class="card-body">
@@ -24,8 +23,5 @@
                 {% endfor %}
             </div>
         </div>
-        {% if current_user.role == "admin" %}
-            <a class="btn btn-success" href="/create_news">Добавить новость</a>
-        {% endif %}
     </div>
 {% endblock %}
