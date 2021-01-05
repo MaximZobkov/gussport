@@ -8,13 +8,20 @@
             <h1 align="center">Создание соревнования</h1>
         </div>
         <div class="card-body">
-            <form action="" method="post">
+            <form action="" method="post" enctype="multipart/form-data">
                 {{ form.hidden_tag() }}
                 {{ form.csrf_token }}
                 <p>
                     {{ form.name.label }}<br>
                     {{ form.name(class="form-control") }}
                 </p>
+                <p>
+                    {{ form.short_description.label }}<br>
+                    {{ form.short_description(class="form-control") }}
+                </p>
+                <div class="form-group">
+                        <input type="file" class="form-control-file" id="photo" name="file">
+                </div>
                 <p>
                     {{ form.type.label }}
                     {{ form.type(class="form-control") }}

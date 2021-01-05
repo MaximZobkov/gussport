@@ -50,6 +50,7 @@ class RegisterForm(FlaskForm):
 
 class CreateCompetitionForm(FlaskForm):
     name = StringField('Название соревнования', validators=[DataRequired()])
+    short_description = StringField('Краткое описание соревнования', validators=[DataRequired()])
     event_date_start = DateField('Дата проведения соревнования')
     event_time_start = TimeField('Время начала соревнования')
     registration_start = DateField('Дата начала регистрации')
@@ -66,6 +67,7 @@ class CreateGroupsForm(FlaskForm):
     age_range_end = IntegerField('Максимальный возраст', validators=[DataRequired()])
     players_count = IntegerField('Максимальное количество участников в группе',
                                  validators=[DataRequired()])
+    distance = IntegerField('Длина дистанции', validators=[DataRequired()])
     group_time_start = TimeField('Время старта группы')
     payment = SelectField('Оплата участия', validators=[DataRequired()],
                           choices=[('1', 'Есть'), ('2', "Нет")])
@@ -142,17 +144,18 @@ def register():
         print(request.form["city"])
         print(request.form["typecode"])
         user.set_password(form.password.data)
-        if str(request.files["file"]) != "<FileStorage: '' ('application/octet-stream')>":
-            file = request.files["file"]
-            name = "static/images/avatar_image/avatar_" + \
-                   str(1 + len(os.listdir("static/images/avatar_image"))) + ".jpg"
-            file.save(name)
-            user.image = "/" + name
-        sessions.add(user)
         if form.gender.data == '1':
             user.gender = 'Мужской'
         else:
             user.gender = 'Женский'
+        sessions.add(user)
+        sessions.commit()
+        if str(request.files["file"]) != "<FileStorage: '' ('application/octet-stream')>":
+            file = request.files["file"]
+            name = "static/images/avatar_image/avatar_" + str(user.id) + ".jpg"
+            file.save(name)
+            user.image = "/" + name
+        sessions.merge(user)
         sessions.commit()
         return redirect('/login')
     return render_template('register.html', title='Регистрация', form=form, email_error="OK",
@@ -169,6 +172,7 @@ def create_competition():
     if request.method == "POST":
         competition = competitions.Competitions()
         competition.name = form.name.data
+        competition.short_description = form.short_description.data
         competition.type = form.type.data
         competition.event_time_start = form.event_time_start.data
         competition.event_date_start = form.event_date_start.data
@@ -183,8 +187,16 @@ def create_competition():
             json.dump(data, file)
         competition.url = "competition" + str(count)
         sessions.add(competition)
+        print(competition.id)
         sessions.commit()
         print('/groups_description/' + str(competition.id) + "/" + str(form.groups_count.data))
+        if str(request.files["file"]) != "<FileStorage: '' ('application/octet-stream')>":
+            file = request.files["file"]
+            name = "static/images/competition_image/competition_" + str(competition.id) + ".jpg"
+            file.save(name)
+            competition.image = "/" + name
+        sessions.merge(competition)
+        sessions.commit()
         return redirect(
             '/groups_description/' + str(competition.id) + "/" + str(
                 form.groups_count.data) + "/0")
@@ -205,11 +217,12 @@ def groups_description(id, count, number):
         competition.groups_description += "%%" + "$$".join([str(form.age_range_start.data),
                                                             str(form.age_range_end.data),
                                                             str(form.players_count.data),
+                                                            str(form.distance.data),
                                                             str(form.group_time_start.data),
                                                             str(form.payments_value.data)])
         with open("static/json/competition.json") as file:
             data = json.load(file)
-        group_name_to_dict = str(form.age_range_start.data) + ":" + str(form.age_range_end.data) + ":" + str(form.players_count.data)
+        group_name_to_dict = str(form.age_range_start.data) + ":" + str(form.age_range_end.data) + ":" + str(form.players_count.data) + ":" + str(form.distance.data)
         data["failed_competitions"][competition.url].update([(group_name_to_dict, [])])
         with open("static/json/competition.json", "w") as file:
             json.dump(data, file)
@@ -225,6 +238,7 @@ def groups_description(id, count, number):
     return render_template("groups_description.html", form=form, count=count, number=number)
 
 
+#Нужно переделать, добавив выбор дистанции
 @app.route("/register_to_competition/<string:name>/<int:id>")
 @login_required
 def register_to_competition(name, id):

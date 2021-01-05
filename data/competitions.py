@@ -10,6 +10,8 @@ class Competitions(SqlAlchemyBase, SerializerMixin):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     name = sqlalchemy.Column(sqlalchemy.TEXT)
     type = sqlalchemy.Column(sqlalchemy.TEXT)
+    short_description = sqlalchemy.Column(sqlalchemy.TEXT)
+    image = sqlalchemy.Column(sqlalchemy.TEXT)
     event_date_start = sqlalchemy.Column(sqlalchemy.DATE)
     event_time_start = sqlalchemy.Column(sqlalchemy.TIME)
     registration_start = sqlalchemy.Column(sqlalchemy.DATE)
@@ -17,4 +19,5 @@ class Competitions(SqlAlchemyBase, SerializerMixin):
     groups_count = sqlalchemy.Column(sqlalchemy.Integer)
     groups_description = sqlalchemy.Column(sqlalchemy.TEXT, default="")
     url = sqlalchemy.Column(sqlalchemy.TEXT)
+    endspiel = sqlalchemy.Column(sqlalchemy.Integer, default=0)
 
