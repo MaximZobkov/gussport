@@ -163,6 +163,24 @@ def register():
                            password_error="OK", again_password_error="OK", date_error='OK')
 
 
+def reformat(string_date):
+    s = string_date.split('-')
+    month = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября',
+             'декабря']
+    string = ''
+    k = 0
+    for x in s[::-1]:
+        print(string)
+        if k == 0:
+            string += x + ' '
+        elif k == 1:
+            string += month[int(x) - 1] + ' '
+        else:
+            string += x
+        k += 1
+    return string
+
+
 @app.route('/create_competition', methods=['GET', 'POST'])
 @login_required
 def create_competition():
@@ -182,11 +200,10 @@ def create_competition():
             competition.type = 'Лыжный масс-старт'
         elif form.type.data == '4':
             competition.type = 'Веломарафон'
-        competition.event_time_start = form.event_time_start.data
-        print(type(form.event_time_start.data))
-        competition.event_date_start = form.event_date_start.data
-        competition.registration_start = form.registration_start.data
-        competition.registration_end = form.registration_end.data
+        competition.event_time_start = str(form.event_time_start.data)[:-3]
+        competition.event_date_start = reformat(str(form.event_date_start.data))
+        competition.registration_start = reformat(str(form.registration_start.data))
+        competition.registration_end = reformat(str(form.registration_end.data))
         competition.groups_count = form.groups_count.data
         with open("static/json/competition.json") as file:
             data = json.load(file)
@@ -196,9 +213,7 @@ def create_competition():
             json.dump(data, file)
         competition.url = "competition" + str(count)
         sessions.add(competition)
-        print(competition.id)
         sessions.commit()
-        print('/groups_description/' + str(competition.id) + "/" + str(form.groups_count.data))
         if str(request.files["file"]) != "<FileStorage: '' ('application/octet-stream')>":
             file = request.files["file"]
             name = "static/images/competition_image/competition_" + str(competition.id) + ".jpg"

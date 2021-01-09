@@ -3,17 +3,12 @@
 {% block content %}
     <div class="container mt-4">
         {% for competition in competitions_list %}
-            <div>
-                <div class="card">
-                    <div>
-                        <img class="card-img-left" style="border-radius: 5px; padding-right: 5px;" src='{{ competition.image }}'>
-                        <h5 align="center"
-                            class="card-title mt-1">{{ competition.name }}</h5>
-                        Вид спорта: {{ competition.type }} <br>
-                        Дата проведения: {{ competition.event_date_start }} {{ competition.event_time_start }} <br>
-                        Регистрация на соревнования открыта с {{ competition.registration_start }}
-                        до {{ competition.registration_end }}
-                    </div>
+            <div class="col-sm-6">
+                <div class="card competitions_lst">
+                    <img class="card-img-top" src='{{ competition.image }}'>
+                    <div class="centered"><h1>{{ competition.name }}</h1></div>
+                    <div class="top-top"><a class="btn btn-primary">{{ competition.event_date_start }}</a></div>
+                    <div class="top-bottom"><a class="btn btn-primary">Подробнее</a></div>
                 </div>
             </div>
         {% endfor %}
