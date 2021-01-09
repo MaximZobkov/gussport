@@ -1,9 +1,8 @@
 {% extends "base.html" %}
 
 {% block content %}
-<script></script>
-    <div class="container mt-4">
-        <div class="card mb-4 card_register">
+    <div class="card container mt-4">
+        <div class="mb-4">
             <div class="card-title">
                 <h1 align="center">Регистрация</h1>
             </div>
@@ -20,14 +19,14 @@
                             {{ error }}
                         {% endfor %}
                         {% if email_error != "OK" %}
-                            <a class="alert alert-danger" role="alert">{{ email_error }}</a>
+                            <p class="alert alert-danger" role="alert">{{ email_error }}</p>
                         {% endif %}
                         </p>
                     <p>
                         {{ form.password.label }}<br>
                         {{ form.password(class="form-control", type="password") }}
                         {% if password_error != "OK" %}
-                            <div class="alert alert-danger" role="alert">{{ password_error }}</div>
+                            <p class="alert alert-danger" role="alert">{{ password_error }}</p>
                         {% endif %}
                     </p>
 
@@ -54,7 +53,7 @@
                         {{ form.date_of_birth.label }}
                         {{ form.date_of_birth(type="date", class="form-control") }}
                         {% if date_error != "OK" %}
-                            <a class="alert alert-danger" role="alert">{{ date_error }}</a>
+                            <p class="alert alert-danger" role="alert">{{ date_error }}</p>
                         {% endif %}
                     </p>
                     <p>

@@ -38,7 +38,7 @@ input, button {
 
 .field input {
     height: 2em;
-    width: 295px;
+    width: 100%;
     border: 1px solid #d8d8d8;
     padding: 0 7px;
     color: #666;

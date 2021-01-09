@@ -2,11 +2,10 @@
 
 {% block content %}
     <div class="container mt-4">
-        <div class="card" style="border-radius: 10px;  box-shadow: 0 4px 8px 0 rgba(0,0,0,0.2)">
+        <div class="card" style="border-radius: 10px;  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2)">
             <div class="border border-left border-right border-top border-bottom border-rounded">
                 <p style="font-size: 20pt; margin: 10px;">
-                    <img class="img-fluid rounded-circle" src="{{ current_user.image }}"
-                         align="left" style="margin-right: 20px;">
+                    <img class="card-img-left" src="{{ current_user.image }}">
                     {{ current_user.name }} {{ current_user.surname }}<br>
                 </p>
                 <a href="/logout">Выйти из учётной записи</a>

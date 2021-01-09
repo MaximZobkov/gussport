@@ -1,7 +1,7 @@
 * {
     box-sizing: border-box;
 }
-.card_register {
+.card-register {
     margin: 20px;
     width: 90%;
 }
@@ -32,6 +32,7 @@ th {
     width: 23%;
     border-radius: 1px;
     float: left;
+    margin: 10px;
 }
 
 .inform{
@@ -52,7 +53,6 @@ input, button {
   height: 0;
 }
 .card {
-    max-height: 400px;
     margin-bottom: 10px;
     padding: 0;
     border-radius: 15px;
