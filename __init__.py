@@ -42,9 +42,6 @@ class RegisterForm(FlaskForm):
     date_of_birth = DateField('Дата рождения')
     gender = SelectField('Пол', validators=[DataRequired()],
                          choices=[('1', 'Мужской'), ('2', "Женский")])
-    residence_type = SelectField('Тип населённого пункта', validators=[DataRequired()],
-                                 choices=[('1', 'Город'), ('2', "Село"), ('3', "Деревня"),
-                                          ('4', "Посёлок"), ('5', "Посёлок городского типа")])
     residence_name = StringField('Название населённого пункта', validators=[DataRequired()])
     submit = SubmitField('Зарегистрироваться')
 
@@ -57,8 +54,12 @@ class CreateCompetitionForm(FlaskForm):
     registration_start = DateField('Дата начала регистрации')
     registration_end = DateField('Дата окончания регистрации')
     type = SelectField('Тип соревнования', validators=[DataRequired()],
-                       choices=[('1', 'Триатлон'), ('2', "Дуатлон"), ('3', "Лыжный Масс-старт"),
-                                ('4', "Веломарафон")])
+                       choices=[('Триатлон', 'Триатлон'), ('Дуатлон', "Дуатлон"),
+                                ('Лыжный Масс-старт', "Лыжный Масс-старт"),
+                                ('Лыжная гонка', 'Лыжная гонка'),
+                                ('Велокросс', 'Велокросс'), ('Велобиатлон', 'Велобиатлон'),
+                                ('Веломарафон', "Веломарафон"), ('Забег', 'Забег'), ('Марафон', 'Марафон'),
+                                ('Полумарафон', 'Полумарафон'), ('Плавание', 'Плавание')])
     groups_count = IntegerField('Количество групп', validators=[DataRequired()])
     submit = SubmitField('Перейти к созданию групп')
 
@@ -161,8 +162,8 @@ def register():
 
 def reformat(string_date):
     s = string_date.split('-')
-    month = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября',
-             'декабря']
+    month = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля',
+             'августа', 'сентября', 'октября', 'ноября', 'декабря']
     string = ''
     k = 0
     for x in s[::-1]:
@@ -177,6 +178,24 @@ def reformat(string_date):
     return string
 
 
+@app.route('/competition/<int:id>')
+@login_required
+def single_competition(id):
+    session = db_session.create_session()
+    competition = session.query(competitions.Competitions).filter(competitions.Competitions.id == id).first()
+    array_group = competition.groups_description[2:].split('%%')
+    array = []
+    for i in range(competition.groups_count):
+        array_elements = array_group[i].split('$$')
+        string_year = f'{array_elements[0]}-{array_elements[1]} лет.'
+        string_count_people = f'{array_elements[2]}'
+        string_distance = f'{array_elements[3]} км.'
+        string_time = f'{array_elements[4][:-3]}.'
+        string_money = f'{array_elements[5]}'
+        array.append([string_year, string_count_people, string_distance, string_time, string_money])
+    return render_template('single_competition.html', competition=competition, groups_array=array)
+
+
 @app.route('/create_competition', methods=['GET', 'POST'])
 @login_required
 def create_competition():
@@ -188,14 +207,7 @@ def create_competition():
         competition = competitions.Competitions()
         competition.name = form.name.data
         competition.short_description = form.short_description.data
-        if form.type.data == '1':
-            competition.type = 'Триатлон'
-        elif form.type.data == '2':
-            competition.type = 'Дуатлон'
-        elif form.type.data == '3':
-            competition.type = 'Лыжный масс-старт'
-        elif form.type.data == '4':
-            competition.type = 'Веломарафон'
+        competition.type = form.type.data
         competition.event_time_start = str(form.event_time_start.data)[:-3]
         competition.event_date_start = reformat(str(form.event_date_start.data))
         competition.registration_start = reformat(str(form.registration_start.data))
@@ -233,12 +245,13 @@ def groups_description(id, count, number):
     if request.method == "POST":
         competition = sessions.query(competitions.Competitions).filter(
             competitions.Competitions.id == id).first()
-        competition.groups_description += "%%" + "$$".join([str(form.age_range_start.data),
-                                                            str(form.age_range_end.data),
-                                                            str(form.players_count.data),
-                                                            str(form.distance.data),
-                                                            str(form.group_time_start.data),
-                                                            str(form.payments_value.data)])
+        competition.groups_description = "%%".join([competition.groups_description,
+                                                    "$$".join([str(form.age_range_start.data),
+                                                               str(form.age_range_end.data),
+                                                               str(form.players_count.data),
+                                                               str(form.distance.data),
+                                                               str(form.group_time_start.data),
+                                                               str(form.payments_value.data)])])
         with open("static/json/competition.json") as file:
             data = json.load(file)
         group_name_to_dict = str(form.age_range_start.data) + ":" + str(form.age_range_end.data) + ":" + str(
@@ -267,7 +280,8 @@ def register_to_competition(name, id):
         data = json.load(file)
     competition = session.query(competitions.Competitions).filter(
         competitions.Competitions.url == name).first()
-    age = get_age(competition.event_date_start)
+    user = session.query(users.User).filter(users.User.id == id).first()
+    age = get_age(user.date_of_birth)
     keys = data["failed_competitions"][name].keys()
     right_key = ""
     for key in keys:
@@ -275,7 +289,7 @@ def register_to_competition(name, id):
             right_key = key
             break
     if right_key == "":
-        # пользователь не может зарегестрироватбся на это соревнование, т.к. нет подходящей возрастной категории
+        # пользователь не может зарегистрироваться на это соревнование, т.к. нет подходящей возрастной категории
         return
     data["failed_competitions"][name][right_key] += [id]
     with open("static/json/competition.json", "w") as file:
@@ -310,9 +324,10 @@ def delete_competitions(id):
 
 def get_age(data):
     date = data.split('-')
-    year = date[0]
-    month = data[1]
-    day = data.day[2]
+    year = int(date[0])
+    month = int(date[1])
+    day = int(date[2])
+    print(day, month, year)
     today_year = datetime.datetime.now().year
     today_month = datetime.datetime.now().month
     today_day = datetime.datetime.now().day
