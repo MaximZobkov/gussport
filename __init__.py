@@ -165,7 +165,8 @@ def register():
 
 def reformat(string_date):
     s = string_date.split('-')
-    month = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября', 'октября', 'ноября',
+    month = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября',
+             'октября', 'ноября',
              'декабря']
     string = ''
     k = 0
@@ -205,13 +206,6 @@ def create_competition():
         competition.registration_start = reformat(str(form.registration_start.data))
         competition.registration_end = reformat(str(form.registration_end.data))
         competition.groups_count = form.groups_count.data
-        with open("static/json/competition.json") as file:
-            data = json.load(file)
-        count = len(data.keys())
-        data["failed_competitions"].update([("competition" + str(count), {})])
-        with open("static/json/competition.json", "w") as file:
-            json.dump(data, file)
-        competition.url = "competition" + str(count)
         sessions.add(competition)
         sessions.commit()
         if str(request.files["file"]) != "<FileStorage: '' ('application/octet-stream')>":
@@ -219,6 +213,12 @@ def create_competition():
             name = "static/images/competition_image/competition_" + str(competition.id) + ".jpg"
             file.save(name)
             competition.image = "/" + name
+        with open("static/json/competition.json") as file:
+            data = json.load(file)
+        data["failed_competitions"].update([("competition" + str(competition.id), {})])
+        with open("static/json/competition.json", "w") as file:
+            json.dump(data, file)
+        competition.url = "competition" + str(competition.id)
         sessions.merge(competition)
         sessions.commit()
         return redirect(
@@ -226,6 +226,21 @@ def create_competition():
                 form.groups_count.data) + "/0")
     return render_template('create_competition.html', title="Создание соревнования", form=form,
                            date_error='OK', time_error='OK')
+
+
+@app.route("/delete_competition/<int:id>")
+def delete_competitions(id):
+    session = db_session.create_session()
+    competition = session.query(competitions.Competitions).filter(
+        competitions.Competitions.id == id).first()
+    with open("static/json/competition.json") as file:
+        data = json.load(file)
+    data["chats"].pop("competition" + str(id), None)
+    with open("static/json/competition.json", "w") as file:
+        json.dump(data, file)
+    session.delete(competition)
+    session.commit()
+    return redirect("/competitions")
 
 
 @app.route("/groups_description/<int:id>/<int:count>/<int:number>", methods=['GET', 'POST'])
@@ -238,15 +253,17 @@ def groups_description(id, count, number):
     if request.method == "POST":
         competition = sessions.query(competitions.Competitions).filter(
             competitions.Competitions.id == id).first()
-        competition.groups_description += "%%" + "$$".join([str(form.age_range_start.data),
-                                                            str(form.age_range_end.data),
-                                                            str(form.players_count.data),
-                                                            str(form.distance.data),
-                                                            str(form.group_time_start.data),
-                                                            str(form.payments_value.data)])
+        competition.groups_description = "%%".join([competition.groups_description,
+                                                    "$$".join([str(form.age_range_start.data),
+                                                               str(form.age_range_end.data),
+                                                               str(form.players_count.data),
+                                                               str(form.distance.data),
+                                                               str(form.group_time_start.data),
+                                                               str(form.payments_value.data)])])
         with open("static/json/competition.json") as file:
             data = json.load(file)
-        group_name_to_dict = str(form.age_range_start.data) + ":" + str(form.age_range_end.data) + ":" + str(
+        group_name_to_dict = str(form.age_range_start.data) + ":" + str(
+            form.age_range_end.data) + ":" + str(
             form.players_count.data) + ":" + str(form.distance.data)
         data["failed_competitions"][competition.url].update([(group_name_to_dict, [])])
         with open("static/json/competition.json", "w") as file:
@@ -272,7 +289,8 @@ def register_to_competition(name, id):
         data = json.load(file)
     competition = session.query(competitions.Competitions).filter(
         competitions.Competitions.url == name).first()
-    age = get_age(competition.event_date_start)
+    user = session.query(users.User).filter(users.User.id == id).first()
+    age = get_age(user.date_of_birth)
     keys = data["failed_competitions"][name].keys()
     right_key = ""
     for key in keys:
