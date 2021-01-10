@@ -96,7 +96,7 @@ class DigitError(Exception):
 @app.route('/profile')
 def profile():
     if current_user.is_authenticated:
-        return render_template("profile.html")
+        return render_template("profile.html", profile=True)
     return redirect('/')
 
 
@@ -109,9 +109,7 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
-    print(4, form.validate_on_submit())
     if request.method == "POST":
-        print(3)
         result = check_password(form.password.data)
         date_check = check_date(form.date_of_birth.data)
         if result != 'OK':
@@ -142,8 +140,6 @@ def register():
         user.date_of_birth = form.date_of_birth.data
         user.residence_type = request.form["typecode"]
         user.residence_name = request.form["city"]
-        print(request.form["city"])
-        print(request.form["typecode"])
         user.set_password(form.password.data)
         if form.gender.data == '1':
             user.gender = 'Мужской'
@@ -205,13 +201,6 @@ def create_competition():
         competition.registration_start = reformat(str(form.registration_start.data))
         competition.registration_end = reformat(str(form.registration_end.data))
         competition.groups_count = form.groups_count.data
-        with open("static/json/competition.json") as file:
-            data = json.load(file)
-        count = len(data.keys())
-        data["failed_competitions"].update([("competition" + str(count), {})])
-        with open("static/json/competition.json", "w") as file:
-            json.dump(data, file)
-        competition.url = "competition" + str(count)
         sessions.add(competition)
         sessions.commit()
         if str(request.files["file"]) != "<FileStorage: '' ('application/octet-stream')>":
@@ -219,6 +208,12 @@ def create_competition():
             name = "static/images/competition_image/competition_" + str(competition.id) + ".jpg"
             file.save(name)
             competition.image = "/" + name
+        with open("static/json/competition.json") as file:
+            data = json.load(file)
+        data["failed_competitions"].update([("competition" + str(competition.id), {})])
+        with open("static/json/competition.json", "w") as file:
+            json.dump(data, file)
+        competition.url = "competition" + str(competition.id)
         sessions.merge(competition)
         sessions.commit()
         return redirect(
@@ -295,12 +290,29 @@ def all_competitions():
     return render_template('competitions.html', competitions_list=competitions_list)
 
 
+@app.route("/delete_competition/<int:id>")
+def delete_competitions(id):
+    session = db_session.create_session()
+    competition = session.query(competitions.Competitions).filter(competitions.Competitions.id == id).first()
+    with open("static/json/competition.json") as file:
+        data = json.load(file)
+    data["failed_competitions"].pop("competition" + str(id), None)
+    with open("static/json/competition.json", "w") as file:
+        json.dump(data, file)
+    session.delete(competition)
+    session.commit()
+    try:
+        os.remove(f"static/images/competition_image/competition_{id}.jpg")
+    except Exception:
+        pass
+    return redirect("/competitions")
+
+
 def get_age(data):
-    # data = data.split("-")
-    # Если будут вылеты, то все проблемы в следующих 3х строках кода
-    year = data.year
-    month = data.month
-    day = data.day
+    date = data.split('-')
+    year = date[0]
+    month = data[1]
+    day = data.day[2]
     today_year = datetime.datetime.now().year
     today_month = datetime.datetime.now().month
     today_day = datetime.datetime.now().day
