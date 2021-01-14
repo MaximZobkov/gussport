@@ -1,14 +1,1 @@
-{
-  "failed_competitions": {
-    "competition1": {
-      "10:81:35:12": []
-    },
-    "competition2": {
-      "12:23:35:10:1": [
-        2
-      ],
-      "12:23:35:10:2": []
-    }
-  },
-  "past_competitions": {}
-}
+{"failed_competitions": {"competition1": {"5:90:50:12:1": [], "5:90:50:10:2": []}}, "past_competitions": {}}

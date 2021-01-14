@@ -182,7 +182,6 @@ def reformat(string_date):
 
 
 @app.route('/competition/<int:id>')
-@login_required
 def single_competition(id):
     session = db_session.create_session()
     competition = session.query(competitions.Competitions).filter(
@@ -278,7 +277,6 @@ def groups_description(id, count, number):
     return render_template("groups_description.html", form=form, count=count, number=number)
 
 
-# Нужно переделать, добавив выбор дистанции
 @app.route("/register_to_competition/<string:name>/<int:id>/<int:number>")
 @login_required
 def register_to_competition(name, id, number):
@@ -292,7 +290,7 @@ def register_to_competition(name, id, number):
     small_dict = {"Мужской": 1, "Женский": 2}
     for key in keys:
         if (int(key.split(':')[0]) <= age <= int(key.split(':')[1]) and
-            int(key.split(':')[4]) == small_dict[user.gender]):
+                int(key.split(':')[4]) == small_dict[user.gender]):
             group_list += [key.split(":")]
     if len(group_list) == 0:
         # пользователь не может зарегистрироваться на это соревнование, т.к. нет подходящей возрастной категории
@@ -302,7 +300,7 @@ def register_to_competition(name, id, number):
         data["failed_competitions"][name][":".join(group_list[number - 1])] += [id]
         with open("static/json/competition.json", "w") as file:
             json.dump(data, file)
-        #регистрация успешно завершена
+        # регистрация успешно завершена
         return redirect("/")
     return render_template('register_to_competition.html', group_list=group_list, name=name, id=id)
 
@@ -458,12 +456,12 @@ def index():
     return render_template("index.html", news_list=all_news)
 
 
-@app.errorhandler(404)  # функция ошибки
+@app.errorhandler(404)
 def not_found(error):
     return render_template("not_found.html")
 
 
-@app.errorhandler(401)  # функция ошибки
+@app.errorhandler(401)
 def not_found(error):
     return render_template("not_authorized.html")
 

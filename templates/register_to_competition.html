@@ -8,17 +8,17 @@
             </div>
             <div class="card-body">
                 {% for group in group_list %}
-                <a href="/register_to_competition/{{ name }}/{{ id }}/{{ loop.index }}">
-                    <div style="background-color: #C0C0C0;">
-                        <p>Возраст: {{group[0]}}: {{group[1]}}</p>
-                        <p>Количество человек: {{group[2]}}</p>
-                        <p>Дистанция: {{group[3]}}</p>
+                    <div class="col-xl-4 col-lg-4 col-sm-6 col-xs-12">
+                        <div class="container mt-4">
+                            <div class="card card-color" style="padding: 5px">
+                                <h6>Возраст: {{ group[0] }}-{{ group[1] }} лет</h6>
+                                <h6>Количество человек: {{ group[2] }}</h6>
+                                <h6>Дистанция: {{ group[3] }}</h6>
+                                <a class="btn btn-light" href="/register_to_competition/{{ name }}/{{ id }}/{{ loop.index }}">Зарегистрироваться в эту группу</a>
+                            </div>
+                        </div>
                     </div>
-                </a>
                 {% endfor %}
-                <form action="" method="post" enctype="multipart/form-data">
-
-                </form>
             </div>
         </div>
     </div>
