@@ -18,18 +18,22 @@
                 Вы еще нигде не участвовали!
             </h1>
         {% else %}
-            <table>
-                <tr>
-                    <th>Название соревнования</th>
-                    <th>Отменить регистрацию</th>
-                </tr>
-                {% for competition in users_competition %}
-                <tr>
-                    <td>{{ competition[0].name }}</td>
-                    <td><a href="/unregister/{{ competition[0].url }}/{{ current_user.id }}/{{ competition[1] }}">Отменить регистрацию</a></td>
-                </tr>
-                {% endfor %}
-            </table>
+            <div class="card" style="padding: 10px;">
+                <table style="width: 100%">
+                    <tr>
+                        <th>Название соревнования</th>
+                        <th>Отменить регистрацию</th>
+                    </tr>
+                    {% for competition in users_competition %}
+                        <tr>
+                            <td>{{ competition[0].name }}</td>
+                            <td>
+                                <a href="/unregister/{{ competition[0].url }}/{{ current_user.id }}/{{ competition[1] }}">Отменить
+                                    регистрацию</a></td>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
         {% endif %}
     </div>
 {% endblock %}

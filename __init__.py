@@ -113,7 +113,7 @@ def profile():
             if current_user.id in competition["all_users"]:
                 keys = competition.keys()
                 for key in keys:
-                    if current_user.id in competition[key]:
+                    if key != "all_users" and current_user.id in competition[key]:
                         full_competition = sessions.query(competitions.Competitions).filter(
                             competitions.Competitions.url == competition_name).first()
                         users_competition += [[full_competition, key]]
