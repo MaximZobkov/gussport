@@ -4,21 +4,31 @@
     <div class="container mt-4">
         <div class="card mb-4 card_register">
             <div class="card-title">
-                <h1 align="center">Выберете группу</h1>
+                <h1 align="center">Выберите группу</h1>
             </div>
             <div class="card-body">
-                {% for group in group_list %}
-                <a href="/register_to_competition/{{ name }}/{{ id }}/{{ loop.index }}">
-                    <div style="background-color: #C0C0C0;">
-                        <p>Возраст: {{group[0]}}: {{group[1]}}</p>
-                        <p>Количество человек: {{group[2]}}</p>
-                        <p>Дистанция: {{group[3]}}</p>
-                    </div>
-                </a>
-                {% endfor %}
-                <form action="" method="post" enctype="multipart/form-data">
-
-                </form>
+                <div class="row">
+                    {% for group in group_list %}
+                        <div class="col-xl-4 col-lg-4 col-sm-6 col-xs-12">
+                            <div class="container mt-4">
+                                <div class="card card-color" style="background-color: white; padding: 5px">
+                                    <h6>Возраст: {{ group[0][0] }}-{{ group[0][1] }} лет.</h6>
+                                    <h6>Количество человек: {{ group[0][2] }}</h6>
+                                    <h6>Дистанция: {{ group[0][3] }} км.</h6>
+                                    <h6>Осталось мест: {{ group[1] }}</h6>
+                                    {% if group[1] != 0 %}
+                                        <a class="btn" style="background-color: #828282; color: white;"
+                                           href="/register_to_competition/{{ name }}/{{ id }}/{{ loop.index }}">
+                                            Зарегистрироваться в эту группу</a>
+                                    {% else %}
+                                        <p>Группа заполнена</p>
+                                    {% endif %}
+                                </div>
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <a href="/competition/{{ competition_id }}">Вернуться к странице соревнования</a>
+                </div>
             </div>
         </div>
     </div>

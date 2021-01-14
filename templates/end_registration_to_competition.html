@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="card mb-4 card_register">
+            {% if message == "no age category" %}
+                <div class="card-title">
+                    <h1 align="center">Для данного соревнования нет подходящей вам возрастной категории</h1>
+                </div>
+            {% elif message == "success" %}
+                <div class="card-title">
+                    <h1 align="center">Регистрация успешно завершена</h1>
+                </div>
+            {% elif message == "stack overflow" %}
+                <div class="card-title">
+                    <h1 align="center">Вы уже зарегистрированны в одну из групп</h1>
+                </div>
+            {% endif %}
+            <div class="card-body">
+                <a href="/competition/{{ competition_id }}">Вернуться к странице соревнования</a>
+            </div>
+        </div>
+    </div>
+{% endblock %}

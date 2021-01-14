@@ -6,7 +6,7 @@ from flask import Flask, render_template, redirect, url_for, request
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, DateField, BooleanField, IntegerField, \
-    SelectField, TimeField, TextAreaField
+    SelectField, TimeField, TextAreaField, FileField
 from wtforms.validators import DataRequired
 
 from data import db_session, users, competitions, news
@@ -14,9 +14,11 @@ from data import db_session, users, competitions, news
 app = Flask(__name__)
 app.config['SECRET_KEY'] = 'GusStory.ru'
 db_session.global_init("db/blogs.sqlite")
-Token = "2ec81e520102ba1f8e3bc0d9fc1b74e656bc1e6a"  # токен с dadata
 login_manager = LoginManager()
 login_manager.init_app(app)
+
+
+# Кто читает этот код извините меня, вместо failed должно быть upcoming, не бейте палками
 
 
 @login_manager.user_loader
@@ -100,7 +102,26 @@ class DigitError(Exception):
 @app.route('/profile')
 def profile():
     if current_user.is_authenticated:
-        return render_template("profile.html", profile=True)
+        sessions = db_session.create_session()
+        with open("static/json/competition.json") as file:
+            data = json.load(file)
+        upcoming = data["failed_competitions"]
+        keys_list = upcoming.keys()
+        users_competition = []
+        for competition_name in keys_list:
+            competition = upcoming[competition_name]
+            if current_user.id in competition["all_users"]:
+                keys = competition.keys()
+                for key in keys:
+                    if current_user.id in competition[key]:
+                        full_competition = sessions.query(competitions.Competitions).filter(
+                            competitions.Competitions.url == competition_name).first()
+                        users_competition += [[full_competition, key]]
+                        break
+        flag = 1
+        if len(users_competition) == 0:
+            flag = 0
+        return render_template("profile.html", users_competition=users_competition, flag=flag)
     return redirect('/')
 
 
@@ -227,7 +248,8 @@ def create_competition():
             competition.image = "/" + name
         with open("static/json/competition.json") as file:
             data = json.load(file)
-        data["failed_competitions"].update([("competition" + str(competition.id), {})])
+        data["failed_competitions"].update(
+            [("competition" + str(competition.id), {"all_users": []})])
         with open("static/json/competition.json", "w") as file:
             json.dump(data, file)
         competition.url = "competition" + str(competition.id)
@@ -278,7 +300,6 @@ def groups_description(id, count, number):
     return render_template("groups_description.html", form=form, count=count, number=number)
 
 
-# Нужно переделать, добавив выбор дистанции
 @app.route("/register_to_competition/<string:name>/<int:id>/<int:number>")
 @login_required
 def register_to_competition(name, id, number):
@@ -288,29 +309,55 @@ def register_to_competition(name, id, number):
     user = session.query(users.User).filter(users.User.id == id).first()
     age = get_age(user.date_of_birth)
     keys = data["failed_competitions"][name].keys()
+    print(keys)
     group_list = []
     small_dict = {"Мужской": 1, "Женский": 2}
+    stack_overflow = 0
+    competition_id = int(name.split("competition")[1])
+    if id in data["failed_competitions"][name]["all_users"]:
+        stack_overflow = 1
+    if stack_overflow == 1:
+        return render_template("end_registration_to_competition.html", message="stack overflow",
+                               competition_id=competition_id)
     for key in keys:
-        if (int(key.split(':')[0]) <= age <= int(key.split(':')[1]) and
-            int(key.split(':')[4]) == small_dict[user.gender]):
-            group_list += [key.split(":")]
+        if key == "all_users":
+            continue
+        key_s = key.split(':')
+        if (int(key_s[0]) <= age <= int(key_s[1]) and
+                int(key_s[4]) == small_dict[user.gender]):
+            lenght = max(int(key_s[2]) - len(data["failed_competitions"][name][key]), 0)
+            group_list += [[key_s, lenght]]
     if len(group_list) == 0:
         # пользователь не может зарегистрироваться на это соревнование, т.к. нет подходящей возрастной категории
-        return redirect("/")
+        return render_template("end_registration_to_competition.html", message="no age category",
+                               competition_id=competition_id)
     print(group_list, number)
     if number != 0:
-        data["failed_competitions"][name][":".join(group_list[number - 1])] += [id]
+        data["failed_competitions"][name][":".join(group_list[number - 1][0])] += [id]
+        data["failed_competitions"][name]["all_users"] += [id]
         with open("static/json/competition.json", "w") as file:
             json.dump(data, file)
-        #регистрация успешно завершена
-        return redirect("/")
-    return render_template('register_to_competition.html', group_list=group_list, name=name, id=id)
+        # регистрация успешно завершена
+        return render_template("end_registration_to_competition.html", message="success",
+                               competition_id=competition_id)
+    return render_template('register_to_competition.html', group_list=group_list, name=name, id=id,
+                           competition_id=competition_id)
 
 
-@app.route("/select_group/")
+@app.route("/unregister/<string:name>/<int:id>/<string:group>")
 @login_required
-def select_group():
-    pass
+def unregister(name, id, group):
+    with open("static/json/competition.json") as file:
+        data = json.load(file)
+    mas = data["failed_competitions"][name]
+    if id in mas[group]:
+        mas[group].remove(id)
+    if id in mas["all_users"]:
+        mas["all_users"].remove(id)
+    data["failed_competitions"][name] = mas
+    with open("static/json/competition.json", "w") as file:
+        json.dump(data, file)
+    return redirect("/profile")
 
 
 @app.route('/competitions')

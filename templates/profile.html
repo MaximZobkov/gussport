@@ -2,7 +2,7 @@
 
 {% block content %}
     <div class="container mt-4">
-        <div class="card" style="border-radius: 10px;  box-shadow: 0 4px 8px 0 rgba(0, 0, 0, 0.2)">
+        <div class="card" style="box-shadow: 0 6px 9px 2px rgba(0, 0, 0, 0.2)">
             <div class="border border-left border-right border-top border-bottom border-rounded">
                 <p style="font-size: 20pt; margin: 10px;">
                     <img class="card-img-left" src="{{ current_user.image }}">
@@ -13,15 +13,23 @@
         </div>
     </div>
     <div class="container mt-4">
-        {% set vars = {'flag': True} %}
-        {% for competition in current_user.competitions %}
-            {% if vars.update({'flag': False}) %} {% endif %}
-            {{ competition }}
-        {% endfor %}
-        {% if vars.flag %}
+        {% if flag == 0 %}
             <h1 align="center">
                 Вы еще нигде не участвовали!
             </h1>
+        {% else %}
+            <table>
+                <tr>
+                    <th>Название соревнования</th>
+                    <th>Отменить регистрацию</th>
+                </tr>
+                {% for competition in users_competition %}
+                <tr>
+                    <td>{{ competition[0].name }}</td>
+                    <td><a href="/unregister/{{ competition[0].url }}/{{ current_user.id }}/{{ competition[1] }}">Отменить регистрацию</a></td>
+                </tr>
+                {% endfor %}
+            </table>
         {% endif %}
     </div>
 {% endblock %}
