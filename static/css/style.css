@@ -94,12 +94,6 @@ input, button {
 .mobile {
     display: none;
 }
-.navbar-head {
-    font-family: "Segoe script", sans-serif;
-    font-weight: bold;
-    color: #00f;
-    align-items: center;
-}
 .navbar-items {
     font-size: 20px;
     height: 100%;
@@ -107,8 +101,11 @@ input, button {
 p.single_comp {
     text-indent: 10px;
 }
+.card-color {
+    color: blue;
+    background-color: blue;
+}
 @media (orientation: portrait) {
-
     .full {
         display: none;
     }

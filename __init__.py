@@ -203,7 +203,6 @@ def reformat(string_date):
 
 
 @app.route('/competition/<int:id>')
-@login_required
 def single_competition(id):
     session = db_session.create_session()
     competition = session.query(competitions.Competitions).filter(
@@ -309,7 +308,6 @@ def register_to_competition(name, id, number):
     user = session.query(users.User).filter(users.User.id == id).first()
     age = get_age(user.date_of_birth)
     keys = data["failed_competitions"][name].keys()
-    print(keys)
     group_list = []
     small_dict = {"Мужской": 1, "Женский": 2}
     stack_overflow = 0
