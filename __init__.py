@@ -42,9 +42,6 @@ class RegisterForm(FlaskForm):
     date_of_birth = DateField('Дата рождения')
     gender = SelectField('Пол', validators=[DataRequired()],
                          choices=[('1', 'Мужской'), ('2', "Женский")])
-    residence_type = SelectField('Тип населённого пункта', validators=[DataRequired()],
-                                 choices=[('1', 'Город'), ('2', "Село"), ('3', "Деревня"),
-                                          ('4', "Посёлок"), ('5', "Посёлок городского типа")])
     residence_name = StringField('Название населённого пункта', validators=[DataRequired()])
     submit = SubmitField('Зарегистрироваться')
 
@@ -57,8 +54,12 @@ class CreateCompetitionForm(FlaskForm):
     registration_start = DateField('Дата начала регистрации')
     registration_end = DateField('Дата окончания регистрации')
     type = SelectField('Тип соревнования', validators=[DataRequired()],
-                       choices=[('1', 'Триатлон'), ('2', "Дуатлон"), ('3', "Лыжный Масс-старт"),
-                                ('4', "Веломарафон")])
+                       choices=[('Триатлон', 'Триатлон'), ('Дуатлон', "Дуатлон"),
+                                ('Лыжный Масс-старт', "Лыжный Масс-старт"),
+                                ('Лыжная гонка', 'Лыжная гонка'),
+                                ('Велокросс', 'Велокросс'), ('Велобиатлон', 'Велобиатлон'),
+                                ('Веломарафон', "Веломарафон"), ('Забег', 'Забег'), ('Марафон', 'Марафон'),
+                                ('Полумарафон', 'Полумарафон'), ('Плавание', 'Плавание')])
     groups_count = IntegerField('Количество групп', validators=[DataRequired()])
     submit = SubmitField('Перейти к созданию групп')
 
@@ -96,7 +97,7 @@ class DigitError(Exception):
 @app.route('/profile')
 def profile():
     if current_user.is_authenticated:
-        return render_template("profile.html")
+        return render_template("profile.html", profile=True)
     return redirect('/')
 
 
@@ -109,9 +110,7 @@ def logout():
 @app.route('/register', methods=['GET', 'POST'])
 def register():
     form = RegisterForm()
-    print(4, form.validate_on_submit())
     if request.method == "POST":
-        print(3)
         result = check_password(form.password.data)
         date_check = check_date(form.date_of_birth.data)
         if result != 'OK':
@@ -142,8 +141,6 @@ def register():
         user.date_of_birth = form.date_of_birth.data
         user.residence_type = request.form["typecode"]
         user.residence_name = request.form["city"]
-        print(request.form["city"])
-        print(request.form["typecode"])
         user.set_password(form.password.data)
         if form.gender.data == '1':
             user.gender = 'Мужской'
@@ -165,9 +162,8 @@ def register():
 
 def reformat(string_date):
     s = string_date.split('-')
-    month = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля', 'августа', 'сентября',
-             'октября', 'ноября',
-             'декабря']
+    month = ['января', 'февраля', 'марта', 'апреля', 'мая', 'июня', 'июля',
+             'августа', 'сентября', 'октября', 'ноября', 'декабря']
     string = ''
     k = 0
     for x in s[::-1]:
@@ -182,6 +178,24 @@ def reformat(string_date):
     return string
 
 
+@app.route('/competition/<int:id>')
+@login_required
+def single_competition(id):
+    session = db_session.create_session()
+    competition = session.query(competitions.Competitions).filter(competitions.Competitions.id == id).first()
+    array_group = competition.groups_description[2:].split('%%')
+    array = []
+    for i in range(competition.groups_count):
+        array_elements = array_group[i].split('$$')
+        string_year = f'{array_elements[0]}-{array_elements[1]} лет.'
+        string_count_people = f'{array_elements[2]}'
+        string_distance = f'{array_elements[3]} км.'
+        string_time = f'{array_elements[4][:-3]}.'
+        string_money = f'{array_elements[5]}'
+        array.append([string_year, string_count_people, string_distance, string_time, string_money])
+    return render_template('single_competition.html', competition=competition, groups_array=array)
+
+
 @app.route('/create_competition', methods=['GET', 'POST'])
 @login_required
 def create_competition():
@@ -193,14 +207,7 @@ def create_competition():
         competition = competitions.Competitions()
         competition.name = form.name.data
         competition.short_description = form.short_description.data
-        if form.type.data == '1':
-            competition.type = 'Триатлон'
-        elif form.type.data == '2':
-            competition.type = 'Дуатлон'
-        elif form.type.data == '3':
-            competition.type = 'Лыжный масс-старт'
-        elif form.type.data == '4':
-            competition.type = 'Веломарафон'
+        competition.type = form.type.data
         competition.event_time_start = str(form.event_time_start.data)[:-3]
         competition.event_date_start = reformat(str(form.event_date_start.data))
         competition.registration_start = reformat(str(form.registration_start.data))
@@ -228,21 +235,6 @@ def create_competition():
                            date_error='OK', time_error='OK')
 
 
-@app.route("/delete_competition/<int:id>")
-def delete_competitions(id):
-    session = db_session.create_session()
-    competition = session.query(competitions.Competitions).filter(
-        competitions.Competitions.id == id).first()
-    with open("static/json/competition.json") as file:
-        data = json.load(file)
-    data["chats"].pop("competition" + str(id), None)
-    with open("static/json/competition.json", "w") as file:
-        json.dump(data, file)
-    session.delete(competition)
-    session.commit()
-    return redirect("/competitions")
-
-
 @app.route("/groups_description/<int:id>/<int:count>/<int:number>", methods=['GET', 'POST'])
 @login_required
 def groups_description(id, count, number):
@@ -262,8 +254,7 @@ def groups_description(id, count, number):
                                                                str(form.payments_value.data)])])
         with open("static/json/competition.json") as file:
             data = json.load(file)
-        group_name_to_dict = str(form.age_range_start.data) + ":" + str(
-            form.age_range_end.data) + ":" + str(
+        group_name_to_dict = str(form.age_range_start.data) + ":" + str(form.age_range_end.data) + ":" + str(
             form.players_count.data) + ":" + str(form.distance.data)
         data["failed_competitions"][competition.url].update([(group_name_to_dict, [])])
         with open("static/json/competition.json", "w") as file:
@@ -298,7 +289,7 @@ def register_to_competition(name, id):
             right_key = key
             break
     if right_key == "":
-        # пользователь не может зарегестрироватбся на это соревнование, т.к. нет подходящей возрастной категории
+        # пользователь не может зарегистрироваться на это соревнование, т.к. нет подходящей возрастной категории
         return
     data["failed_competitions"][name][right_key] += [id]
     with open("static/json/competition.json", "w") as file:
@@ -313,12 +304,30 @@ def all_competitions():
     return render_template('competitions.html', competitions_list=competitions_list)
 
 
+@app.route("/delete_competition/<int:id>")
+def delete_competitions(id):
+    session = db_session.create_session()
+    competition = session.query(competitions.Competitions).filter(competitions.Competitions.id == id).first()
+    with open("static/json/competition.json") as file:
+        data = json.load(file)
+    data["failed_competitions"].pop("competition" + str(id), None)
+    with open("static/json/competition.json", "w") as file:
+        json.dump(data, file)
+    session.delete(competition)
+    session.commit()
+    try:
+        os.remove(f"static/images/competition_image/competition_{id}.jpg")
+    except Exception:
+        pass
+    return redirect("/competitions")
+
+
 def get_age(data):
-    # data = data.split("-")
-    # Если будут вылеты, то все проблемы в следующих 3х строках кода
-    year = data.year
-    month = data.month
-    day = data.day
+    date = data.split('-')
+    year = int(date[0])
+    month = int(date[1])
+    day = int(date[2])
+    print(day, month, year)
     today_year = datetime.datetime.now().year
     today_month = datetime.datetime.now().month
     today_day = datetime.datetime.now().day

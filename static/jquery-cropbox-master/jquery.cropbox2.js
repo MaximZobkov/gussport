@@ -1,7 +1,6 @@
 (function() {
   var supportsCanvas = document.createElement('canvas');
   supportsCanvas = !!(supportsCanvas.getContext && supportsCanvas.getContext('2d'));
-
   // helper functions
   function is_touch_device() {
     return 'ontouchstart' in window || // works on most browsers
@@ -28,7 +27,7 @@
   var pluginName = 'cropbox';
 
   function factory($) {
-    function Crop($image, options, on_load) {
+    function Crop($image, options) {
       this.width = null;
       this.height = null;
       this.img_width = null;
@@ -40,7 +39,6 @@
       this.$image = $image;
       this.$image.hide().prop('draggable', false).addClass('cropImage').wrap('<div class="cropFrame" />'); // wrap image in frame;
       this.$frame = this.$image.parent();
-	  this.on_load = on_load || function() {};
       this.init();
     }
 
@@ -49,9 +47,9 @@
         var self = this;
 
         var defaultControls = $('<div/>', { 'class' : 'cropControls' })
-              .append($('<span>'+this.options.label+'</span>'))
-              .append($('<button/>', { 'class' : 'cropZoomIn', 'type':'button' }).on('click', $.proxy(this.zoomIn, this)))
-              .append($('<button/>', { 'class' : 'cropZoomOut', 'type':'button' }).on('click', $.proxy(this.zoomOut, this)));
+              .append($('<span>Drag to crop</span>'))
+              .append($('<a/>', { 'class' : 'cropZoomIn' }).on('click', $.proxy(this.zoomIn, this)))
+              .append($('<a/>', { 'class' : 'cropZoomOut' }).on('click', $.proxy(this.zoomOut, this)));
 
         this.$frame.append(this.options.controls || defaultControls);
         this.updateOptions();
@@ -59,44 +57,42 @@
         if (typeof $.fn.hammer === 'function' || typeof Hammer !== 'undefined') {
           var hammerit, dragData;
           if (typeof $.fn.hammer === 'function')
-            hammerit = this.$image.hammer().data('hammer'); // Get the hammer instance after it has been created.
+            hammerit = this.$image.hammer();
           else
             hammerit = Hammer(this.$image.get(0));
-		  // Enable panning in all directions without any threshold.
-		  hammerit.get('pan').set({ direction: Hammer.DIRECTION_ALL, threshold: 0 });
-		  // Enable pinching.
-		  hammerit.get('pinch').set({ enable: true });
-          hammerit.on('panleft panright panup pandown', function(e) {
+
+          hammerit.on('touch', function(e) {
+            e.gesture.preventDefault();
+          }).on("dragleft dragright dragup dragdown", function(e) {
             if (!dragData)
               dragData = {
                 startX: self.img_left,
-                startY: self.img_top	// Some IE versions complained about the extra comma.
+                startY: self.img_top,
               };
-            dragData.dx = e.deltaX;
-            dragData.dy = e.deltaY;
-            e.preventDefault();
+            dragData.dx = e.gesture.deltaX;
+            dragData.dy = e.gesture.deltaY;
+            e.gesture.preventDefault();
+            e.gesture.stopPropagation();
             self.drag.call(self, dragData, true);
-          }).on('panend pancancel', function(e) {
-            e.preventDefault();
+          }).on('release', function(e) {
+            e.gesture.preventDefault();
             dragData = null;
             self.update.call(self);
           }).on('doubletap', function(e) {
-            e.preventDefault();
+            e.gesture.preventDefault();
             self.zoomIn.call(self);
           }).on('pinchin', function (e) {
-            e.preventDefault();
+            e.gesture.preventDefault();
             self.zoomOut.call(self);
           }).on('pinchout', function (e) {
-            e.preventDefault();
+            e.gesture.preventDefault();
             self.zoomIn.call(self);
           });
         } else {
-          // prevent IE8's default drag functionality
-          this.$image.on("dragstart", function () { return false; });
           this.$image.on('mousedown.' + pluginName, function(e1) {
             var dragData = {
               startX: self.img_left,
-              startY: self.img_top
+              startY: self.img_top,
             };
             e1.preventDefault();
             $(document).on('mousemove.' + pluginName, function (e2) {
@@ -138,6 +134,7 @@
 
         // Image hack to get width and height on IE
         var img = new Image();
+        img.src = self.$image.attr('src');
         img.onload = function () {
           self.width = img.width;
           self.height = img.height;
@@ -150,31 +147,27 @@
           else
             self.zoom.call(self, self.minPercent);
           self.$image.fadeIn('fast');
-		  self.on_load.call(self);
         };
-        // onload has to be set before src for IE8
-        // otherwise it never fires
-        img.src = self.$image.attr('src');
       },
 
       remove: function () {
         var hammerit;
         if (typeof $.fn.hammer === 'function')
-          hammerit = this.$image.data('hammer');	// Get hammer instance object.
+          hammerit = this.$image.hammer();
         else if (typeof Hammer !== 'undefined')
           hammerit = Hammer(this.$image.get(0));
         if (hammerit)
-          hammerit.off('panleft panright panup pandown panend pancancel doubletap pinchin pinchout');
+          hammerit.off('mousedown dragleft dragright dragup dragdown release doubletap pinchin pinchout');
         this.$frame.off('.' + pluginName);
         this.$image.off('.' + pluginName);
         this.$image.css({width: '', left: '', top: ''});
         this.$image.removeClass('cropImage');
-        this.$image.removeData(pluginName);
+        this.$image.removeData('cropbox');
         this.$image.insertAfter(this.$frame);
         this.$frame.removeClass('cropFrame');
         this.$frame.removeAttr('style');
         this.$frame.empty();
-        this.$frame.remove();
+        this.$frame.hide();
       },
 
       fit: function () {
@@ -222,7 +215,7 @@
         this.img_left = fill(data.startX + data.dx, this.img_width, this.options.width);
         this.img_top = fill(data.startY + data.dy, this.img_height, this.options.height);
         this.$image.css({ left: this.img_left, top: this.img_top });
-        if (!skipupdate)
+        if (skipupdate)
           this.update();
       },
       update: function() {
@@ -237,11 +230,6 @@
         this.$image.trigger(pluginName, [this.result, this]);
       },
       getDataURL: function () {
-        if(!supportsCanvas) {
-          // return an empty string for browsers that don't support canvas.
-          // this allows it to fail gracefully.
-          return false;
-        }
         var canvas = document.createElement('canvas'), ctx = canvas.getContext('2d');
         canvas.width = this.options.width;
         canvas.height = this.options.height;
@@ -250,15 +238,15 @@
       },
       getBlob: function () {
         return uri2blob(this.getDataURL());
-      }
+      },
     };
 
-    $.fn[pluginName] = function(options, on_load) {
+    $.fn[pluginName] = function(options) {
       return this.each(function() {
-        var $this = $(this), inst = $this.data(pluginName);
+        var inst = $.data(this, pluginName);
         if (!inst) {
           var opts = $.extend({}, $.fn[pluginName].defaultOptions, options);
-          $this.data(pluginName, new Crop($this, opts, on_load));
+          $.data(this, pluginName, new Crop($(this), opts));
         } else if (options) {
           $.extend(inst.options, options);
           inst.updateOptions();
@@ -272,8 +260,7 @@
       zoom: 10,
       maxZoom: 1,
       controls: null,
-      showControls: 'auto',
-      label: 'Drag to crop'
+      showControls: 'auto'
     };
   }
 

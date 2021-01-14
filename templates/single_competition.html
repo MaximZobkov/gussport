@@ -1,10 +1,50 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Title</title>
-</head>
-<body>
+{% extends "base.html" %}
 
-</body>
-</html>
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="card mb-4">
+            <h2 align="center"> {{ competition.name }} </h2> <br>
+            <p class="single_comp"> {{ competition.short_description }} </p>
+            <p class="single_comp"><b>Тип соревнования:</b> {{ competition.type }} </p>
+            <p class="single_comp"><b>Дата проведения: </b> {{ competition.event_date_start }} года
+                в {{ competition.event_time_start }} </p>
+            <p class="single_comp"><b>Начало регистрации на соревнования: </b> {{ competition.registration_start }} </p>
+            <p class="single_comp"><b>Последний день регистрации: </b> {{ competition.registration_end }} </p>
+            <table>
+                <tr>
+                    <td><b>Категория</b></td>
+                    {% for i in range(competition.groups_count) %}
+                        <td>{{ groups_array[i][0] }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td><b>Дистанция</b></td>
+                    {% for i in range(competition.groups_count) %}
+                        <td>{{ groups_array[i][2] }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td><b>Кол-во человек</b></td>
+                    {% for i in range(competition.groups_count) %}
+                        <td>{{ groups_array[i][1] }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td><b>Время старта</b></td>
+                    {% for i in range(competition.groups_count) %}
+                        <td>{{ groups_array[i][3] }}</td>
+                    {% endfor %}
+                </tr>
+                <tr>
+                    <td><b>Оплата</b></td>
+                    {% for i in range(competition.groups_count) %}
+                        <td>{{ groups_array[i][4] }}</td>
+                    {% endfor %}
+                </tr>
+            </table>
+            <a class="btn btn-light mt-1" href="/register_to_competition/{{ competition.url }}/{{ current_user.id }}">
+                Зарегистрироваться на соревнование</a>
+        </div>
+    </div>
+{% endblock %}

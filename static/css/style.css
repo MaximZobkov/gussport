@@ -25,6 +25,7 @@ th {
     font-size: 20px;
     border: 1px solid grey;
 }
+
 .card-img-left {
     width: 23%;
     border-radius: 1px;
@@ -32,7 +33,7 @@ th {
     margin: 10px;
 }
 
-.inform{
+.inform {
     color: #FFF;
 }
 
@@ -45,43 +46,74 @@ body, input {
 input, button {
     outline: none;
 }
+
 .break {
-  flex-basis: 100%;
-  height: 0;
+    flex-basis: 100%;
+    height: 0;
 }
+
 .card {
     margin-bottom: 10px;
     padding: 0;
     border-radius: 15px;
 }
+
 .competitions_lst {
     position: relative;
     text-align: center;
     color: white;
 }
+
 .centered {
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
 }
+
 .top-bottom {
     position: absolute;
     top: 100%;
     left: 50%;
     transform: translate(-50%, -100%);
 }
+
 .top-top {
     position: absolute;
     left: 50%;
     transform: translate(-50%, 0);
 }
+
 .navbar-back {
-    background-color: #f8f8ff;
+    background-color: #fff;
 }
+
 .card-img-top {
     border-radius: 2px;
 }
+.mobile {
+    display: none;
+}
+.navbar-head {
+    font-family: "Segoe script", sans-serif;
+    font-weight: bold;
+    color: #00f;
+    align-items: center;
+}
+.navbar-items {
+    font-size: 20px;
+    height: 100%;
+}
+p.single_comp {
+    text-indent: 10px;
+}
 @media (orientation: portrait) {
-    .btn-group-vertical
+
+    .full {
+        display: none;
+    }
+
+    .mobile {
+        display: block;
+    }
 }
