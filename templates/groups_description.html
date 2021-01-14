@@ -13,6 +13,10 @@
                 {{ form.csrf_token }}
                 <p>Группа {{number + 1}}</p>
                 <p>
+                    {{ form.gender.label }}<br>
+                    {{ form.gender(class="form-control") }}
+                </p>
+                <p>
                     {{ form.age_range_start.label }}
                     {{ form.age_range_start(class="form-control") }}
                 </p>

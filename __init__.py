@@ -58,13 +58,16 @@ class CreateCompetitionForm(FlaskForm):
                                 ('Лыжный Масс-старт', "Лыжный Масс-старт"),
                                 ('Лыжная гонка', 'Лыжная гонка'),
                                 ('Велокросс', 'Велокросс'), ('Велобиатлон', 'Велобиатлон'),
-                                ('Веломарафон', "Веломарафон"), ('Забег', 'Забег'), ('Марафон', 'Марафон'),
+                                ('Веломарафон', "Веломарафон"), ('Забег', 'Забег'),
+                                ('Марафон', 'Марафон'),
                                 ('Полумарафон', 'Полумарафон'), ('Плавание', 'Плавание')])
     groups_count = IntegerField('Количество групп', validators=[DataRequired()])
     submit = SubmitField('Перейти к созданию групп')
 
 
 class CreateGroupsForm(FlaskForm):
+    gender = SelectField('Пол', validators=[DataRequired()],
+                         choices=[('1', 'Мужчины'), ('2', "Женщины")])
     age_range_start = IntegerField('Минимальный возраст', validators=[DataRequired()])
     age_range_end = IntegerField('Максимальный возраст', validators=[DataRequired()])
     players_count = IntegerField('Максимальное количество участников в группе',
@@ -182,7 +185,8 @@ def reformat(string_date):
 @login_required
 def single_competition(id):
     session = db_session.create_session()
-    competition = session.query(competitions.Competitions).filter(competitions.Competitions.id == id).first()
+    competition = session.query(competitions.Competitions).filter(
+        competitions.Competitions.id == id).first()
     array_group = competition.groups_description[2:].split('%%')
     array = []
     for i in range(competition.groups_count):
@@ -192,7 +196,8 @@ def single_competition(id):
         string_distance = f'{array_elements[3]} км.'
         string_time = f'{array_elements[4][:-3]}.'
         string_money = f'{array_elements[5]}'
-        array.append([string_year, string_count_people, string_distance, string_time, string_money])
+        array.append(
+            [string_year, string_count_people, string_distance, string_time, string_money])
     return render_template('single_competition.html', competition=competition, groups_array=array)
 
 
@@ -251,11 +256,13 @@ def groups_description(id, count, number):
                                                                str(form.players_count.data),
                                                                str(form.distance.data),
                                                                str(form.group_time_start.data),
-                                                               str(form.payments_value.data)])])
+                                                               str(form.payments_value.data),
+                                                               str(form.gender.data)])])
         with open("static/json/competition.json") as file:
             data = json.load(file)
-        group_name_to_dict = str(form.age_range_start.data) + ":" + str(form.age_range_end.data) + ":" + str(
-            form.players_count.data) + ":" + str(form.distance.data)
+        group_name_to_dict = str(form.age_range_start.data) + ":" + str(
+            form.age_range_end.data) + ":" + str(
+            form.players_count.data) + ":" + str(form.distance.data) + ":" + str(form.gender.data)
         data["failed_competitions"][competition.url].update([(group_name_to_dict, [])])
         with open("static/json/competition.json", "w") as file:
             json.dump(data, file)
@@ -272,29 +279,38 @@ def groups_description(id, count, number):
 
 
 # Нужно переделать, добавив выбор дистанции
-@app.route("/register_to_competition/<string:name>/<int:id>")
+@app.route("/register_to_competition/<string:name>/<int:id>/<int:number>")
 @login_required
-def register_to_competition(name, id):
+def register_to_competition(name, id, number):
     session = db_session.create_session()
     with open("static/json/competition.json") as file:
         data = json.load(file)
-    competition = session.query(competitions.Competitions).filter(
-        competitions.Competitions.url == name).first()
     user = session.query(users.User).filter(users.User.id == id).first()
     age = get_age(user.date_of_birth)
     keys = data["failed_competitions"][name].keys()
-    right_key = ""
+    group_list = []
+    small_dict = {"Мужской": 1, "Женский": 2}
     for key in keys:
-        if int(key.split(':')[0]) <= age <= int(key.split(':')[1]):
-            right_key = key
-            break
-    if right_key == "":
+        if (int(key.split(':')[0]) <= age <= int(key.split(':')[1]) and
+            int(key.split(':')[4]) == small_dict[user.gender]):
+            group_list += [key.split(":")]
+    if len(group_list) == 0:
         # пользователь не может зарегистрироваться на это соревнование, т.к. нет подходящей возрастной категории
-        return
-    data["failed_competitions"][name][right_key] += [id]
-    with open("static/json/competition.json", "w") as file:
-        json.dump(data, file)
-    return redirect('/')
+        return redirect("/")
+    print(group_list, number)
+    if number != 0:
+        data["failed_competitions"][name][":".join(group_list[number - 1])] += [id]
+        with open("static/json/competition.json", "w") as file:
+            json.dump(data, file)
+        #регистрация успешно завершена
+        return redirect("/")
+    return render_template('register_to_competition.html', group_list=group_list, name=name, id=id)
+
+
+@app.route("/select_group/")
+@login_required
+def select_group():
+    pass
 
 
 @app.route('/competitions')
@@ -307,7 +323,8 @@ def all_competitions():
 @app.route("/delete_competition/<int:id>")
 def delete_competitions(id):
     session = db_session.create_session()
-    competition = session.query(competitions.Competitions).filter(competitions.Competitions.id == id).first()
+    competition = session.query(competitions.Competitions).filter(
+        competitions.Competitions.id == id).first()
     with open("static/json/competition.json") as file:
         data = json.load(file)
     data["failed_competitions"].pop("competition" + str(id), None)

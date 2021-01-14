@@ -1,90 +1,23 @@
 {% extends "base.html" %}
 
-{% block main %}
-    <meta http-equiv="content-type" content="text/html; charset=utf-8">
-    <link href="{{ url_for('static', filename='kladr-jquery/jquery.fias.min.css') }}" rel="stylesheet" type=text/css>
-    <link href="{{ url_for('static', filename='kladr-jquery/examples/type/styles.css') }}" rel="stylesheet" type=text/css>
-
-    <script src="{{ url_for('static', filename='kladr-jquery/examples/lib/jquery-1.11.1.min.js') }}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='kladr-jquery/jquery.fias.min.js')}}" type="text/javascript"></script>
-    <script src="{{ url_for('static', filename='kladr-jquery/examples/type/script.js') }}" type="text/javascript"></script>
-{% endblock %}
-
 {% block content %}
     <div class="container mt-4">
         <div class="card mb-4 card_register">
             <div class="card-title">
-                <h1 align="center">Регистрация</h1>
+                <h1 align="center">Выберете группу</h1>
             </div>
             <div class="card-body">
+                {% for group in group_list %}
+                <a href="/register_to_competition/{{ name }}/{{ id }}/{{ loop.index }}">
+                    <div style="background-color: #C0C0C0;">
+                        <p>Возраст: {{group[0]}}: {{group[1]}}</p>
+                        <p>Количество человек: {{group[2]}}</p>
+                        <p>Дистанция: {{group[3]}}</p>
+                    </div>
+                </a>
+                {% endfor %}
                 <form action="" method="post" enctype="multipart/form-data">
-                    {{ form.hidden_tag() }}
-                    {{ form.csrf_token }}
-                    <p>
-                        {{ form.email.label }}<br>
-                        {{ form.email(class="form-control", type="email") }}
-                        {% for error in form.email.errors %}
-                            </p>
-                            <p class="alert alert-danger" role="alert">
-                            {{ error }}
-                        {% endfor %}
-                        {% if email_error != "OK" %}
-                            <a class="alert alert-danger" role="alert">{{ email_error }}</a>
-                        {% endif %}
-                        </p>
-                    <p>
-                        {{ form.password.label }}<br>
-                        {{ form.password(class="form-control", type="password") }}
-                        {% if password_error != "OK" %}
-                            <div class="alert alert-danger" role="alert">{{ password_error }}</div>
-                        {% endif %}
-                    </p>
 
-                    <p>
-                        {{ form.password_again.label }}<br>
-                        {{ form.password_again(class="form-control", type="password") }}
-                        {% if again_password_error != "OK" %}
-                            <p class="alert alert-danger" role="alert">{{ again_password_error }}</p>
-                        {% endif %}
-                    </p>
-                    <p>
-                        {{ form.name.label }}
-                        {{ form.name(class="form-control") }}
-                    </p>
-                    <p>
-                        {{ form.surname.label }}
-                        {{ form.surname(class="form-control") }}
-                    </p>
-                    <p>
-                        {{ form.middle_name.label }}
-                        {{ form.middle_name(class="form-control") }}
-                    </p>
-                    <p>
-                        {{ form.date_of_birth.label }}
-                        {{ form.date_of_birth(type="date", class="form-control") }}
-                        {% if date_error != "OK" %}
-                            <a class="alert alert-danger" role="alert">{{ date_error }}</a>
-                        {% endif %}
-                    </p>
-                    <p>
-                        {{ form.gender.label }} <br>
-                        {{ form.gender(class="form-control") }} <br>
-                    </p>
-                    <div class="address">
-                        <h1>Ограничение списка выводимых населённых пунктов</h1>
-                        <div class="field">
-                            <input name="city" type="text" value="" placeholder="Город">
-                        </div>
-                        <div class="field">
-                            <label><input name="typecode" type="radio" value="Город" checked="checked"> Город</label>
-                            <label><input name="typecode" type="radio" value="Посёлок/село"> Посёлок/село</label>
-                            <label><input name="typecode" type="radio" value="Деревня"> Деревня</label>
-                        </div>
-                    </div>
-                    <div class="form-group">
-                        <input type="file" class="form-control-file" id="photo" name="file">
-                    </div>
-                    <p>{{ form.submit(type="submit", class="btn btn-outline-dark") }}</p>
                 </form>
             </div>
         </div>
