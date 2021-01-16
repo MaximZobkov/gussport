@@ -15,11 +15,17 @@
                 {{ form.content.label }} <br>
                 {{ form.content(class="form-control") }} <br>
             </a>
+            <h6> Загрузите фотографию</h6>
             <div class="form-group">
-                <input type="file" class="form-control-file" id="photo" name="file1">
+                <input type="file" class="form-control-file" id="photo" name="file1" accept="image/*" required>
+            </div>
+             <h6> Загрузите положение соревнования (Не обязательное поле)</h6>
+            <div class="form-group">
+                <input type="file" class="form-control-file" id="file" name="file"
+                       accept=".doc, .txt, .rtf, .docx, .pdf">
             </div>
             <form enctype="multipart/form-data" method="post">
-                <input type="submit" value="Отправить">
+                <input type="submit" value="Создать новость">
             </form>
             {{ message }}
             <br>

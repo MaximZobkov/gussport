@@ -9,19 +9,24 @@
         <div class="card-body">
             <div class="row">
                 {% for new in news_list %}
-                    <div>
-                        <div class="card bg-light mb-4" style="border-radius: 10px;">
-                            <img class="card-img-top" style="border-radius: 10px;" src='{{ new.image }}'>
-                            <div class="card-body">
-                                <h5 align="center" style="height: 35px;"
-                                    class="card-title">{{ new.name }}</h5>
-                                {% for content in new.content.split('\n') %}
-                                    <p style="text-indent: 20px">{{ content }}</p>
-                                {% endfor %}
-                                {% if current_user.role == "admin" %}
-                                    <a class="btn btn-dark" href="/delete_new/{{ new.id }}">Удалить новость</a>
-                                {% endif %}
+                    <div class="col-xl-12 col-lg-12 col-sm-12 col-xs-12">
+                        <div class="card bg-white mb-4" style="border-radius: 10px;" id="parent">
+                            <div>
+                                <img class="card-img-news" src='{{ new.image }}'>
+                                <h5 style="text-align: center;" class="mt-2">{{ new.name }}</h5>
+                                <p style="text-indent: 15px;">
+                                    {{ '\n'.join(new.content.strip().split('\n')[:2]) }}
+                                </p>
+                                <h6><a href="/single_new">Подробнее...</a></h6>
+                                <div align="right" class="mr-2">
+                                    <a class="ml-1" href="{{ new.files }}" target="_blank">Положение соревнования</a>
+                                    <img class="mb-1" src="../static/images/other-image/file.png"/>
+                                </div>
                             </div>
+                            {% if current_user.role == "admin" %}
+                                <a class="btn btn-light" style="width: 24%;" href="/delete_new/{{ new.id }}">Удалить
+                                    Новость</a>
+                            {% endif %}
                         </div>
                     </div>
                 {% endfor %}

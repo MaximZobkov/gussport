@@ -33,8 +33,25 @@ th {
     margin: 10px;
 }
 
-.inform {
-    color: #FFF;
+.card-img-news {
+    float: left;
+    width: 25%;
+    padding-right: 10px;
+}
+
+.card {
+    min-width: 100%;
+    margin-bottom: 10px;
+    padding: 0;
+    border-radius: 15px;
+}
+
+.show {
+    display: block;
+}
+
+.hidden {
+    display: none;
 }
 
 body, input {
@@ -50,12 +67,6 @@ input, button {
 .break {
     flex-basis: 100%;
     height: 0;
-}
-
-.card {
-    margin-bottom: 10px;
-    padding: 0;
-    border-radius: 15px;
 }
 
 .competitions_lst {
@@ -91,20 +102,25 @@ input, button {
 .card-img-top {
     border-radius: 2px;
 }
+
 .mobile {
     display: none;
 }
+
 .navbar-items {
     font-size: 20px;
     height: 100%;
 }
+
 p.single_comp {
     text-indent: 10px;
 }
+
 .card-color {
     color: blue;
     background-color: blue;
 }
+
 @media (orientation: portrait) {
     .full {
         display: none;
@@ -113,4 +129,10 @@ p.single_comp {
     .mobile {
         display: block;
     }
+}
+
+#child {
+    display: inline-block;
+    vertical-align: bottom;
+    border: 1px solid blue;
 }

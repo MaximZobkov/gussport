@@ -10,6 +10,5 @@ class News(SqlAlchemyBase, SerializerMixin):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     name = sqlalchemy.Column(sqlalchemy.TEXT, nullable=True)
     content = sqlalchemy.Column(sqlalchemy.TEXT, nullable=True)
-    image = sqlalchemy.Column(sqlalchemy.TEXT, default="/static/images/news_image/default_news.jpg")
-
-
+    image = sqlalchemy.Column(sqlalchemy.TEXT)
+    files = sqlalchemy.Column(sqlalchemy.String)
