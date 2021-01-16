@@ -13,10 +13,10 @@
                             <div>
                                 <img class="card-img-news" src='{{ new.image }}'>
                                 <h5 style="text-align: center;" class="mt-2">{{ new.name }}</h5>
-                                <p style="text-indent: 15px;">
+                                <p style="text-indent: 15px;" class="mr-2">
                                     {{ '\n'.join(new.content.strip().split('\n')[:2]) }}
                                 </p>
-                                <h6><a href="/single_new">Подробнее...</a></h6>
+                                <h6><a href="/single_new">Подробнее</a></h6>
                                 <div align="right" class="mr-2">
                                     <a class="ml-1" href="{{ new.files }}" target="_blank">Положение соревнования</a>
                                     <img class="mb-1" src="../static/images/other-image/file.png"/>

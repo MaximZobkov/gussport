@@ -13,7 +13,6 @@
 
 
 .table-user {
-    padding: 20px;
     border: 1px solid grey;
 }
 
@@ -36,13 +35,14 @@ th {
 .card-img-news {
     float: left;
     width: 25%;
+    padding-right: 10px;
 }
 
 .card {
     min-width: 100%;
     margin-bottom: 10px;
     padding: 0;
-    border-radius: 15px;
+    border-radius: 15px;;
 }
 
 .show {
@@ -97,9 +97,16 @@ input, button {
 .navbar-back {
     background-color: #fff;
 }
-
 .card-img-top {
-    border-radius: 2px;
+    filter: brightness(70%);
+}
+.bg-fon {
+    background-color: rgba(0, 0, 0, .3);
+    height: 100%;
+    position: fixed;
+    width: 100%;
+    top: 0;
+    left: 0;
 }
 
 .mobile {
@@ -123,11 +130,24 @@ p.single_comp {
 @media (orientation: portrait) {
     .card-img-news {
         width: 100%;
+        padding: 0;
+        max-width: 100%;
+    }
+}
 
-    }
-    .mobile {
-        display: block;
-    }
+.img-competition {
+
+}
+
+nav::after {
+    border-bottom: 1px solid blue;
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    width: 100%;
+    bottom: 0;
+    margin: 0 auto;
 }
 
 #child {
