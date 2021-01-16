@@ -36,7 +36,6 @@ th {
 .card-img-news {
     float: left;
     width: 25%;
-    padding-right: 10px;
 }
 
 .card {
@@ -124,6 +123,7 @@ p.single_comp {
 @media (orientation: portrait) {
     .card-img-news {
         width: 100%;
+
     }
     .mobile {
         display: block;
