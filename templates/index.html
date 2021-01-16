@@ -11,14 +11,14 @@
                     <div class="col-xl-12 col-lg-12 col-sm-12 col-xs-12">
                         <div class="card bg-white mb-4" style="border-radius: 10px;" id="parent">
                             <div>
-                                <img class="card-img-news" src='{{ new.image }}'>
+                                <img class="card-img-top card-left" src='{{ new.image }}'>
                                 <h5 style="text-align: center;" class="mt-2">{{ new.name }}</h5>
                                 <p style="text-indent: 15px;" class="mr-2">
                                     {{ '\n'.join(new.content.strip().split('\n')[:2]) }}
                                 </p>
                                 <h6><a href="/single_new">Подробнее</a></h6>
-                                <div align="right" class="mr-2">
-                                    <a class="ml-1" href="{{ new.files }}" target="_blank">Положение соревнования</a>
+                                <div align="right">
+                                    <a href="{{ new.files }}" target="_blank">Положение соревнования</a>
                                     <img class="mb-1" src="../static/images/other-image/file.png"/>
                                 </div>
                             </div>
