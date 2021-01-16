@@ -439,9 +439,8 @@ def create_news():
         new.content = form.content.data
         photo = request.files['file1']
         file = request.files['file']
-        print(str(file)[-6:-3])
         if file:
-            file_extension = str(file)[-6:-3]
+            file_extension = str(file).split('application/')[1][:-3]
             file.save("static/files/file_" + \
                       str(1 + len(os.listdir("static/files"))) + "." + file_extension)
             new.files = "static/files/file_" + \
@@ -463,11 +462,10 @@ def delete_news(id):
     session.delete(new)
     session.commit()
     try:
-        os.remove(f"static/images/news_image/news_{id}.jpg")
+        os.remove(f"{new.image}")
     except Exception:
         pass
     try:
-        print(f"{new.files}")
         os.remove(f"{new.files}")
     except Exception:
         pass

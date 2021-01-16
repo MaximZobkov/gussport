@@ -122,10 +122,9 @@ p.single_comp {
 }
 
 @media (orientation: portrait) {
-    .full {
-        display: none;
+    .card-img-news {
+        width: 100%;
     }
-
     .mobile {
         display: block;
     }
