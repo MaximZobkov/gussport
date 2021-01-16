@@ -7,29 +7,27 @@
             <div class="card-title">
                 <h1 align="center">Все пользователи</h1>
             </div>
-            <table class="table-user">
+            <table class="table-user" style="width: 100%">
                 <tr>
                     <th>Имя</th>
                     <th>Фамилия</th>
                     <th>Отчество</th>
                     <th>Роль</th>
-                    <th>Переназначить роль</th>
                 </tr>
                 {% for user in table %}
                     <tr>
-                        <td>{{ user[1] }}</td>
                         <td>{{ user[2] }}</td>
+                        <td>{{ user[1] }}</td>
                         <td>{{ user[3] }}</td>
-                        <td>{{ user[7] }}</td>
-                        <td>
-                            {% if user[7] == "user" %}
-                                <a href="/redefine_role/admin/{{ user[0] }}" class="btn btn-primary">Назначить
-                                    администратором</a>
-                            {% else %}
-                                <a href="/redefine_role/user/{{ user[0] }}" class="btn btn-primary">Назначить
-                                    пользователем</a>
-                            {% endif %}
-                        </td>
+                        {% if user[7] == "user" %}
+                            <td>
+                                <a style="width: 100%" href="/redefine_role/admin/{{ user[0] }}" class="btn btn-light">User</a>
+                            </td>
+                        {% else %}
+                            <td>
+                                <a style="width: 100%" href="/redefine_role/user/{{ user[0] }}" class="btn btn-light">Admin</a>
+                            </td>
+                        {% endif %}
                     </tr>
                 {% endfor %}
             </table>
