@@ -12,3 +12,5 @@ class News(SqlAlchemyBase, SerializerMixin):
     content = sqlalchemy.Column(sqlalchemy.TEXT, nullable=True)
     image = sqlalchemy.Column(sqlalchemy.TEXT)
     files = sqlalchemy.Column(sqlalchemy.String)
+    count_file = sqlalchemy.Column(sqlalchemy.Integer)
+    file_name = sqlalchemy.Column(sqlalchemy.String)

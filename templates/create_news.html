@@ -2,33 +2,30 @@
 
 
 {% block content %}
-    <div class="card container mt-4">
-        <h1>{{ title }}</h1>
-        <form action="" method="post" enctype="multipart/form-data">
-            {{ form.hidden_tag() }}
-            {{ form.csrf_token }}
-            <a>
-                {{ form.name.label }} <br>
-                {{ form.name(class="form-control") }} <br>
-            </a>
-            <a>
-                {{ form.content.label }} <br>
-                {{ form.content(class="form-control") }} <br>
-            </a>
-            <h6> Загрузите фотографию</h6>
-            <div class="form-group">
-                <input type="file" class="form-control-file" id="photo" name="file1" accept="image/*" required>
-            </div>
-             <h6> Загрузите положение соревнования (Не обязательное поле)</h6>
-            <div class="form-group">
-                <input type="file" class="form-control-file" id="file" name="file"
-                       accept=".doc, .txt, .rtf, .docx, .pdf">
-            </div>
-            <form enctype="multipart/form-data" method="post">
-                <input type="submit" value="Создать новость">
-            </form>
-            {{ message }}
-            <br>
+<div class="card container mt-4">
+    <h1>{{ title }}</h1>
+    <form action="" method="post" enctype="multipart/form-data">
+        {{ form.hidden_tag() }}
+        {{ form.csrf_token }}
+        <a>
+            {{ form.name.label }} <br>
+            {{ form.name(class="form-control") }} <br>
+        </a>
+        <a>
+            {{ form.content.label }} <br>
+            {{ form.content(class="form-control") }} <br>
+        </a>
+        <h6> Загрузите фотографию</h6>
+        <div class="form-group">
+            <input type="file" class="form-control-file" id="photo" name="file1" accept="image/*" required>
+        </div>
+        <h6> Загрузите положение соревнования (Не обязательное поле)</h6>
+        <input type="file" name="file_new" multiple accept=".doc, .txt, .rtf, .docx, .pdf"><br><br>
+        <form enctype="multipart/form-data" method="post">
+            <input type="submit" value="Создать новость">
         </form>
-    </div>
+        {{ message }}
+        <br>
+    </form>
+</div>
 {% endblock %}

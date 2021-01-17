@@ -1,6 +1,7 @@
 import datetime
 import os
 import json
+import shutil
 
 from flask import Flask, render_template, redirect, url_for, request
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
@@ -439,18 +440,25 @@ def create_news():
         new.name = form.name.data
         new.content = form.content.data
         photo = request.files['file1']
-        file = request.files['file']
-        if file:
-            file_extension = str(file).split('application/')[1][:-3]
-            file.save("static/files/file_" + \
-                      str(1 + len(os.listdir("static/files"))) + "." + file_extension)
-            new.files = "static/files/file_" + \
-                        str(len(os.listdir("static/files"))) + "." + file_extension
-        photo.save("static/images/news_image/news_" + \
-                   str(1 + len(os.listdir("static/images/news_image"))) + ".jpg")
-        new.image = "static/images/news_image/news_" + \
-                    str(len(os.listdir("static/images/news_image"))) + ".jpg"
         sessions.add(new)
+        sessions.commit()
+        files = request.files.getlist("file_new")
+        photo.save("static/images/news_image/news_" + str(new.id) + ".jpg")
+        new.image = "static/images/news_image/news_" + str(new.id) + ".jpg"
+        if str(files) != "[<FileStorage: '' ('application/octet-stream')>]":
+            count_file = 0
+            file_str_name = ''
+            os.mkdir('static/files/new' + str(new.id))
+            for file in files:
+                count_file += 1
+                file_extension = str(file).split('application/')[1][:-3]
+                file_name = str(file).split("FileStorage: '")[1][:-25].split('.')[0]
+                file.save(f"static/files/new{new.id}/{file_name}." + file_extension)
+                file_str_name += file_name + '%%'
+            new.files = "static/files/new" + str(new.id)
+            new.file_name = file_str_name[:-2]
+            new.count_file = count_file
+        sessions.merge(new)
         sessions.commit()
         return redirect('/')
     return render_template("create_news.html", form=form)
@@ -467,8 +475,7 @@ def delete_news(id):
     except Exception:
         pass
     try:
-        print(f"{new.files}")
-        os.remove(f"{new.files}")
+        shutil.rmtree(f"{new.files}")
     except Exception:
         pass
     return redirect("/")

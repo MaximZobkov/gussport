@@ -121,15 +121,43 @@ p.single_comp {
     color: blue;
     background-color: blue;
 }
-
+.card-display {
+    display: inline-block;
+    margin: auto;
+}
+div.card-new {
+    width: 70%;
+    float: left;
+}
+div.card-calendar {
+    width: 28%;
+    float: right;
+}
+.display-more-detailed {
+    display: inline-block;
+    margin: auto;
+    width: 100%;
+}
+.file_detail {
+    float: left;
+}
 @media (orientation: portrait) {
     .card-img-news {
         width: 100%;
         margin: 0;
         padding: 0;
     }
+    div.card-new {
+        width: 100%;
+        padding: 5px 5px 20px 5px;
+        float: none;
+    }
+    div.card-calendar {
+        width: 93%;
+        margin: auto;
+        float: none;
+    }
 }
-
 #child {
     display: inline-block;
     vertical-align: bottom;
