@@ -141,6 +141,12 @@ div.card-calendar {
 .file_detail {
     float: left;
 }
+.file_new_name {
+    width: 100%;
+}
+.full {
+    display: block;
+}
 @media (orientation: portrait) {
     .card-img-news {
         width: 100%;
@@ -156,6 +162,15 @@ div.card-calendar {
         width: 93%;
         float: none;
         margin-left: 15px;
+    }
+    .file_new_name {
+        width: 40%;
+    }
+    .mobile {
+        display: block;
+    }
+    .full {
+        display: none;
     }
 }
 #child {

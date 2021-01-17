@@ -36,7 +36,9 @@
                         {% if new.files %}
                         {% for i in range(new.count_file) %}
                         <div class="file_detail" align="left">
-                            <a class="ml-1" href="/static/files/new{{ new.id }}/{{ new.file_name.split('%%')[i] }}.pdf"
+                            <a class="mobile ml-1" href="/static/files/new{{ new.id }}/{{ new.file_name.split('%%')[i][:21] }}.pdf"
+                               target="_blank">{{ new.file_name.split('%%')[i]}}.pdf</a>
+                            <a class="full" href="/static/files/new{{ new.id }}/{{ new.file_name.split('%%')[i] }}.pdf"
                                target="_blank">{{ new.file_name.split('%%')[i]}}.pdf</a>
                         </div>
                         {% if i != new.count_file - 1 %}
