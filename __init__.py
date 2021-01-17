@@ -531,7 +531,8 @@ def login():
 def index():
     sessions = db_session.create_session()
     all_news = sessions.query(news.News)
-    return render_template("index.html", news_list=all_news)
+    competitions_list = sessions.query(competitions.Competitions)
+    return render_template("index.html", news_list=all_news, competitions_list=competitions_list)
 
 
 @app.errorhandler(404)  # функция ошибки

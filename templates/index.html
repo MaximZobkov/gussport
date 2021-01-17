@@ -11,8 +11,14 @@
         <div class="card-display">
             <div class="card-calendar mr-3">
                 <div class="card">
-                    <div class="card-title">
-                        <h6> Календарь событий </h6>
+                    <div class="card-body">
+                        <h3 align="center"> Календарь событий </h3>
+                        <hr size=5px width=94% align="center"/>
+                        {% for competition in competitions_list %}
+                        <h6 align="center"><strong>{{ competition.event_date_start }}</strong></h6>
+                        <h5 align="center"><a href="/competition/{{ competition.id }}"> {{ competition.name }} </a></h5>
+                        <hr size=5px width=94% align="center"/>
+                        {% endfor %}
                     </div>
                 </div>
             </div>
