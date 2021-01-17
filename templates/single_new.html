@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+<div class="container mt-4">
+    <div class="card mb-4" style="padding: 10px;">
+        <img class="card-img mb-2" src='../{{ new.image }}'/>
+        <h2 style="text-align: center;" class="card-title mb-2">{{ new.name }}</h2>
+        {% for new_element in new.content.split('\n') %}
+            <p style="text-indent: 15px; margin-top: -5px;">{{ new_element }}</p>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

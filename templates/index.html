@@ -1,41 +1,41 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="container">
-        <img class="mobile" style="width: 100%" src='../static/images/other-image/start-image.jpg'>
-        <img class="full" style="width: 100%" src='../static/images/other-image/start-image.jpg'>
-    </div>
-    <div class="container mt-4">
-        <div class="card-body">
-            <div class="row">
-                {% for new in news_list %}
-                    <div class="col-xl-12 col-lg-12 col-sm-12 col-xs-12">
-                        <div class="card bg-white mb-4" style="border-radius: 10px;" id="parent">
-                            <div style="height: 100%;" id="{{ loop.index }}">
-                                <img class="card-img-news" id="newsimages" src='{{ new.image }}'>
-                                <h5 style="text-align: center;" class="mt-2">{{ new.name }}</h5>
-                                <p style="text-indent: 15px;">
-                                    {{ '\n'.join(new.content.strip().split('\n')[:2]) }}
-                                </p>
-                                <div class="hidden" id="details">
-                                    {% for new_row in new.content.split('\n')[2:] %}
-                                        <p style="text-indent: 15px;">{{ new_row }}</p>
-                                    {% endfor %}
-                                </div>
-                                <a href="#{{ loop.index }}" onclick="show('details', 'useless'); return false;" id="useless">Подробнее...</a>
-                                <div align="right" style="vertical-align: bottom; vertical-align: middle;">
-                                    <a class="ml-1" href="{{ new.files }}" target="_blank">Положение соревнования</a>
-                                    <img class="mb-1" src="../static/images/other-image/file.png"/>
-                                </div>
-                            </div>
-                            {% if current_user.role == "admin" %}
-                                <a class="btn btn-light" style="width: 24%;" href="/delete_new/{{ new.id }}">Удалить
-                                    Новость</a>
+<div class="container">
+    <img class="mobile" style="width: 100%" src='../static/images/other-image/start-image.jpg'>
+    <img class="full" style="width: 100%" src='../static/images/other-image/start-image.jpg'>
+</div>
+<div class="container mt-4">
+        <div class="row">
+            {% for new in news_list %}
+            <div class="col-xl-12 col-lg-12 col-sm-12 col-xs-12">
+                <div class="card bg-white mb-4" style="border-radius: 10px;" id="parent">
+                    <div style="height: 100%;" id="{{ loop.index }}">
+                        <img class="card-img-news" id="newsimages" src='{{ new.image }}'>
+                        <h5 style="text-align: center;" class="mt-2">{{ new.name }}</h5>
+                        <p style="text-indent: 15px; padding: 5px">
+                            {{ '\n'.join(new.content.strip().split('\n')[:2]) }}
+                        </p>
+                        <div class="hidden" id="details">
+                            {% for new_row in new.content.split('\n')[2:] %}
+                            <p style="text-indent: 15px; padding: 5px">{{ new_row }}</p>
+                            {% endfor %}
+                        </div>
+                        <a href="/single_new/{{ new.id }}">Подробнее...</a>
+                        <div align="right" style="vertical-align: bottom; vertical-align: middle;">
+                            {% if new.files %}
+                            <a class="ml-1" href="{{ new.files }}" target="_blank">Положение соревнования</a>
+                            <img class="mb-1" src="../static/images/other-image/file.png"/>
                             {% endif %}
                         </div>
                     </div>
-                {% endfor %}
+                    {% if current_user.role == "admin" %}
+                    <a class="btn btn-light" style="width: 24%;" href="/delete_new/{{ new.id }}">Удалить
+                        Новость</a>
+                    {% endif %}
+                </div>
             </div>
+            {% endfor %}
         </div>
-    </div>
+</div>
 {% endblock %}

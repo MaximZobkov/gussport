@@ -440,9 +440,8 @@ def create_news():
         new.content = form.content.data
         photo = request.files['file1']
         file = request.files['file']
-        print(str(file)[-6:-3])
         if file:
-            file_extension = str(file)[-6:-3]
+            file_extension = str(file).split('application/')[1][:-3]
             file.save("static/files/file_" + \
                       str(1 + len(os.listdir("static/files"))) + "." + file_extension)
             new.files = "static/files/file_" + \
@@ -473,6 +472,13 @@ def delete_news(id):
     except Exception:
         pass
     return redirect("/")
+
+
+@app.route('/single_new/<int:id>')
+def single_item_new(id):
+    session = db_session.create_session()
+    new = session.query(news.News).filter(news.News.id == id).first()
+    return render_template("single_new.html", new=new)
 
 
 def check_password(password):
