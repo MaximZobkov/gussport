@@ -154,8 +154,8 @@ div.card-calendar {
     }
     div.card-calendar {
         width: 93%;
-        margin: auto;
         float: none;
+        margin-left: 15px;
     }
 }
 #child {
