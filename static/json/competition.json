@@ -1,1 +1,16 @@
-{"failed_competitions": {"competition1": {"all_users": [1], "10:21:50:15:1": [1], "22:35:50:15:1": [], "10:21:50:8:2": [], "22:35:50:10:2": []}}, "past_competitions": {}}
+{
+  "failed_competitions": {
+    "competition1": {
+      "all_users": [
+        1
+      ],
+      "10:21:50:15:1": [
+        1
+      ],
+      "22:35:50:15:1": [],
+      "10:21:50:8:2": [],
+      "22:35:50:10:2": []
+    }
+  },
+  "past_competitions": {}
+}

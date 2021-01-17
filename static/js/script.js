@@ -1,38 +1,30 @@
-(function () {
-    var $container = $(document.getElementById('type_code'));
+document.addEventListener("DOMContentLoaded", function (event) {
+    window.onresize = function () {
+        resize_info();
+    };
+});
 
-    var $city = $container.find('[name="city"]'),
-        $typeCode = $container.find('[name="typecode"]');
-
-    $city.fias({
-        type: $.fias.type.city,
-    });
-
-    $city.fias('withParents', true);
-
-    $typeCode.change(function () {
-        changeTypeCode($(this).val());
-    });
-
-    changeTypeCode($container.find('[name="typecode"]:checked').val());
-
-    function changeTypeCode(value) {
-        var typeCode = null;
-
-        switch (value) {
-            case 'city':
-                typeCode = $.fias.typeCode.city;
-                break;
-
-            case 'settlement':
-                typeCode = $.fias.typeCode.city + $.fias.typeCode.settlement;
-                break;
-
-            case 'all':
-                typeCode = $.fias.typeCode.city + $.fias.typeCode.settlement + $.fias.typeCode.village;
-                break;
-        }
-
-        $city.fias('typeCode', typeCode);
+function resize_info() {
+    if (document.documentElement.clientHeight > document.documentElement.clientWidth){
+        document.getElementById('newsimages').className = "card-img-top";
     }
-})();
+    else{
+        document.getElementById('newsimages').className = "card-img-news";
+    }
+}
+
+function show(name, second_name) {
+    var elem = document.getElementById(name);
+    var second_elem = document.getElementById(second_name);
+    if (elem){
+        console.log(second_elem);
+        if (elem.style.display == "block"){
+            elem.style.display = "none";
+            second_elem.innerHTML="Подробнее...";
+        }
+        else{
+            elem.style.display = "block";
+            second_elem.innerHTML="Свернуть";
+        }
+    }
+}
