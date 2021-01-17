@@ -37,6 +37,7 @@ th {
     float: left;
     width: 25%;
     padding-right: 10px;
+    border-radius: 5px;
 }
 
 .card {

@@ -21,6 +21,10 @@
                         {% endfor %}
                     </div>
                 </div>
+                <div align="center" class="full">
+                    <a href="https://vk.com/scbarro" target="_blank"><img src='../static/images/other-image/vk.png'></a>
+                    <a href="mailto: gussport@mail.ru" target="_blank"><img src='../static/images/other-image/mail.png'></a>
+                </div>
             </div>
             {% for new in news_list[::-1] %}
             <div class="col-xl-12 col-lg-12 col-sm-12 col-xs-12">
@@ -35,8 +39,9 @@
                     <div class="display-more-detailed">
                         {% if new.files %}
                         {% for i in range(new.count_file) %}
-                        <div class="file_detail" align="left">
-                            <a class="mobile ml-1" href="/static/files/new{{ new.id }}/{{ new.file_name.split('%%')[i] }}.pdf"
+                        <div class="file_detail ml-2 mb-1" align="left">
+                            <a class="mobile ml-1"
+                               href="/static/files/new{{ new.id }}/{{ new.file_name.split('%%')[i] }}.pdf"
                                target="_blank">{{ new.file_name.split('%%')[i][:17]}}...</a>
                             <a class="full" href="/static/files/new{{ new.id }}/{{ new.file_name.split('%%')[i] }}.pdf"
                                target="_blank">{{ new.file_name.split('%%')[i]}}.pdf</a>
@@ -46,7 +51,7 @@
                         {% endif %}
                         {% endfor %}
                         {% endif %}
-                        <div class="file_more_detail" align="right">
+                        <div class="file_more_detail mr-1 mb-1" align="right">
                             <a href="/single_new/{{ new.id }}">Подробнее...</a>
                         </div>
                     </div>

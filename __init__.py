@@ -100,30 +100,30 @@ class DigitError(Exception):
     error = 'В пароле должна быть хотя бы одна цифра!'
 
 
-@app.route('/profile')
-def profile():
-    if current_user.is_authenticated:
-        sessions = db_session.create_session()
-        with open("static/json/competition.json") as file:
-            data = json.load(file)
-        upcoming = data["failed_competitions"]
-        keys_list = upcoming.keys()
-        users_competition = []
-        for competition_name in keys_list:
-            competition = upcoming[competition_name]
-            if current_user.id in competition["all_users"]:
-                keys = competition.keys()
-                for key in keys:
-                    if key != "all_users" and current_user.id in competition[key]:
-                        full_competition = sessions.query(competitions.Competitions).filter(
-                            competitions.Competitions.url == competition_name).first()
-                        users_competition += [[full_competition, key]]
-                        break
-        flag = 1
-        if len(users_competition) == 0:
-            flag = 0
-        return render_template("profile.html", users_competition=users_competition, flag=flag)
-    return redirect('/')
+@app.route('/profile/<int:id>')
+def profile(id):
+    sessions = db_session.create_session()
+    user = sessions.query(users.User).filter(users.User.id == id).first()
+    with open("static/json/competition.json") as file:
+        data = json.load(file)
+    upcoming = data["failed_competitions"]
+    keys_list = upcoming.keys()
+    users_competition = []
+    for competition_name in keys_list:
+        competition = upcoming[competition_name]
+        if user.id in competition["all_users"]:
+            keys = competition.keys()
+            for key in keys:
+                if key != "all_users" and user.id in competition[key]:
+                    full_competition = sessions.query(competitions.Competitions).filter(
+                        competitions.Competitions.url == competition_name).first()
+                    users_competition += [[full_competition, key]]
+                    break
+    flag = 1
+    if len(users_competition) == 0:
+        flag = 0
+    return render_template("profile.html", users_competition=users_competition, flag=flag, user=user)
+
 
 
 @app.route('/logout')

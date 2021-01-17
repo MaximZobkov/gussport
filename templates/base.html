@@ -61,7 +61,7 @@
                     <a class="btn" href="/register" style="background-color: #c1caca;"> Зарегистрироваться </a>
                 </p>
             {% else %}
-                <a class="btn" href="/profile" style="background-color: #c1caca;"> Личный кабинет </a>
+                <a class="btn" href="/profile/{{ current_user.id }}" style="background-color: #c1caca;"> Личный кабинет </a>
             {% endif %}
         </div>
     </nav>

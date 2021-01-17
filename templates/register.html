@@ -62,7 +62,7 @@
                     </p>
                     <div class="card-body">
                         <h6 align="center">Укажите ваш населенный пункт</h6>
-                        <input name="city" type="text" value="" placeholder="Населенный пункт" style="width: 100%">
+                        <input name="city" type="text" value="" placeholder="Населенный пункт" style="width: 100%" required>
                         <div class="field mt-3">
                             <label><input name="typecode" type="radio" value="Город" checked="checked"> Город</label>
                             <label><input name="typecode" type="radio" value="Посёлок/село"> Посёлок/село</label>
@@ -80,7 +80,7 @@
                     </div>-->
                     <div class="form-group">
                         <h6>Загрузите вашу фотографию</h6>
-                        <input type="file" class="form-control-file" id="photo" name="file">
+                        <input type="file" class="form-control-file" id="photo" name="file" required>
                     </div>
                     <p>{{ form.submit(type="submit", class="btn btn-outline-dark") }}</p>
                 </form>
