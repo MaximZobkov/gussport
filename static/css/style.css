@@ -147,6 +147,9 @@ div.card-calendar {
 .mobile {
     display: none;
 }
+.btn-mobile {
+    width: 24%;
+}
 @media (orientation: portrait) {
     .card-img-news {
         width: 100%;
@@ -172,6 +175,9 @@ div.card-calendar {
 
     .mobile {
         display: block;
+    }
+    .btn-mobile {
+        width: 100%;
     }
 }
 #child {
