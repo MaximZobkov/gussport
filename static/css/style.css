@@ -104,10 +104,6 @@ input, button {
     filter: brightness(70%);
 }
 
-.mobile {
-    display: none;
-}
-
 .navbar-items {
     font-size: 20px;
     height: 100%;
@@ -147,6 +143,9 @@ div.card-calendar {
 .full {
     display: block;
 }
+.mobile {
+    display: none;
+}
 @media (orientation: portrait) {
     .card-img-news {
         width: 100%;
@@ -166,11 +165,12 @@ div.card-calendar {
     .file_new_name {
         width: 40%;
     }
-    .mobile {
-        display: block;
-    }
     .full {
         display: none;
+    }
+
+    .mobile {
+        display: block;
     }
 }
 #child {
