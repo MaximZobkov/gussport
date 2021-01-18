@@ -122,8 +122,7 @@ def profile(id):
     flag = 1
     if len(users_competition) == 0:
         flag = 0
-    return render_template("profile.html", users_competition=users_competition, flag=flag, user=user)
-
+    return render_template("profile.html", users_competition=users_competition, flag=flag, user=user, profile=True)
 
 
 @app.route('/logout')
@@ -346,7 +345,6 @@ def register_to_competition(name, id, number):
 @app.route("/unregister/<string:name>/<int:id>/<string:group>")
 @login_required
 def unregister(name, id, group):
-    print(group)
     with open("static/json/competition.json") as file:
         data = json.load(file)
     mas = data["failed_competitions"][name]
@@ -357,7 +355,7 @@ def unregister(name, id, group):
     data["failed_competitions"][name] = mas
     with open("static/json/competition.json", "w") as file:
         json.dump(data, file)
-    return redirect("/profile")
+    return redirect(f"/profile/{id}")
 
 
 @app.route('/competitions')

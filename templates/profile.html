@@ -13,40 +13,43 @@
                 Пол: {{ user.gender }} <br>
                 {{ user.residence_type }}: {{ user.residence_name }}
             </p>
-            {% if current_user and current_user.id == user.id %}
-            <a href="/logout">Выйти из учётной записи</a>
-            {% endif %}
         </div>
     </div>
 </div>
-<div class="container card mt-4">
-    {% if flag == 0 %}
-    {% if current_user and current_user.id == user.id %}
-    <h3 align="center">
-        Вы еще нигде не участвовали!
-    </h3>
-    {% else %}
-    <h3 align="center">
-        Пользователь еще нигде не участвовал!
-    </h3>
-    {% endif %}
-    {% else %}
-    <div class="card" style="padding: 10px;">
-        <table style="width: 100%">
-            <tr>
-                <th>Название соревнования</th>
-                <th>Отменить регистрацию</th>
-            </tr>
-            {% for competition in users_competition %}
-            <tr>
-                <td>{{ competition[0].name }}</td>
-                <td>
-                    <a href="/unregister/{{ competition[0].url }}/{{ user.id }}/{{ competition[1] }}">Отменить
-                        регистрацию</a></td>
-            </tr>
-            {% endfor %}
-        </table>
+<div class="container mt-4" style="width: 100%">
+    <div class="card">
+        {% if flag == 0 %}
+        {% if current_user and current_user.id == user.id %}
+        <h3 align="center">
+            Вы еще нигде не участвовали!
+        </h3>
+        {% else %}
+        <h3 align="center">
+            Пользователь еще нигде не участвовал!
+        </h3>
+        {% endif %}
+        {% else %}
+        <div style="padding: 10px;">
+            <table style="width: 100%">
+                <tr>
+                    <th>Название соревнования</th>
+                    {% if current_user and current_user.id == user.id %}
+                    <th>Отменить регистрацию</th>
+                    {% endif %}
+                </tr>
+                {% for competition in users_competition %}
+                <tr>
+                    <td> {{ competition[0].name }}</td>
+                    {% if current_user and current_user.id == user.id %}
+                    <td>
+                        <a href="/unregister/{{ competition[0].url }}/{{ user.id }}/{{ competition[1] }}">Отменить
+                            заявку</a></td>
+                    {% endif %}
+                </tr>
+                {% endfor %}
+            </table>
+        </div>
+        {% endif %}
     </div>
-    {% endif %}
 </div>
 {% endblock %}
