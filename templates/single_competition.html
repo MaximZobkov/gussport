@@ -43,8 +43,13 @@
                     {% endfor %}
                 </tr>
             </table>
-            <a class="btn btn-light mt-1" href="/register_to_competition/{{ competition.url }}/{{ current_user.id }}/0">
-                Зарегистрироваться на соревнование</a>
+            {% if current_user.is_authenticated %}
+                <a class="btn btn-light mt-1" href="/register_to_competition/{{ competition.url }}/{{ current_user.id }}/0">
+                    Зарегистрироваться на соревнование</a>
+            {% else %}
+                <a class="btn btn-light mt-1" href="/not_authorized">
+                    Зарегистрироваться на соревнование</a>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

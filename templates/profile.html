@@ -8,11 +8,15 @@
                 <img class="card-img-left" src="{{ user.image }}">
                 {{ user.name }} {{ user.surname }}<br>
             </p>
-            <p>
-                Дата рождения: {{ user.date_of_birth }} <br>
-                Пол: {{ user.gender }} <br>
-                {{ user.residence_type }}: {{ user.residence_name }}
-            </p>
+            <p> Возраст: {{ age }} лет/год. <br>
+                {{ user.residence_type }}: {{ user.residence_name }} <br>
+            <span class="hidden" id="details">Пол: {{ user.gender }} <br>
+                Дата рождения: {{ '.'.join(user.date_of_birth.split('-')[::-1]) }} <br>
+                {% if user.club %}
+                    Клуб: {{ user.club }}
+                {% endif %}
+            </span>
+            <a href="#" onclick="show('details', 'useless'); return false;" id="useless">Подробнее...</a>
         </div>
     </div>
 </div>
