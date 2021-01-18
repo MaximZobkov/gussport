@@ -8,7 +8,7 @@
                 <img class="card-img-left-profile" src="{{ user.image }}">
                 <span class="card-profile-text">{{ user.name }} {{ user.surname }}</span> <br>
             </p>
-            <p> Возраст: {{ age }} лет/год. <br>
+            <p class="ml-3"> Возраст: {{ age }} лет/год. <br>
                 {{ user.residence_type }}: {{ user.residence_name }} <br>
             <span class="hidden" id="details">Пол: {{ user.gender }} <br>
                 Дата рождения: {{ '.'.join(user.date_of_birth.split('-')[::-1]) }} <br>
