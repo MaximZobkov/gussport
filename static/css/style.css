@@ -33,7 +33,13 @@ th {
     margin-right: 10px;
     margin-bottom: 10px;
 }
-
+.card-img-left-profile {
+    width: 25%;
+    border-radius: 1px;
+    float: left;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
 .card-img-news {
     float: left;
     width: 25%;
@@ -182,6 +188,12 @@ div.card-calendar {
     }
     .btn-mobile {
         width: 100%;
+    }
+    .card-img-left-profile {
+        float: none;
+    }
+    .card-profile-text {
+        text-align: center;
     }
 }
 #child {
