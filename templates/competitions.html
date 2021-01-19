@@ -2,35 +2,43 @@
 
 {% block content %}
     <div class="container mt-4">
-        <div class="row">
-            <h2>Предстоящие соревнования</h2><br>
-            {% for competition in failed_list %}
-                <div class="col-xl-6 col-lg-6 col-sm-12 col-xs-12">
-                    <div class="card competitions_lst">
-                        <img class="card-img-top" src='{{ competition.image }}'>
-                        <div class="centered"><h1>{{ competition.name }}</h1></div>
-                        <div class="top-top"><a class="btn btn-primary">{{ competition.event_date_start }}</a></div>
-                        <div class="top-bottom"><a href="/competition/{{ competition.id }}" class="btn btn-primary">Подробнее</a></div>
+        <div class="card" style="padding: 5px">
+            <div class="row">
+                {% for competition in failed_list %}
+                    <div class="col-xl-6 col-lg-6 col-sm-12 col-xs-12">
+                        <div class="card competitions_lst">
+                            <img class="card-img-top" src='{{ competition.image }}'>
+                            <div class="centered"><h1>{{ competition.name }}</h1></div>
+                            <div class="top-top"><a class="btn btn-primary">{{ competition.event_date_start }}</a></div>
+                            <div class="top-bottom"><a href="/competition/{{ competition.id }}" class="btn btn-primary">Подробнее</a>
+                            </div>
+                        </div>
+                        {% if current_user.role == "admin" %}
+                            <a class="btn btn-dark" href="/delete_competition/{{ competition.id }}">Удалить
+                                соревнование</a>
+                        {% endif %}
                     </div>
-                    {% if current_user.role == "admin" %}
-                        <a class="btn btn-dark" href="/delete_competition/{{ competition.id }}">Удалить соревнование</a>
-                    {% endif %}
+                {% endfor %}
+                <div class="container">
+                    <h3 align="center">Прошедшие соревнования</h3>
+                    <table style="width: 100%">
+                        <tr>
+                            <td style="text-align: center"><h5>Название</h5></td>
+                            <td style="text-align: center"><h5>Дата</h5></td>
+                            <td style="text-align: center"><h5>Ссылка на соревнование</h5></td>
+                        </tr>
+                        {% for competition in past_list %}
+                            <tr>
+                                <td style="width: 33%">{{ competition.name }}</td>
+                                <td style="width: 33%">{{ competition.event_date_start }}</td>
+                                <td style="width: 33%">
+                                    <a href="/competition/{{ competition.id }}">Подробнее</a>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </table>
                 </div>
-            {% endfor %}
-            <h2>Прошедшие соревнования</h2><br>
-            {% for competition in past_list %}
-                <div class="col-xl-6 col-lg-6 col-sm-12 col-xs-12">
-                    <div class="card competitions_lst">
-                        <img class="card-img-top" src='{{ competition.image }}'>
-                        <div class="centered"><h1>{{ competition.name }}</h1></div>
-                        <div class="top-top"><a class="btn btn-primary">{{ competition.event_date_start }}</a></div>
-                        <div class="top-bottom"><a href="/competition/{{ competition.id }}" class="btn btn-primary">Подробнее</a></div>
-                    </div>
-                    {% if current_user.role == "admin" %}
-                        <a class="btn btn-dark" href="/delete_competition/{{ competition.id }}">Удалить соревнование</a>
-                    {% endif %}
-                </div>
-            {% endfor %}
+            </div>
         </div>
     </div>
 {% endblock %}
