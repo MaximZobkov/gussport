@@ -114,7 +114,7 @@ def profile(id):
         if user.id in competition["all_users"]:
             keys = competition.keys()
             for key in keys:
-                if key != "all_users" and user.id in competition[key]:
+                if not key in ["all_users", "registration"] and user.id in competition[key]:
                     full_competition = sessions.query(competitions.Competitions).filter(
                         competitions.Competitions.url == competition_name).first()
                     users_competition += [[full_competition, key]]
@@ -122,8 +122,8 @@ def profile(id):
     flag = 1
     if len(users_competition) == 0:
         flag = 0
-    return render_template("profile.html", users_competition=users_competition, flag=flag, user=user)
-
+    return render_template("profile.html", users_competition=users_competition, flag=flag,
+                           user=user)
 
 
 @app.route('/logout')
@@ -249,7 +249,7 @@ def create_competition():
         with open("static/json/competition.json") as file:
             data = json.load(file)
         data["failed_competitions"].update(
-            [("competition" + str(competition.id), {"all_users": []})])
+            [("competition" + str(competition.id), {"all_users": [], "registration": 0})])
         with open("static/json/competition.json", "w") as file:
             json.dump(data, file)
         competition.url = "competition" + str(competition.id)
@@ -319,7 +319,7 @@ def register_to_competition(name, id, number):
         return render_template("end_registration_to_competition.html", message="stack overflow",
                                competition_id=competition_id)
     for key in keys:
-        if key == "all_users":
+        if key in ["all_users", "registration"]:
             continue
         key_s = key.split(':')
         if (int(key_s[0]) <= age <= int(key_s[1]) and
@@ -357,14 +357,76 @@ def unregister(name, id, group):
     data["failed_competitions"][name] = mas
     with open("static/json/competition.json", "w") as file:
         json.dump(data, file)
-    return redirect("/profile")
+    return redirect("/profile/" + str(id))
 
 
 @app.route('/competitions')
 def all_competitions():
+    check_all_competitions()
     session = db_session.create_session()
     competitions_list = session.query(competitions.Competitions)
-    return render_template('competitions.html', competitions_list=competitions_list)
+    failed_list = []
+    past_list = []
+    with open("static/json/competition.json") as file:
+        data = json.load(file)
+    keys = data["failed_competitions"].keys()
+    for key in keys:
+        failed_list += [competitions_list.filter(competitions.Competitions.url == key).first()]
+    keys = data["past_competitions"].keys()
+    for key in keys:
+        past_list += [competitions_list.filter(competitions.Competitions.url == key).first()]
+    return render_template('competitions.html', failed_list=failed_list, past_list=past_list)
+
+
+def check_all_competitions():
+    session = db_session.create_session()
+    with open("static/json/competition.json") as file:
+        data = json.load(file)
+    data_copy = data
+    upcoming_competitions = data["failed_competitions"]
+    keys = upcoming_competitions.keys()
+    go_to_past = []
+    for key in keys:
+        upcoming_competition = upcoming_competitions[key]
+        competition = session.query(competitions.Competitions).filter(competitions.Competitions.url == key).first()
+        date_end = get_data(competition.registration_end)
+        date_start = get_data(competition.registration_start)
+        date_event = get_data(competition.event_date_start)
+        today_year = datetime.datetime.now().year
+        today_month = datetime.datetime.now().month
+        today_day = datetime.datetime.now().day
+        if (date_event[2] < today_year or (
+                date_event[2] == today_year and date_event[1] < today_month) or (
+                date_event[2] == today_year and date_event[1] == today_month and date_event[
+            0] < today_day)):
+            go_to_past += [key]
+            competition.endspiel = 1
+            continue
+        if upcoming_competition["registration"] == 0 and (date_start[2] < today_year or (
+                date_start[2] == today_year and date_start[1] < today_month) or (
+                date_start[2] == today_year and date_start[1] == today_month and date_start[0] < today_day)):
+            competition.registration = 1
+            data_copy["failed_competitions"][key]["registration"] = 1
+        if upcoming_competition["registration"] == 1 and (date_end[2] < today_year or (
+                date_end[2] == today_year and date_end[1] < today_month) or (
+                date_end[2] == today_year and date_end[1] == today_month and date_end[0] < today_day)):
+            data_copy["failed_competitions"][key]["registration"] = 0
+            competition.registration = 0
+        session.merge(competition)
+        session.commit()
+    for key in go_to_past:
+        new_competition = data_copy["failed_competitions"].pop(key, None)
+        data_copy["past_competitions"].update([(key, new_competition)])
+    with open("static/json/competition.json", "w") as file:
+        json.dump(data_copy, file)
+
+
+
+def get_data(date):
+    date = date.split()
+    dikt = {'января': 1, 'февраля': 2, 'марта': 3, 'апреля': 4, 'мая': 5, 'июня': 6, 'июля': 7,
+            'августа': 8, 'сентября': 9, 'октября': 10, 'ноября': 11, 'декабря': 12}
+    return [int(date[0]), dikt[date[1]], int(date[2])]
 
 
 @app.route("/delete_competition/<int:id>")
@@ -375,6 +437,7 @@ def delete_competitions(id):
     with open("static/json/competition.json") as file:
         data = json.load(file)
     data["failed_competitions"].pop("competition" + str(id), None)
+    data["past_competitions"].pop("competition" + str(id), None)
     with open("static/json/competition.json", "w") as file:
         json.dump(data, file)
     session.delete(competition)

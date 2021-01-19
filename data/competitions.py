@@ -19,5 +19,6 @@ class Competitions(SqlAlchemyBase, SerializerMixin):
     groups_count = sqlalchemy.Column(sqlalchemy.Integer)
     groups_description = sqlalchemy.Column(sqlalchemy.TEXT, default="")
     url = sqlalchemy.Column(sqlalchemy.TEXT)
+    # endspiel: 0-незавершено, 1-завершено
     endspiel = sqlalchemy.Column(sqlalchemy.Integer, default=0)
-
+    registration = sqlalchemy.Column(sqlalchemy.Integer, default=0)
