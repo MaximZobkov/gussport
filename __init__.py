@@ -45,6 +45,7 @@ class RegisterForm(FlaskForm):
     date_of_birth = DateField('Дата рождения')
     gender = SelectField('Пол', validators=[DataRequired()],
                          choices=[('1', 'Мужской'), ('2', "Женский")])
+    club = StringField('Клуб', validators=[DataRequired()])
     residence_name = StringField('Название населённого пункта', validators=[DataRequired()])
     submit = SubmitField('Зарегистрироваться')
 
@@ -122,8 +123,9 @@ def profile(id):
     flag = 1
     if len(users_competition) == 0:
         flag = 0
-    return render_template("profile.html", users_competition=users_competition, flag=flag,
-                           user=user)
+    age = get_age(user.date_of_birth)
+    return render_template("profile.html", users_competition=users_competition, flag=flag, user=user, age=age,
+                           profile=True)
 
 
 @app.route('/logout')
@@ -159,13 +161,14 @@ def register():
                                    form=form, email_error="OK", password_error="OK",
                                    again_password_error="OK", date_error=date_check)
         user = users.User()
-        user.email = form.email.data.lower()
+        user.email = form.email.data.lower().strip()
         user.name = form.name.data
         user.surname = form.surname.data
         user.middle_name = form.middle_name.data
         user.date_of_birth = form.date_of_birth.data
         user.residence_type = request.form["typecode"]
         user.residence_name = request.form["city"]
+        user.club = form.club.data
         user.set_password(form.password.data)
         if form.gender.data == '1':
             user.gender = 'Мужской'
@@ -358,6 +361,7 @@ def unregister(name, id, group):
     with open("static/json/competition.json", "w") as file:
         json.dump(data, file)
     return redirect("/profile/" + str(id))
+    return redirect(f"/profile/{id}")
 
 
 @app.route('/competitions')
@@ -582,7 +586,7 @@ def login():
     if form.validate_on_submit():
         sessions = db_session.create_session()
         user = sessions.query(users.User).filter(users.User.email ==
-                                                 form.email.data).first()
+                                                 form.email.data.strip().lower()).first()
         if user and user.check_password(form.password.data):
             login_user(user, remember=form.remember_me.data)
             return redirect('/')
@@ -613,6 +617,11 @@ def main():
     sessions = db_session.create_session()
     sessions.close()
     app.run()
+
+
+@app.route('/not_authorized')
+def not_auth():
+    return render_template("not_authorized.html")
 
 
 if __name__ == '__main__':
