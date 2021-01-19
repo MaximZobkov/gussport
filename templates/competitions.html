@@ -22,17 +22,30 @@
                 <div class="container">
                     <h3 align="center">Прошедшие соревнования</h3>
                     <table style="width: 100%">
-                        <tr>
-                            <td style="text-align: center"><h5>Название</h5></td>
-                            <td style="text-align: center"><h5>Дата</h5></td>
-                            <td style="text-align: center"><h5>Ссылка на соревнование</h5></td>
-                        </tr>
                         {% for competition in past_list %}
                             <tr>
-                                <td style="width: 33%">{{ competition.name }}</td>
-                                <td style="width: 33%">{{ competition.event_date_start }}</td>
                                 <td style="width: 33%">
-                                    <a href="/competition/{{ competition.id }}">Подробнее</a>
+                                    <h6>
+                                        <b>
+                                            <a href="/competition/{{ competition.id }}">
+                                                {{ competition.name }}
+                                            </a>
+                                        </b>
+                                    </h6>
+                                </td>
+                                <td style="width: 33%; text-align: center">
+                                    <h6>
+                                        <b>
+                                            {{ competition.event_date_start }}
+                                        </b>
+                                    </h6>
+                                </td>
+                                <td style="width: 33%; text-align: center">
+                                    <h6>
+                                        <b>
+                                            <a href="/result_competition/{{ competition.id }}">Протокол</a>
+                                        </b>
+                                    </h6>
                                 </td>
                             </tr>
                         {% endfor %}

@@ -26,48 +26,46 @@
     </style>
 </head>
 <body style="background-color: #f5f5f5">
-<div>
-    <nav class="navbar navbar-expand-lg sticky-top navbar_margin bg-white">
-        <a class="navbar-brand" href="/"><span class="navbar-head">Гусь-Спорт</span></a>
-        <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse"
-                data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
-                aria-expanded="false" aria-label="Toggle navigation">
+<nav class="navbar navbar-expand-lg sticky-top navbar_margin bg-white">
+    <a class="navbar-brand" href="/"><span class="navbar-head">Гусь-Спорт</span></a>
+    <button class="navbar-toggler custom-toggler" type="button" data-toggle="collapse"
+            data-target="#navbarSupportedContent" aria-controls="navbarSupportedContent"
+            aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-icon">
             </span>
-        </button>
-        <div class="collapse navbar-collapse mr-auto" id="navbarSupportedContent">
-            <a class="mr-auto"> </a>
+    </button>
+    <div class="collapse navbar-collapse mr-auto" id="navbarSupportedContent">
+        <a class="mr-auto"> </a>
+        <p class="mt-1 mb-1">
+            <a href="/competitions" class="btn mr-2">Cоревнования</a>
+        </p>
+        <!--<a href="https://vk.com/scbarro" class="btn btn-dark mr-2">Группа ВКонтакте</a>-->
+        {% if current_user.role == "admin" %}
             <p class="mt-1 mb-1">
-                <a href="/competitions" class="btn mr-2">Cоревнования</a>
+                <a href="/user_management" class="btn mr-2">Пользователи</a>
             </p>
-            <!--<a href="https://vk.com/scbarro" class="btn btn-dark mr-2">Группа ВКонтакте</a>-->
-            {% if current_user.role == "admin" %}
-                <p class="mt-1 mb-1">
-                    <a href="/user_management" class="btn mr-2">Пользователи</a>
-                </p>
-                <p class="mt-1 mb-1">
-                    <a href="/create_competition" class="btn mr-2">Создание
-                        соревнований</a>
-                </p>
-                <p class="mt-1 mb-1">
-                    <a class="btn  mr-1" href="/create_news">Добавить новость</a>
-                </p>
-            {% endif %}
-            {% if not current_user.is_authenticated %}
-                <p class="mt-1 mb-1">
-                    <a class="btn mr-1" href="/login" style="background-color: #c1caca;"> Войти </a>
-                </p>
-                <p class="mt-1 mb-1">
-                    <a class="btn" href="/register" style="background-color: #c1caca;"> Зарегистрироваться </a>
-                </p>
-            {% elif profile %}
-                <a class="btn" style="background-color: #c1caca;" href="/logout">Выйти из учётной записи</a>
-            {% else %}
-                <a class="btn" href="/profile/{{ current_user.id }}" style="background-color: #c1caca;"> Личный кабинет </a>
-            {% endif %}
-        </div>
-    </nav>
-</div>
+            <p class="mt-1 mb-1">
+                <a href="/create_competition" class="btn mr-2">Создание
+                    соревнований</a>
+            </p>
+            <p class="mt-1 mb-1">
+                <a class="btn  mr-1" href="/create_news">Добавить новость</a>
+            </p>
+        {% endif %}
+        {% if not current_user.is_authenticated %}
+            <p class="mt-1 mb-1">
+                <a class="btn mr-1" href="/login" style="background-color: #c1caca;"> Войти </a>
+            </p>
+            <p class="mt-1 mb-1">
+                <a class="btn" href="/register" style="background-color: #c1caca;"> Зарегистрироваться </a>
+            </p>
+        {% elif profile %}
+            <a class="btn" style="background-color: #c1caca;" href="/logout">Выйти из учётной записи</a>
+        {% else %}
+            <a class="btn" href="/profile/{{ current_user.id }}" style="background-color: #c1caca;"> Личный кабинет </a>
+        {% endif %}
+    </div>
+</nav>
 <div>
     {% block content %}
     {% endblock %}
