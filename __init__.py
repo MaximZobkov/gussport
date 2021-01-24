@@ -57,6 +57,9 @@ class CreateCompetitionForm(FlaskForm):
     event_time_start = TimeField('Время начала соревнования')
     registration_start = DateField('Дата начала регистрации')
     registration_end = DateField('Дата окончания регистрации')
+    team_competition = SelectField('Тип соревнования', validators=[DataRequired()],
+                       choices=[('Командное', 'Командное'), ('Индивидуальное', "Индивидуальное")])
+    kol_vo_player = IntegerField('Количество участников в команде', validators=[DataRequired()])
     type = SelectField('Тип соревнования', validators=[DataRequired()],
                        choices=[('Триатлон', 'Триатлон'), ('Дуатлон', "Дуатлон"),
                                 ('Лыжный Масс-старт', "Лыжный Масс-старт"),
@@ -208,6 +211,7 @@ def reformat(string_date):
 
 @app.route('/competition/<int:id>')
 def single_competition(id):
+    check_all_competitions()
     session = db_session.create_session()
     competition = session.query(competitions.Competitions).filter(
         competitions.Competitions.id == id).first()
@@ -233,6 +237,10 @@ def create_competition():
     sessions = db_session.create_session()
     form = CreateCompetitionForm()
     if request.method == "POST":
+        team_competition = SelectField('Тип соревнования', validators=[DataRequired()],
+                                       choices=[('Командное', 'Командное'),
+                                                ('Индивидуальное', "Индивидуальное")])
+        kol_vo_player
         competition = competitions.Competitions()
         competition.name = form.name.data
         competition.short_description = form.short_description.data
@@ -360,7 +368,6 @@ def unregister(name, id, group):
     data["failed_competitions"][name] = mas
     with open("static/json/competition.json", "w") as file:
         json.dump(data, file)
-    return redirect("/profile/" + str(id))
     return redirect(f"/profile/{id}")
 
 
@@ -371,14 +378,11 @@ def all_competitions():
     competitions_list = session.query(competitions.Competitions)
     failed_list = []
     past_list = []
-    with open("static/json/competition.json") as file:
-        data = json.load(file)
-    keys = data["failed_competitions"].keys()
-    for key in keys:
-        failed_list += [competitions_list.filter(competitions.Competitions.url == key).first()]
-    keys = data["past_competitions"].keys()
-    for key in keys:
-        past_list += [competitions_list.filter(competitions.Competitions.url == key).first()]
+    for competition in competitions_list:
+        if competition.endspiel == 0:
+            failed_list += [competition]
+        else:
+            past_list += [competition]
     return render_template('competitions.html', failed_list=failed_list, past_list=past_list)
 
 
@@ -405,17 +409,20 @@ def check_all_competitions():
             0] < today_day)):
             go_to_past += [key]
             competition.endspiel = 1
+            competition.registration = "01"
+            session.merge(competition)
+            session.commit()
             continue
-        if upcoming_competition["registration"] == 0 and (date_start[2] < today_year or (
+        if competition.registration == "00" and (date_start[2] < today_year or (
                 date_start[2] == today_year and date_start[1] < today_month) or (
-                date_start[2] == today_year and date_start[1] == today_month and date_start[0] < today_day)):
-            competition.registration = 1
+                date_start[2] == today_year and date_start[1] == today_month and date_start[0] <= today_day)):
+            competition.registration = "11"
             data_copy["failed_competitions"][key]["registration"] = 1
-        if upcoming_competition["registration"] == 1 and (date_end[2] < today_year or (
+        if competition.registration == "11" and (date_end[2] < today_year or (
                 date_end[2] == today_year and date_end[1] < today_month) or (
                 date_end[2] == today_year and date_end[1] == today_month and date_end[0] < today_day)):
             data_copy["failed_competitions"][key]["registration"] = 0
-            competition.registration = 0
+            competition.registration = "01"
         session.merge(competition)
         session.commit()
     for key in go_to_past:
@@ -598,7 +605,7 @@ def login():
 def index():
     sessions = db_session.create_session()
     all_news = sessions.query(news.News)
-    competitions_list = sessions.query(competitions.Competitions)
+    competitions_list = sessions.query(competitions.Competitions).filter(competitions.Competitions.endspiel == 0)
     return render_template("index.html", news_list=all_news, competitions_list=competitions_list)
 
 

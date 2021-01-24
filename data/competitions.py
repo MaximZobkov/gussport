@@ -10,6 +10,10 @@ class Competitions(SqlAlchemyBase, SerializerMixin):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     name = sqlalchemy.Column(sqlalchemy.TEXT)
     type = sqlalchemy.Column(sqlalchemy.TEXT)
+    #Командное или нет
+    team_competition = sqlalchemy.Column(sqlalchemy.TEXT)
+    #Количество участников
+    kol_vo_player = sqlalchemy.Column(sqlalchemy.Integer, default=1)
     short_description = sqlalchemy.Column(sqlalchemy.TEXT)
     image = sqlalchemy.Column(sqlalchemy.TEXT)
     event_date_start = sqlalchemy.Column(sqlalchemy.String)
@@ -21,4 +25,5 @@ class Competitions(SqlAlchemyBase, SerializerMixin):
     url = sqlalchemy.Column(sqlalchemy.TEXT)
     # endspiel: 0-незавершено, 1-завершено
     endspiel = sqlalchemy.Column(sqlalchemy.Integer, default=0)
-    registration = sqlalchemy.Column(sqlalchemy.Integer, default=0)
+    # (регистрация открыта/закрыта)(регистрация была/не было)
+    registration = sqlalchemy.Column(sqlalchemy.TEXT, default="00")

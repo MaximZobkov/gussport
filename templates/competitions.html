@@ -3,7 +3,7 @@
 {% block content %}
     <div class="container mt-4">
         <div class="row">
-            <h2>Предстоящие соревнования</h2><br>
+            <!--<h2>Предстоящие соревнования</h2><br>-->
             {% for competition in failed_list %}
                 <div class="col-xl-6 col-lg-6 col-sm-12 col-xs-12">
                     <div class="card competitions_lst">
@@ -17,7 +17,7 @@
                     {% endif %}
                 </div>
             {% endfor %}
-            <h2>Прошедшие соревнования</h2><br>
+            <!--<br><h2>Прошедшие соревнования</h2><br>
             {% for competition in past_list %}
                 <div class="col-xl-6 col-lg-6 col-sm-12 col-xs-12">
                     <div class="card competitions_lst">
@@ -30,7 +30,7 @@
                         <a class="btn btn-dark" href="/delete_competition/{{ competition.id }}">Удалить соревнование</a>
                     {% endif %}
                 </div>
-            {% endfor %}
+            {% endfor %}-->
         </div>
     </div>
 {% endblock %}

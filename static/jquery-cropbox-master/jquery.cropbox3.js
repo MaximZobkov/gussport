@@ -60,7 +60,10 @@
           if (typeof $.fn.hammer === 'function')
             hammerit = this.$image.hammer().data('hammer');
           else
------------            hammerit = Hammer(this.$image.get(0));
+	    hammerit = Hammer(this.$image.get(0));
+		hammerit.get('pan').set({ direction: Hammer.DIRECTION_ALL, threshold: 0 });
+		  // Enable pinching.
+		  hammerit.get('pinch').set({ enable: true });
 
           hammerit.on('touch', function(e) {
             e.gesture.preventDefault();
