@@ -13,13 +13,10 @@ from wtforms.validators import DataRequired
 from data import db_session, users, competitions, news
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'GusStory.ru'
+app.config['SECRET_KEY'] = 'A1VLU3E4TFJY7WCM'
 db_session.global_init("db/blogs.sqlite")
 login_manager = LoginManager()
 login_manager.init_app(app)
-
-
-# Кто читает этот код извините меня, вместо failed должно быть upcoming, не бейте палками
 
 
 @login_manager.user_loader
@@ -58,7 +55,7 @@ class CreateCompetitionForm(FlaskForm):
     registration_start = DateField('Дата начала регистрации')
     registration_end = DateField('Дата окончания регистрации')
     team_competition = SelectField('Тип соревнования', validators=[DataRequired()],
-                       choices=[('Командное', 'Командное'), ('Индивидуальное', "Индивидуальное")])
+                                   choices=[('Командное', 'Командное'), ('Индивидуальное', "Индивидуальное")])
     kol_vo_player = IntegerField('Количество участников в команде', validators=[DataRequired()])
     type = SelectField('Тип соревнования', validators=[DataRequired()],
                        choices=[('Триатлон', 'Триатлон'), ('Дуатлон', "Дуатлон"),
@@ -207,6 +204,11 @@ def reformat(string_date):
             string += x
         k += 1
     return string
+
+
+@app.route('/competitions_type')
+def competition_type():
+    return render_template('type_competition.html')
 
 
 @app.route('/competition/<int:id>')
@@ -415,12 +417,14 @@ def check_all_competitions():
             continue
         if competition.registration == "00" and (date_start[2] < today_year or (
                 date_start[2] == today_year and date_start[1] < today_month) or (
-                date_start[2] == today_year and date_start[1] == today_month and date_start[0] <= today_day)):
+                                                         date_start[2] == today_year and date_start[
+                                                     1] == today_month and date_start[0] <= today_day)):
             competition.registration = "11"
             data_copy["failed_competitions"][key]["registration"] = 1
         if competition.registration == "11" and (date_end[2] < today_year or (
                 date_end[2] == today_year and date_end[1] < today_month) or (
-                date_end[2] == today_year and date_end[1] == today_month and date_end[0] < today_day)):
+                                                         date_end[2] == today_year and date_end[1] == today_month and
+                                                         date_end[0] < today_day)):
             data_copy["failed_competitions"][key]["registration"] = 0
             competition.registration = "01"
         session.merge(competition)
@@ -430,7 +434,6 @@ def check_all_competitions():
         data_copy["past_competitions"].update([(key, new_competition)])
     with open("static/json/competition.json", "w") as file:
         json.dump(data_copy, file)
-
 
 
 def get_data(date):

@@ -27,9 +27,16 @@ th {
 }
 
 .card-img-left {
-    width: 25%;
+    width: 50%;
     border-radius: 1px;
     float: left;
+    margin-right: 10px;
+    margin-bottom: 10px;
+}
+.card-img-right {
+    width: 50%;
+    border-radius: 1px;
+    float: right;
     margin-right: 10px;
     margin-bottom: 10px;
 }
@@ -195,6 +202,10 @@ div.card-calendar {
     .card-profile-text {
         text-align: center;
     }
+}
+.text-type-competition:hover {
+    color: black;
+    text-underline-color: black;
 }
 #child {
     display: inline-block;
