@@ -58,7 +58,7 @@ class CreateCompetitionForm(FlaskForm):
     registration_start = DateField('Дата начала регистрации')
     registration_end = DateField('Дата окончания регистрации')
     team_competition = SelectField('Тип соревнования', validators=[DataRequired()],
-                       choices=[('Индивидуальное', "Индивидуальное"), ('Командное', 'Командное')])
+                                   choices=[('Индивидуальное', "Индивидуальное"), ('Командное', 'Командное')])
     kol_vo_player = IntegerField('Количество участников в команде', validators=[DataRequired()], default=1)
     type = SelectField('Тип соревнования', validators=[DataRequired()],
                        choices=[('Триатлон', 'Триатлон'), ('Дуатлон', "Дуатлон"),
@@ -369,6 +369,24 @@ def unregister(name, id, group):
     return redirect(f"/profile/{id}")
 
 
+@app.route('/table_of_registered_users/<string:name>')
+def table_of_users(name):
+    with open("static/json/competition.json") as file:
+        data = json.load(file)
+    mas = data["failed_competitions"][name]
+    keys = mas.keys()
+    array_users = []
+    sessions = db_session.create_session()
+    for key in keys:
+        if "all_users" != key and key != "registration":
+            if len(mas[key]) != 0:
+                array_users += [
+                    [get_category(key)] + [sessions.query(users.User).filter(users.User.id == id).first() for id in
+                                           mas[key]]]
+    print(array_users)
+    return render_template("table_of_registered_users.html", array_users=array_users)
+
+
 @app.route('/competitions/<string:type>')
 def all_competitions(type):
     check_all_competitions()
@@ -400,7 +418,6 @@ def check_all_competitions():
     keys = upcoming_competitions.keys()
     go_to_past = []
     for key in keys:
-        upcoming_competition = upcoming_competitions[key]
         competition = session.query(competitions.Competitions).filter(competitions.Competitions.url == key).first()
         date_end = get_data(competition.registration_end)
         date_start = get_data(competition.registration_start)
@@ -420,12 +437,14 @@ def check_all_competitions():
             continue
         if competition.registration == "00" and (date_start[2] < today_year or (
                 date_start[2] == today_year and date_start[1] < today_month) or (
-                date_start[2] == today_year and date_start[1] == today_month and date_start[0] <= today_day)):
+                                                         date_start[2] == today_year and date_start[
+                                                     1] == today_month and date_start[0] <= today_day)):
             competition.registration = "11"
             data_copy["failed_competitions"][key]["registration"] = 1
         if competition.registration == "11" and (date_end[2] < today_year or (
                 date_end[2] == today_year and date_end[1] < today_month) or (
-                date_end[2] == today_year and date_end[1] == today_month and date_end[0] < today_day)):
+                                                         date_end[2] == today_year and date_end[1] == today_month and
+                                                         date_end[0] < today_day)):
             data_copy["failed_competitions"][key]["registration"] = 0
             competition.registration = "01"
         session.merge(competition)
@@ -442,6 +461,17 @@ def get_data(date):
     dikt = {'января': 1, 'февраля': 2, 'марта': 3, 'апреля': 4, 'мая': 5, 'июня': 6, 'июля': 7,
             'августа': 8, 'сентября': 9, 'октября': 10, 'ноября': 11, 'декабря': 12}
     return [int(date[0]), dikt[date[1]], int(date[2])]
+
+
+def get_category(key):
+    category_start = key.split(':')
+    category = ""
+    if category_start[-1] == "1":
+        category += "М"
+    else:
+        category += "Ж"
+    category += category_start[0] + "-" + category_start[1]
+    return category
 
 
 @app.route("/delete_competition/<int:id>")

@@ -1,5 +1,4 @@
 function show(name, second_name) {
-    alert(1);
     var elem = document.getElementById(name);
     var second_elem = document.getElementById(second_name);
     if (elem){
