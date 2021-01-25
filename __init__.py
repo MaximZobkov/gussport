@@ -209,11 +209,6 @@ def reformat(string_date):
     return string
 
 
-@app.route('/competitions_type')
-def competition_type():
-    return render_template('type_competition.html')
-
-
 @app.route('/competition/<int:id>')
 def single_competition(id):
     check_all_competitions()
@@ -374,11 +369,12 @@ def unregister(name, id, group):
     return redirect(f"/profile/{id}")
 
 
-@app.route('/competitions')
-def all_competitions():
+@app.route('/competitions/<string:type>')
+def all_competitions(type):
     check_all_competitions()
     session = db_session.create_session()
     competitions_list = session.query(competitions.Competitions)
+    normal_type = "Командное" if type == "team" else "Индивидуальное"
     failed_list = []
     past_list = []
     for competition in competitions_list:
@@ -387,6 +383,11 @@ def all_competitions():
         else:
             past_list += [competition]
     return render_template('competitions.html', failed_list=failed_list, past_list=past_list)
+
+
+@app.route('/competitions_type')
+def competition_type():
+    return render_template('type_competition.html')
 
 
 def check_all_competitions():
