@@ -378,10 +378,11 @@ def all_competitions(type):
     failed_list = []
     past_list = []
     for competition in competitions_list:
-        if competition.endspiel == 0:
-            failed_list += [competition]
-        else:
-            past_list += [competition]
+        if competition.team_competition == normal_type:
+            if competition.endspiel == 0:
+                failed_list += [competition]
+            else:
+                past_list += [competition]
     return render_template('competitions.html', failed_list=failed_list, past_list=past_list)
 
 

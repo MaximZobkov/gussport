@@ -2,7 +2,6 @@ function show(name, second_name) {
     alert(1);
     var elem = document.getElementById(name);
     var second_elem = document.getElementById(second_name);
-    alert(elem.value);
     if (elem){
         if (name == "type_team"){
             if (elem.value == "Индивидуальное"){
@@ -13,6 +12,7 @@ function show(name, second_name) {
             }
         }
         if (name == "pay"){
+            alert(2);
             alert(elem.value);
             if (elem.value == 1){
                 second_elem.style.display = "none";
@@ -21,7 +21,7 @@ function show(name, second_name) {
                 second_elem.style.display = "block";
             }
         }
-        if (name == "show_detail"){
+        if (name == "details"){
             if (elem.style.display == "block"){
                 elem.style.display = "none";
                 second_elem.innerHTML="Подробнее...";
