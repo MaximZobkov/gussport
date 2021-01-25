@@ -82,7 +82,7 @@ class CreateGroupsForm(FlaskForm):
     distance = IntegerField('Длина дистанции', validators=[DataRequired()])
     group_time_start = TimeField('Время старта группы')
     payment = SelectField('Оплата участия', validators=[DataRequired()],
-                          choices=[('1', 'Есть'), ('2', "Нет")])
+                          choices=[('1', 'Нет'), ('2', "Есть")])
     payments_value = IntegerField('Размер оплаты', validators=[DataRequired()])
 
 
@@ -491,7 +491,7 @@ def delete_competitions(id):
         os.remove(f"static/images/competition_image/competition_{id}.jpg")
     except Exception:
         pass
-    return redirect("/competitions")
+    return redirect("/competitions_type")
 
 
 def get_age(data):
