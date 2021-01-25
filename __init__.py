@@ -13,7 +13,7 @@ from wtforms.validators import DataRequired
 from data import db_session, users, competitions, news
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'GusStory.ru'
+app.config['SECRET_KEY'] = 'A1VLU3E4TFJY7WCM'
 db_session.global_init("db/blogs.sqlite")
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -58,8 +58,8 @@ class CreateCompetitionForm(FlaskForm):
     registration_start = DateField('Дата начала регистрации')
     registration_end = DateField('Дата окончания регистрации')
     team_competition = SelectField('Тип соревнования', validators=[DataRequired()],
-                       choices=[('Командное', 'Командное'), ('Индивидуальное', "Индивидуальное")])
-    kol_vo_player = IntegerField('Количество участников в команде', validators=[DataRequired()])
+                       choices=[('Индивидуальное', "Индивидуальное"), ('Командное', 'Командное')])
+    kol_vo_player = IntegerField('Количество участников в команде', validators=[DataRequired()], default=1)
     type = SelectField('Тип соревнования', validators=[DataRequired()],
                        choices=[('Триатлон', 'Триатлон'), ('Дуатлон', "Дуатлон"),
                                 ('Лыжный Масс-старт', "Лыжный Масс-старт"),
@@ -237,10 +237,6 @@ def create_competition():
     sessions = db_session.create_session()
     form = CreateCompetitionForm()
     if request.method == "POST":
-        team_competition = SelectField('Тип соревнования', validators=[DataRequired()],
-                                       choices=[('Командное', 'Командное'),
-                                                ('Индивидуальное', "Индивидуальное")])
-        kol_vo_player
         competition = competitions.Competitions()
         competition.name = form.name.data
         competition.short_description = form.short_description.data
@@ -250,6 +246,8 @@ def create_competition():
         competition.registration_start = reformat(str(form.registration_start.data))
         competition.registration_end = reformat(str(form.registration_end.data))
         competition.groups_count = form.groups_count.data
+        competition.team_competition = form.team_competition.data
+        competition.kol_vo_player = form.kol_vo_player.data
         sessions.add(competition)
         sessions.commit()
         if str(request.files["file"]) != "<FileStorage: '' ('application/octet-stream')>":

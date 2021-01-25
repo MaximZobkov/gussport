@@ -2,7 +2,6 @@
 
 
 {% block content %}
-<>
 <div class="container mt-2">
     <div class="card mb-4 card_register">
         <div class="card-title">
@@ -30,9 +29,9 @@
                 </p>
                 <p>
                     {{ form.team_competition.label }}<br>
-                    {{ form.team_competition(class="form-control") }}
+                    {{ form.team_competition(class="form-control", id="type_team", onChange="show('type_team', 'kol_vo_player')") }}
                 </p>
-                <p id="">
+                <p id="kol_vo_player" style="display: none;">
                     {{ form.kol_vo_player.label }}<br>
                     {{ form.kol_vo_player(class="form-control") }}
                 </p>
