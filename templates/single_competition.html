@@ -5,7 +5,11 @@
     <div class="container mt-4">
         <div class="card mb-4">
             <h2 align="center"> {{ competition.name }} </h2> <br>
-            <p class="single_comp"> {{ competition.short_description }} </p>
+            <span class="single_comp">
+                {% for text in competition.short_description.split('\n') %}
+                    <p style="text-indent: 10px"> {{ text }} </p>
+                {% endfor %}
+            </span>
             <p class="single_comp"><b>Тип соревнования:</b> {{ competition.type }} </p>
             <p class="single_comp"><b>Дата проведения: </b> {{ competition.event_date_start }} года
                 в {{ competition.event_time_start }} </p>

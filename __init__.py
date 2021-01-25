@@ -13,7 +13,7 @@ from wtforms.validators import DataRequired
 from data import db_session, users, competitions, news
 
 app = Flask(__name__)
-app.config['SECRET_KEY'] = 'A1VLU3E4TFJY7WCM'
+app.config['SECRET_KEY'] = 'GusStory.ru'
 db_session.global_init("db/blogs.sqlite")
 login_manager = LoginManager()
 login_manager.init_app(app)
@@ -207,6 +207,11 @@ def reformat(string_date):
             string += x
         k += 1
     return string
+
+
+@app.route('/competitions_type')
+def competition_type():
+    return render_template('type_competition.html')
 
 
 @app.route('/competition/<int:id>')
@@ -428,7 +433,6 @@ def check_all_competitions():
         data_copy["past_competitions"].update([(key, new_competition)])
     with open("static/json/competition.json", "w") as file:
         json.dump(data_copy, file)
-
 
 
 def get_data(date):
