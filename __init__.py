@@ -2,12 +2,15 @@ import datetime
 import os
 import json
 import shutil
-
+import smtplib
+from email.header import Header
+from email.mime.text import MIMEText
+from random import randint
 from flask import Flask, render_template, redirect, url_for, request
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, DateField, BooleanField, IntegerField, \
-    SelectField, TimeField, TextAreaField, FileField
+    SelectField, TimeField, TextAreaField
 from wtforms.validators import DataRequired
 
 from data import db_session, users, competitions, news
@@ -17,9 +20,11 @@ app.config['SECRET_KEY'] = 'GusStory.ru'
 db_session.global_init("db/blogs.sqlite")
 login_manager = LoginManager()
 login_manager.init_app(app)
-
-
-# Кто читает этот код извините меня, вместо failed должно быть upcoming, не бейте палками
+code = 0
+i = 0
+flag = 0
+name = 0
+mail_to = ''
 
 
 @login_manager.user_loader
@@ -42,12 +47,25 @@ class RegisterForm(FlaskForm):
     email = StringField("Электронная почта", validators=[DataRequired()])
     password = PasswordField('Пароль', validators=[DataRequired()])
     password_again = PasswordField('Повторите пароль', validators=[DataRequired()])
-    date_of_birth = DateField('Дата рождения')
+    date_of_birth = DateField('Дата рождения', validators=[DataRequired()])
     gender = SelectField('Пол', validators=[DataRequired()],
                          choices=[('1', 'Мужской'), ('2', "Женский")])
-    club = StringField('Клуб', validators=[DataRequired()])
+    club = StringField('Клуб')
     residence_name = StringField('Название населённого пункта', validators=[DataRequired()])
     submit = SubmitField('Зарегистрироваться')
+
+
+class EditForm(FlaskForm):
+    name = StringField('Имя', validators=[DataRequired()])
+    surname = StringField('Фамилия', validators=[DataRequired()])
+    middle_name = StringField('Отчество', validators=[DataRequired()])
+    email = StringField("Электронная почта", validators=[DataRequired()])
+    date_of_birth = DateField('Дата рождения', validators=[DataRequired()])
+    gender = SelectField('Пол', validators=[DataRequired()],
+                         choices=[('Мужской', 'Мужской'), ('Женский', "Женский")])
+    club = StringField('Клуб')
+    residence_name = StringField('Название населённого пункта', validators=[DataRequired()])
+    submit = SubmitField('Изменить данные')
 
 
 class CreateCompetitionForm(FlaskForm):
@@ -104,8 +122,70 @@ class DigitError(Exception):
     error = 'В пароле должна быть хотя бы одна цифра!'
 
 
+class RecoveryForm(FlaskForm):
+    email = StringField("Введите почту", validators=[DataRequired()])
+    code = StringField("Введите код", validators=[DataRequired()])
+    new_password = PasswordField("Введите новый пароль", validators=[DataRequired()])
+    repeat_new_password = PasswordField("Повторите новый пароль", validators=[DataRequired()])
+    submit = SubmitField("Отправить")
+
+
+@app.route('/recovery_password', methods=['GET', 'POST'])
+def recovery_password():
+    global mail_to, flag
+    form = RecoveryForm()
+    sessions = db_session.create_session()
+    if request.method == 'POST':
+        if not (form.repeat_new_password.data is None or form.repeat_new_password.data == ""):
+            if form.repeat_new_password.data == form.new_password.data and flag == 2:
+                user = sessions.query(users.User).filter(users.User.email == mail_to).first()
+                user.set_password(form.new_password.data)
+                sessions.merge(user)
+                sessions.commit()
+                flag = 0
+                return redirect("/login")
+            elif form.repeat_new_password.data != form.new_password.data and flag == 2:
+                result = check_password(form.new_password.data)
+                return render_template('password_recovery.html', form=form, type="password",
+                                       message=result)
+        elif sessions.query(users.User).filter(users.User.email ==
+                                               form.email.data.lower()).first() and flag == 0:
+            send_email(form.email.data.lower())
+            mail_to = form.email.data.lower()
+            flag = 1
+            return render_template('password_recovery.html', form=form, type="code", message="OK")
+
+        elif sessions.query(users.User).filter(users.User.email ==
+                                               form.email.data.lower()).first() is None and flag == 0:
+            return render_template('password_recovery.html', form=form, type="email",
+                                   message="Пользователя с данной почтой не существует")
+        elif form.code.data.strip() == str(code).strip() and flag == 1:
+            flag = 2
+            return render_template('password_recovery.html', form=form, type="password", message="OK")
+        elif form.code.data.strip() != str(code).strip() and flag == 1:
+            return render_template('password_recovery.html', form=form, type="code", message="Неверный код")
+    return render_template('password_recovery.html', form=form, type="email", message='OK')
+
+
+def send_email(user_mail):
+    global code, flag
+    flag = 0
+    code = randint(100000, 1000000)
+    subject_msg = 'Восстановление пароля GusSport'
+    body = f'Ваш проверочный код: {code}'
+    msg = MIMEText(body, 'plain', 'utf-8')
+    msg['Subject'] = Header(subject_msg, 'utf-8')
+    server = smtplib.SMTP('smtp.beget.com:2525')
+    server.starttls()
+    server.login('gussport@gusstory.ru', '12345678aA')
+    server.sendmail('gussport@gusstory.ru', user_mail, msg.as_string())
+    server.quit()
+
+
 @app.route('/profile/<int:id>')
 def profile(id):
+    if not current_user.is_authenticated:
+        return redirect('/')
     sessions = db_session.create_session()
     user = sessions.query(users.User).filter(users.User.id == id).first()
     with open("static/json/competition.json") as file:
@@ -129,6 +209,42 @@ def profile(id):
     age = get_age(user.date_of_birth)
     return render_template("profile.html", users_competition=users_competition, flag=flag, user=user, age=age,
                            profile=True)
+
+
+@app.route('/edit_profile/<int:id>', methods=["GET", "POST"])
+def editor_profile(id):
+    form = EditForm()
+    session = db_session.create_session()
+    user = session.query(users.User).filter(users.User.id == id).first()
+    if current_user.is_authenticated and current_user.id == id:
+        if request.method == "GET":
+            form.name.data = user.name
+            form.surname.data = user.surname
+            form.gender.data = user.gender
+            form.middle_name.data = user.middle_name
+            form.club.data = user.club
+            form.email.data = user.email
+        elif request.method == "POST":
+            user.email = form.email.data.lower().strip()
+            user.name = form.name.data
+            user.surname = form.surname.data
+            user.middle_name = form.middle_name.data
+            user.gender  = form.gender.data
+            date_check = check_date(form.date_of_birth.data)
+            if date_check != 'OK':
+                return render_template('register.html', title='Регистрация',
+                                       form=form, email_error="OK", password_error="OK",
+                                       again_password_error="OK", date_error=date_check)
+            user.date_of_birth = form.date_of_birth.data
+            user.residence_name = request.form["city"]
+            user.club = form.club.data
+            session.merge(user)
+            session.commit()
+            return redirect('/profile/' + str(id))
+        return render_template('editor_profile.html', form=form, user=user, date_error="OK")
+    if current_user.is_authenticated:
+        return redirect(f'/profile/{current_user.id}')
+    return redirect('/')
 
 
 @app.route('/logout')
@@ -170,7 +286,7 @@ def register():
         user.middle_name = form.middle_name.data
         user.date_of_birth = form.date_of_birth.data
         user.residence_type = request.form["typecode"]
-        user.residence_name = request.form["city"]
+        user.residence_name = request.form["city"]["typecode"]
         user.club = form.club.data
         user.set_password(form.password.data)
         if form.gender.data == '1':
@@ -355,7 +471,6 @@ def register_to_competition(name, id, number):
 @app.route("/unregister/<string:name>/<int:id>/<string:group>")
 @login_required
 def unregister(name, id, group):
-    print(group)
     with open("static/json/competition.json") as file:
         data = json.load(file)
     mas = data["failed_competitions"][name]

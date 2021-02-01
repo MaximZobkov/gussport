@@ -59,7 +59,7 @@
             <p class="mt-1 mb-1">
                 <a class="btn" href="/register" style="background-color: #c1caca;"> Зарегистрироваться </a>
             </p>
-        {% elif profile %}
+        {% elif profile%}
             <a class="btn" style="background-color: #c1caca;" href="/logout">Выйти из учётной записи</a>
         {% else %}
             <a class="btn" href="/profile/{{ current_user.id }}" style="background-color: #c1caca;"> Личный кабинет </a>

@@ -114,7 +114,12 @@ input, button {
     left: 50%;
     transform: translate(-50%, -100%);
 }
-
+.top-bottom-profile {
+    position: absolute;
+    top: 100%;
+    left: 83%;
+    transform: translate(0%, -100%);
+}
 .top-top {
     position: absolute;
     left: 50%;
