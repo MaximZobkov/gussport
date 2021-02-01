@@ -207,8 +207,11 @@ def profile(id):
     if len(users_competition) == 0:
         flag = 0
     age = get_age(user.date_of_birth)
-    return render_template("profile.html", users_competition=users_competition, flag=flag, user=user, age=age,
+    if current_user.id == id:
+        return render_template("profile.html", users_competition=users_competition, flag=flag, user=user, age=age,
                            profile=True)
+    return render_template("profile.html", users_competition=users_competition, flag=flag, user=user, age=age,
+                           profile=False)
 
 
 @app.route('/edit_profile/<int:id>', methods=["GET", "POST"])
