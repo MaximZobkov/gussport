@@ -4,17 +4,18 @@
 {% block content %}
     <div class="container mt-4">
         <div class="card mb-4">
-            <h2 align="center"> {{ competition.name }} </h2> <br>
+            <h2 align="center" style="padding-right: 5px; padding-left: 5px;"> {{ competition.name }} </h2> <br>
             <span class="single_comp">
                 {% for text in competition.short_description.split('\n') %}
-                    <p style="text-indent: 10px"> {{ text }} </p>
+                    <p style="text-indent: 10px; padding-right: 5px; padding-left: 5px;"> {{ text }} </p>
                 {% endfor %}
             </span>
-            <p class="single_comp"><b>Тип соревнования:</b> {{ competition.type }} </p>
-            <p class="single_comp"><b>Дата проведения: </b> {{ competition.event_date_start }} года
+            <p style="padding-right: 5px; padding-left: 5px;"><b>Тип соревнования:</b> {{ competition.type }} </p>
+            <p style="padding-right: 5px; padding-left: 5px;"><b>Дата проведения: </b> {{ competition.event_date_start }} года
                 в {{ competition.event_time_start }} </p>
-            <p class="single_comp"><b>Начало регистрации на соревнования: </b> {{ competition.registration_start }} </p>
-            <p class="single_comp"><b>Последний день регистрации: </b> {{ competition.registration_end }} </p>
+            <p style="padding-right: 5px; padding-left: 5px;"><b>Начало регистрации на соревнования: </b> {{ competition.registration_start }} </p>
+            <p style="padding-right: 5px; padding-left: 5px;"><b>Последний день регистрации: </b> {{ competition.registration_end }} </p>
+            <a href="/table_of_registered_users/{{ competition.url}}" style="padding-right: 5px; padding-left: 5px;">Список всех участников</a>
             <table>
                 <tr>
                     <td><b>Категория</b></td>

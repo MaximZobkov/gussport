@@ -2,51 +2,64 @@
 
 
 {% block content %}
-<div class="container mt-4">
-    <div class="card mb-4 card_register">
-        <div class="card-title">
-            <h1 align="center">Создание соревнования</h1>
-        </div>
-        <div class="card-body">
-            <form action="" method="post" enctype="multipart/form-data">
-                {{ form.hidden_tag() }}
-                {{ form.csrf_token }}
-                <p>Группа {{number + 1}}</p>
-                <p>
-                    {{ form.gender.label }}<br>
-                    {{ form.gender(class="form-control") }}
-                </p>
-                <p>
-                    {{ form.age_range_start.label }}
-                    {{ form.age_range_start(class="form-control") }}
-                </p>
-                <p>
-                    {{ form.age_range_end.label }}
-                    {{ form.age_range_end(class="form-control") }}
-                </p>
-                <p>
-                    {{ form.distance.label }}
-                    {{ form.distance(class="form-control") }}
-                </p>
-                <p>
-                    {{ form.players_count.label }}
-                    {{ form.players_count(class="form-control") }}
-                </p>
-                <p>
-                    {{ form.group_time_start.label }}
-                    {{ form.group_time_start(type="time", class="form-control") }}
-                </p>
-                <p>
-                    {{ form.payment.label }}
-                    {{ form.payment(class="form-control", id="pay", onClick="show('pay', 'pay_val')") }}
-                </p>
-                <p id="pay_val" style="display: block;">
-                    {{ form.payments_value.label }} <br>
-                    {{ form.payments_value(class="form-control") }} <br>
-                </p>
-                <input type="submit" placeholder="Завершить создание групп">
-            </form>
+    <script>
+        function show_pay(name, second_name) {
+            var elem = document.getElementById(name);
+            var second_elem = document.getElementById(second_name);
+            if (elem) {
+                if (elem.value == 1) {
+                    second_elem.style.display = "none";
+                } else {
+                    second_elem.style.display = "block";
+                }
+            }
+        }
+    </script>
+    <div class="container mt-4">
+        <div class="card mb-4 card_register">
+            <div class="card-title">
+                <h1 align="center">Создание соревнования</h1>
+            </div>
+            <div class="card-body">
+                <form action="" method="post" enctype="multipart/form-data">
+                    {{ form.hidden_tag() }}
+                    {{ form.csrf_token }}
+                    <p>Группа {{ number + 1 }}</p>
+                    <p>
+                        {{ form.gender.label }}<br>
+                        {{ form.gender(class="form-control") }}
+                    </p>
+                    <p>
+                        {{ form.age_range_start.label }}
+                        {{ form.age_range_start(class="form-control") }}
+                    </p>
+                    <p>
+                        {{ form.age_range_end.label }}
+                        {{ form.age_range_end(class="form-control") }}
+                    </p>
+                    <p>
+                        {{ form.distance.label }}
+                        {{ form.distance(class="form-control") }}
+                    </p>
+                    <p>
+                        {{ form.players_count.label }}
+                        {{ form.players_count(class="form-control") }}
+                    </p>
+                    <p>
+                        {{ form.group_time_start.label }}
+                        {{ form.group_time_start(type="time", class="form-control") }}
+                    </p>
+                    <p>
+                        {{ form.payment.label }}
+                        {{ form.payment(class="form-control", id="pay", onChange="show_pay('pay', 'pay_val')") }}
+                    </p>
+                    <p id="pay_val" style="display: none;">
+                        {{ form.payments_value.label }} <br>
+                        {{ form.payments_value(class="form-control") }} <br>
+                    </p>
+                    <input type="submit" placeholder="Завершить создание групп">
+                </form>
+            </div>
         </div>
     </div>
-</div>
 {% endblock %}

@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="card mb-4">
+            <div class="card-title">
+                <h1 align="center">Список участников соревнования</h1>
+            </div>
+            <table class="table-user" style="width: 100%">
+                <tr>
+                    <td><h6>Имя</h6></td>
+                    <td><h6>Фамилия</h6></td>
+                    <td><h6>Населенный пункт</h6></td>
+                    <td class="full_table"><h6>Клуб</h6></td>
+                    <td class="full_table"><h6>Категория</h6></td>
+                </tr>
+                {% for array in array_users %}
+                    {% for user in array[1:] %}
+                        <tr>
+                            <td>{{ user.name }}</td>
+                            <td>{{ user.surname }}</td>
+                            <td>{{ user.residence_type[0] }}. {{ user.residence_name }}</td>
+                            {% if user.club %}
+                                <td class="full_table">{{ user.club }}</td>
+                            {% else %}
+                                <td class="full_table">-</td>
+                            {% endif %}
+                                <td class="full_table">{{ array[0] }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+            </table>
+        </div>
+    </div>
+{% endblock %}

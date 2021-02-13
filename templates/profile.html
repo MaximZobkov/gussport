@@ -1,59 +1,60 @@
 {% extends "base.html" %}
 
 {% block content %}
-<div class="container mt-4">
-    <div class="card" style="box-shadow: 0 6px 9px 2px rgba(0, 0, 0, 0.2)">
-        <div class="border border-left border-right border-top border-bottom border-rounded">
-            <p style="font-size: 20pt; margin: 10px;" >
-                <img class="card-img-left-profile" src="{{ user.image }}">
-                <span class="card-profile-text">{{ user.name }} {{ user.surname }}</span> <br>
-            </p>
-            <p class="ml-3"> Возраст: {{ age }} лет/год. <br>
-                {{ user.residence_type }}: {{ user.residence_name }} <br>
-            <span class="hidden" id="details">Пол: {{ user.gender }} <br>
+    <div class="container mt-4">
+        <div class="card" style="box-shadow: 0 6px 9px 2px rgba(0, 0, 0, 0.2)">
+            <div>
+                <p style="font-size: 20pt; margin: 10px;">
+                    <img class="card-img-left-profile" src="{{ user.image }}">
+                    <span class="card-profile-text">{{ user.name }} {{ user.surname }}</span> <br>
+                </p>
+                <p class="ml-3"> Возраст: {{ age }} лет/год. <br>
+                    {{ user.residence_type }}: {{ user.residence_name }} <br>
+                    <span class="hidden" id="details">Пол: {{ user.gender }} <br>
                 Дата рождения: {{ '.'.join(user.date_of_birth.split('-')[::-1]) }} <br>
-                {% if user.club %}
-                    Клуб: {{ user.club }}
-                {% endif %}
+                        {% if user.club %}
+                            Клуб: {{ user.club }}
+                        {% endif %}
             </span>
-            <a href="#" onclick="show('details', 'useless'); return false;" id="useless">Подробнее...</a>
+                    <a href="#" onclick="show('details', 'useless'); return false;" id="useless">Подробнее...</a>
+            </div>
+            <span align="right" class="mr-2"><a href="/edit_profile/{{ user.id }}">Редактировать профиль</a></span>
         </div>
     </div>
-</div>
-<div class="container mt-4" style="width: 100%">
-    <div class="card">
-        {% if flag == 0 %}
-        {% if current_user and current_user.id == user.id %}
-        <h3 align="center">
-            Вы еще нигде не участвовали!
-        </h3>
-        {% else %}
-        <h3 align="center">
-            Пользователь еще нигде не участвовал!
-        </h3>
-        {% endif %}
-        {% else %}
-        <div style="padding: 10px;">
-            <table style="width: 100%">
-                <tr>
-                    <th>Название соревнования</th>
-                    {% if current_user and current_user.id == user.id %}
-                    <th>Отменить регистрацию</th>
-                    {% endif %}
-                </tr>
-                {% for competition in users_competition %}
-                <tr>
-                    <td> {{ competition[0].name }}</td>
-                    {% if current_user and current_user.id == user.id %}
-                    <td>
-                        <a href="/unregister/{{ competition[0].url }}/{{ user.id }}/{{ competition[1] }}">Отменить
-                            заявку</a></td>
-                    {% endif %}
-                </tr>
-                {% endfor %}
-            </table>
+    <div class="container mt-4" style="width: 100%">
+        <div class="card">
+            {% if flag == 0 %}
+                {% if current_user and current_user.id == user.id %}
+                    <h3 align="center">
+                        Вы еще нигде не участвовали!
+                    </h3>
+                {% else %}
+                    <h3 align="center">
+                        Пользователь еще нигде не участвовал!
+                    </h3>
+                {% endif %}
+            {% else %}
+                <div style="padding: 10px;">
+                    <table style="width: 100%">
+                        <tr>
+                            <th>Название соревнования</th>
+                            {% if current_user and current_user.id == user.id %}
+                                <th>Отменить регистрацию</th>
+                            {% endif %}
+                        </tr>
+                        {% for competition in users_competition %}
+                            <tr>
+                                <td> {{ competition[0].name }}</td>
+                                {% if current_user and current_user.id == user.id %}
+                                    <td>
+                                        <a href="/unregister/{{ competition[0].url }}/{{ user.id }}/{{ competition[1] }}">Отменить
+                                            заявку</a></td>
+                                {% endif %}
+                            </tr>
+                        {% endfor %}
+                    </table>
+                </div>
+            {% endif %}
         </div>
-        {% endif %}
     </div>
-</div>
 {% endblock %}

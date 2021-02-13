@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <div class="container mt-4">
+        <div class="card mb-4" style="width: 100%; border-radius: 10px;">
+            <div class="card-title">
+                <h1 align="center"> Редактирование профиля </h1>
+            </div>
+            <div class="card-body">
+                <form action="" method="post">
+                    {{ form.hidden_tag() }}
+                    {{ form.csrf_token }}
+                    <p>
+                        {{ form.name.label }}
+                        {{ form.name(class="form-control") }}
+                    </p>
+                    <p>
+                        {{ form.surname.label }}
+                        {{ form.surname(class="form-control") }}
+                    </p>
+                    <p>
+                        {{ form.middle_name.label }}<br>
+                        {{ form.middle_name(class="form-control") }}
+                    </p>
+                    <p>
+                        {{ form.date_of_birth.label }}
+                        {{ form.date_of_birth(type="date", class="form-control") }}
+                        {% if date_error != "OK" %}
+                            <p class="alert alert-danger" role="alert">{{ date_error }}</p>
+                        {% endif %}
+                    </p>
+                    <p>
+                        {{ form.gender.label }}
+                        {{ form.gender(class="form-control") }}
+                    </p>
+                    <p>
+                        {{ form.club.label }}
+                        {{ form.club(class="form-control") }}
+                    </p>
+                    <p>
+                        {{ form.email.label }}<br>
+                        {{ form.email(class="form-control", type="email") }}
+                    </p>
+                    <div class="card-body">
+                        <h6 align="center">Укажите ваш населенный пункт</h6>
+                        <input name="city" type="text" value="{{ user.residence_name }}" placeholder="Населенный пункт"
+                               style="width: 100%" required>
+                        <div class="field mt-3">
+                            <label><input name="typecode" type="radio" value="Город" checked="checked"> Город</label>
+                            <label><input name="typecode" type="radio" value="Посёлок/село"> Посёлок/село</label>
+                            <label><input name="typecode" type="radio" value="Деревня"> Деревня</label>
+                        </div>
+                    </div>
+                    {% for error in form.email.errors %}
+                        <p class="alert alert-danger" role="alert"> {{ error }} </p>
+                    {% endfor %}
+                    <div class="form-group">
+                        <h6>Загрузите вашу фотографию</h6>
+                        <input type="file" class="form-control-file" id="photo" name="file">
+                    </div>
+                    <p>{{ form.submit(type="submit", class="btn btn-outline-dark") }}</p>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}
