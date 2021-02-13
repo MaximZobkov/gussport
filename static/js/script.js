@@ -1,5 +1,4 @@
 function show(name, second_name) {
-    alert(1);
     var elem = document.getElementById(name);
     var second_elem = document.getElementById(second_name);
     if (elem){
@@ -12,8 +11,6 @@ function show(name, second_name) {
             }
         }
         if (name == "pay"){
-            alert(2);
-            alert(elem.value);
             if (elem.value == 1){
                 second_elem.style.display = "none";
             }
@@ -33,3 +30,25 @@ function show(name, second_name) {
         }
     }
 }
+
+
+/*function show_table(id, table_name, user_id, user_name){
+    var elem = document.getElementsByName(table_name)[0];
+    if (elem){
+         if (elem.style.display == "none"){
+            elem.id = id;
+            elem.style.display = "block";
+         }
+         else{
+            elem.style.display = "none";
+            if (id == 1){
+                var second_elem = document.getElementById("player1");
+                second_elem.value = user_name;
+                var third_elem = document.getElementById("id_player1");
+                third_elem.value = user_id;
+            }
+            elem.id = 0;
+
+         }
+    }
+}*/

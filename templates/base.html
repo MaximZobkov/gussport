@@ -60,6 +60,15 @@
                 <a class="btn" href="/register" style="background-color: #c1caca;"> Зарегистрироваться </a>
             </p>
         {% elif profile %}
+            {% if current_user.notifications != None %}
+            <p class="mt-1 mb-1">
+                <a class="btn" style="color: #FF0000;" href="/notifications">Уведомления</a>
+            </p>
+            {% else %}
+            <p class="mt-1 mb-1">
+                <a class="btn" href="/notifications">Уведомления</a>
+            </p>
+            {% endif %}
             <a class="btn" style="background-color: #c1caca;" href="/logout">Выйти из учётной записи</a>
         {% else %}
             <a class="btn" href="/profile/{{ current_user.id }}" style="background-color: #c1caca;"> Личный кабинет </a>

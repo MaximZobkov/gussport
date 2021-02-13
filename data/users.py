@@ -21,6 +21,7 @@ class User(SqlAlchemyBase, UserMixin, SerializerMixin):
     middle_name = sqlalchemy.Column(sqlalchemy.String, nullable=True)
     residence_type = sqlalchemy.Column(sqlalchemy.String, nullable=False)
     residence_name = sqlalchemy.Column(sqlalchemy.String, nullable=False)
+    notifications = sqlalchemy.Column(sqlalchemy.TEXT, nullable=False)
     club = sqlalchemy.Column(sqlalchemy.String, nullable=True)
 
     def __repr__(self):

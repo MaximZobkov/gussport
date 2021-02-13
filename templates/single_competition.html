@@ -52,7 +52,7 @@
             {% else %}
                 {% if competition.registration[0] == "1" %}
                     {% if current_user.is_authenticated %}
-                        <a class="btn btn-light mt-1" href="/register_to_competition/{{ competition.url }}/{{ current_user.id }}/0">
+                        <a class="btn btn-light mt-1" href="/register_to_competition/{{ competition.url }}/{{ current_user.id }}/0/{{ competition.kol_vo_player }}">
                             Зарегистрироваться на соревнование</a>
                     {% else %}
                         <a class="btn btn-light mt-1" href="/not_authorized">

@@ -1,0 +1,101 @@
+{% extends "base.html" %}
+
+{% block content %}
+    <script>
+        function show_table(id, table_name, user_id){
+            var elem = document.getElementsByName(table_name)[0];
+            if (elem){
+                 if (elem.style.display == "none"){
+                    elem.id = id;
+                    elem.style.display = "block";
+                 }
+                 else{
+                    elem.style.display = "none";
+                    var name1 = 'player' + String(elem.id);
+                    var name2 = 'id_player' + String(elem.id);
+                    var normal_user_name = document.getElementById(String(user_id) + '_1').textContent + ' ' + document.getElementById(String(user_id) + '_2').textContent + ' ' + document.getElementById(String(user_id) + '_3').textContent;
+                    var second_elem = document.getElementById(name1);
+                    second_elem.value = normal_user_name;
+                    var third_elem = document.getElementById(name2);
+                    third_elem.value = user_id;
+                    elem.id = 0;
+                 }
+            }
+        }
+    </script>
+    <div class="container mt-4">
+        <div class="card mb-4 card_register">
+            <div class="card-title">
+                <h1 align="center">Регистрация команды</h1>
+            </div>
+            <div class="card-body">
+                    <form action="" method="post" enctype="multipart/form-data">
+                        <p>
+                            {{ form.name.label }}<br>
+                            {{ form.name(class="form-control") }}
+                        </p>
+                        <p>
+                            <div style="width: 100%;">
+                            {{ form.id_player1(class="form-control", id="id_player1", style="display: none;") }}
+                            {{ form.player1.label }}
+                            {{ form.player1(class="form-control", id="player1") }}
+                            <a href="#" onclick="show_table(1, 'users_table', 0); return false;">Выбрать пользователя</a><br>
+                            </div>
+                        </p>
+                        <p>
+                            {{ form.id_player2(class="form-control", id="id_player2", style="display: none;") }}
+                            {{ form.player2.label }}
+                            {{ form.player2(class="form-control", id="player2", style="width: 100%;") }}
+                            <a href="#" onclick="show_table(2, 'users_table', 0); return false;">Выбрать пользователя</a><br>
+                        </p>
+                        {% if kol_vo_player >= 3 %}
+                            <p>
+                                {{ form.id_player3(class="form-control", id="id_player3", style="display: none;") }}
+                                {{ form.player3.label }}
+                                {{ form.player3(class="form-control", id="player3") }}
+                                <a href="#" onclick="show_table(3, 'users_table', 0); return false;">Выбрать пользователя</a><br>
+                            </p>
+                        {% endif %}
+                        {% if kol_vo_player >= 4 %}
+                            <p>
+                                {{ form.id_player4(class="form-control", id="id_player4", style="display: none;") }}
+                                {{ form.player4.label }}
+                                {{ form.player4(class="form-control", id="player4") }}
+                                <a href="#" onclick="show_table(4, 'users_table', 0); return false;">Выбрать пользователя</a><br>
+                            </p>
+                        {% endif %}
+                        {% if kol_vo_player == 5 %}
+                            <p>
+                                {{ form.id_player5(class="form-control", id="id_player5", style="display: none;") }}
+                                {{ form.player5.label }}
+                                {{ form.player5(class="form-control", id="player5") }}
+                                <a href="#" onclick="show_table(5, 'users_table', 0); return false;">Выбрать пользователя</a><br>
+                            </p>
+                        {% endif %}
+                        <p>{{ form.submit(type="submit", class="btn btn-outline-dark") }}</p>
+                    </form>
+                    <a href="/competition/{{ competition_id }}">Вернуться к странице соревнования</a>
+                <table id="0" name="users_table" style="display: none;">
+                    <tr>
+                        <th>Фамилия</th>
+                        <th>Имя</th>
+                        <th>Отчество</th>
+                        <th>Дата рождения</th>
+                        <th>Добавить пользователя в команду</th>
+                    </tr>
+                    {% for user in all_users_list %}
+                        <tr id="{{ user.id }}">
+                            <th id="{{ user.id }}_1"> {{ user.surname }}</th>
+                            <th id="{{ user.id }}_2">{{ user.name }}</th>
+                            <th id="{{ user.id }}_3">{{ user.middle_name }}</th>
+                            <th>{{ user.date_of_birth }}</th>
+                            <!--<th><a href="#" onclick="show_table(0, 'users_table', {{ user.id }},
+                             {{ user.name }} + ' ' + {{ user.surname }} + ' ' + {{ user.middle_name }}); return false;">Добавить</a></th>-->
+                            <th><a href="#" onclick="show_table(0, 'users_table', {{ user.id }}); return false;">Добавить</a></th>
+                        </tr>
+                    {% endfor %}
+                </table>
+            </div>
+        </div>
+    </div>
+{% endblock %}

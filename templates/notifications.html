@@ -1,0 +1,21 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="container">
+    {% for notification in notifications_list %}
+    <div class="card">
+            {% if notification[0] == 0 %}
+            <p>Вам предлагается вступить в команду: {{ notification[2] }}, для участия в соревновании
+                    <a href="/competition/{{ notification[1].id }}">{{ notification[1].name }}</a>.<br>
+                Состав команды (по этапам):<br>
+                <ol>
+                    {% for user in notification[3] %}
+                        <li>{{ loop.index }} этап:<br>{{ user.name }} {{ user.surname }} {{ user.middle_name }}</li>
+                    {% endfor %}
+                </ol>
+            </p>
+            {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

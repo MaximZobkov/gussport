@@ -52,7 +52,7 @@ class RegisterForm(FlaskForm):
 
 class CreateCompetitionForm(FlaskForm):
     name = StringField('Название соревнования', validators=[DataRequired()])
-    short_description = StringField('Краткое описание соревнования', validators=[DataRequired()])
+    short_description = TextAreaField('Краткое описание соревнования', validators=[DataRequired()])
     event_date_start = DateField('Дата проведения соревнования')
     event_time_start = TimeField('Время начала соревнования')
     registration_start = DateField('Дата начала регистрации')
@@ -90,6 +90,21 @@ class CreateNewsForm(FlaskForm):
     name = StringField("Заголовок новости", validators=[DataRequired()])
     content = TextAreaField("Новость:", validators=[DataRequired()])
     submit = SubmitField("Завершить создание новости")
+
+
+class RegisterGroupForm(FlaskForm):
+    name = StringField("Название команды", validators=[DataRequired()])
+    player1 = StringField("ФИО участника 1", validators=[DataRequired()])
+    id_player1 = IntegerField("ID 1", validators=[DataRequired()])
+    player2 = StringField("ФИО участника 2", validators=[DataRequired()])
+    id_player2 = IntegerField("ID 2", validators=[DataRequired()])
+    player3 = StringField("ФИО участника 3", validators=[DataRequired()])
+    id_player3 = IntegerField("ID 3", validators=[DataRequired()])
+    player4 = StringField("ФИО участника 4", validators=[DataRequired()])
+    id_player4 = IntegerField("ID 4", validators=[DataRequired()])
+    player5 = StringField("ФИО участника 5", validators=[DataRequired()])
+    id_player5 = IntegerField("ID 5", validators=[DataRequired()])
+    submit = SubmitField("Завершить регистрацию")
 
 
 class LengthError(Exception):
@@ -309,9 +324,9 @@ def groups_description(id, count, number):
     return render_template("groups_description.html", form=form, count=count, number=number)
 
 
-@app.route("/register_to_competition/<string:name>/<int:id>/<int:number>")
+@app.route("/register_to_competition/<string:name>/<int:id>/<int:number>/<int:kol_vo_player>")
 @login_required
-def register_to_competition(name, id, number):
+def register_to_competition(name, id, number, kol_vo_player):
     session = db_session.create_session()
     with open("static/json/competition.json") as file:
         data = json.load(file)
@@ -349,7 +364,104 @@ def register_to_competition(name, id, number):
         return render_template("end_registration_to_competition.html", message="success",
                                competition_id=competition_id)
     return render_template('register_to_competition.html', group_list=group_list, name=name, id=id,
-                           competition_id=competition_id)
+                           competition_id=competition_id, kol_vo_player=kol_vo_player)
+
+
+@app.route("/register_command_to_competition/<string:name>/<int:id>/<int:number>/<int:kol_vo_player>", methods=['GET', 'POST'])
+@login_required
+def register_command_to_competition(name, id, number, kol_vo_player):
+    session = db_session.create_session()
+    with open("static/json/competition.json") as file:
+        data = json.load(file)
+    form = RegisterGroupForm()
+    competition_id = int(name.split("competition")[1])
+    our_user = session.query(users.User).filter(users.User.id == id).first()
+    all_users = session.query(users.User)
+    all_users_list = []
+    #Как команда доолжна выглядеть в json:
+    #{"all_users":[],
+    # "Группа1": [["Тигры", 1, 2, 3], ["Львы", 4, 5, 6]]
+    # }
+    for user in all_users:
+        if not user.id in data["failed_competitions"][name]["all_users"]:
+            all_users_list += [user]
+    if request.method == "POST":
+        # уведомление: тип;;информация
+        # тип 0 - заявка в ожидании
+        # тип 1 - заявка одобрена
+        # тип 2- заявка отвергнута
+        notification = "0;;" + name + ";;" + form.name.data + ";;"
+        first_player = session.query(users.User).filter(users.User.id == form.id_player1.data).first()
+        notification = notification + str(form.id_player1.data) + ";;"
+        if kol_vo_player >= 2:
+            second_player = session.query(users.User).filter(users.User.id == form.id_player2.data).first()
+            notification = notification + str(form.id_player2.data) + ";;"
+        if kol_vo_player >= 3:
+            third_player = session.query(users.User).filter(users.User.id == form.id_player3.data).first()
+            notification = notification + str(form.id_player3.data) + ";;"
+        if kol_vo_player >= 4:
+            fourth_player = session.query(users.User).filter(users.User.id == form.id_player4.data).first()
+            notification = notification + str(form.id_player4.data) + ";;"
+        if kol_vo_player >= 5:
+            fifth_player = session.query(users.User).filter(users.User.id == form.id_player5.data).first()
+            notification = notification + str(form.id_player5.data) + ";;"
+        notification = notification.rstrip(";;")
+        if first_player.id != id:
+            if first_player.notifications is None:
+                first_player.notifications = notification
+            else:
+                first_player.notifications = first_player.notifications + "%%" + notification
+            session.merge(first_player)
+        if kol_vo_player >= 2 and second_player.id != id:
+            if second_player.notifications is None:
+                second_player.notifications = notification
+            else:
+                second_player.notifications = second_player.notifications + "%%" + notification
+            session.merge(second_player)
+        if kol_vo_player >= 3 and third_player.id != id:
+            if third_player.notifications is None:
+                third_player.notifications = notification
+            else:
+                third_player.notifications = third_player.notifications + "%%" + notification
+            session.merge(third_player)
+        if kol_vo_player >= 4 and fourth_player.id != id:
+            if fourth_player.notifications is None:
+                fourth_player.notifications = notification
+            else:
+                fourth_player.notifications = fourth_player.notifications + "%%" + notification
+            session.merge(fourth_player)
+        if kol_vo_player >= 5 and fifth_player.id != id:
+            if fifth_player.notifications is None:
+                fifth_player.notifications = notification
+            else:
+                fifth_player.notifications = fifth_player.notifications + "%%" + notification
+            session.merge(fifth_player)
+        session.commit()
+        return redirect(f"/competition/{competition_id}")
+    return render_template("register_command_to_competition.html", form=form, name=name, id=id,
+                           number=number, kol_vo_player=kol_vo_player,
+                           all_users_list=all_users_list, competition_id=competition_id)
+
+
+@app.route("/notifications")
+@login_required
+def notifications():
+    session = db_session.create_session()
+    user = session.query(users.User).filter(users.User.id == current_user.id).first()
+    notifications = user.notifications
+    notifications_list = []
+    for notification in notifications.split("%%"):
+        type = int(notification.split(";;")[0])
+        value = notification.split(";;")[1:]
+        competition = session.query(competitions.Competitions).filter(competitions.Competitions.id == int(value[0].split("competition")[1])).first()
+        command_name = value[1]
+        players = []
+        for player_id in value[2:]:
+            players += [session.query(users.User).filter(users.User.id == int(player_id)).first()]
+        notifications_list += [[type, competition, command_name, players]]
+        print([type, competition, command_name, players])
+    return render_template("notifications.html", notifications_list=notifications_list)
+
 
 
 @app.route("/unregister/<string:name>/<int:id>/<string:group>")

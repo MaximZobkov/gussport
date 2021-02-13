@@ -17,9 +17,15 @@
                                     <h6>Дистанция: {{ group[0][3] }} км.</h6>
                                     <h6>Осталось мест: {{ group[1] }}</h6>
                                     {% if group[1] != 0 %}
-                                        <a class="btn" style="background-color: #828282; color: white;"
-                                           href="/register_to_competition/{{ name }}/{{ id }}/{{ loop.index }}">
-                                            Зарегистрироваться в эту группу</a>
+                                        {% if kol_vo_player == 1 %}
+                                            <a class="btn" style="background-color: #828282; color: white;"
+                                               href="/register_to_competition/{{ name }}/{{ id }}/{{ loop.index }}/{{ kol_vo_player }}">
+                                                Зарегистрироваться в эту группу</a>
+                                        {% else %}
+                                            <a class="btn" style="background-color: #828282; color: white;"
+                                               href="/register_command_to_competition/{{ name }}/{{ id }}/{{ loop.index }}/{{ kol_vo_player }}">
+                                                Зарегистрировать команду</a>
+                                        {% endif %}
                                     {% else %}
                                         <p>Группа заполнена</p>
                                     {% endif %}
