@@ -47,10 +47,10 @@ class RegisterForm(FlaskForm):
     email = StringField("Электронная почта", validators=[DataRequired()])
     password = PasswordField('Пароль', validators=[DataRequired()])
     password_again = PasswordField('Повторите пароль', validators=[DataRequired()])
-    date_of_birth = DateField('Дата рождения', validators=[DataRequired()])
+    date_of_birth = DateField('Дата рождения')
     gender = SelectField('Пол', validators=[DataRequired()],
                          choices=[('1', 'Мужской'), ('2', "Женский")])
-    club = StringField('Клуб')
+    club = StringField('Клуб', validators=[DataRequired()])
     residence_name = StringField('Название населённого пункта', validators=[DataRequired()])
     submit = SubmitField('Зарегистрироваться')
 
@@ -224,7 +224,7 @@ def profile(id):
     age = get_age(user.date_of_birth)
     if current_user.id == id:
         return render_template("profile.html", users_competition=users_competition, flag=flag, user=user, age=age,
-                           profile=True)
+                               profile=True)
     return render_template("profile.html", users_competition=users_competition, flag=flag, user=user, age=age,
                            profile=False)
 
@@ -247,7 +247,7 @@ def editor_profile(id):
             user.name = form.name.data
             user.surname = form.surname.data
             user.middle_name = form.middle_name.data
-            user.gender  = form.gender.data
+            user.gender = form.gender.data
             date_check = check_date(form.date_of_birth.data)
             if date_check != 'OK':
                 return render_template('register.html', title='Регистрация',
@@ -304,7 +304,7 @@ def register():
         user.middle_name = form.middle_name.data
         user.date_of_birth = form.date_of_birth.data
         user.residence_type = request.form["typecode"]
-        user.residence_name = request.form["city"]["typecode"]
+        user.residence_name = request.form["city"]
         user.club = form.club.data
         user.set_password(form.password.data)
         if form.gender.data == '1':
@@ -345,22 +345,25 @@ def reformat(string_date):
 
 @app.route('/competition/<int:id>')
 def single_competition(id):
-    check_all_competitions()
-    session = db_session.create_session()
-    competition = session.query(competitions.Competitions).filter(
-        competitions.Competitions.id == id).first()
-    array_group = competition.groups_description[2:].split('%%')
-    array = []
-    for i in range(competition.groups_count):
-        array_elements = array_group[i].split('$$')
-        string_year = f'{array_elements[0]}-{array_elements[1]} лет.'
-        string_count_people = f'{array_elements[2]}'
-        string_distance = f'{array_elements[3]} км.'
-        string_time = f'{array_elements[4][:-3]}.'
-        string_money = f'{array_elements[5]}'
-        array.append(
-            [string_year, string_count_people, string_distance, string_time, string_money])
-    return render_template('single_competition.html', competition=competition, groups_array=array)
+    try:
+        check_all_competitions()
+        session = db_session.create_session()
+        competition = session.query(competitions.Competitions).filter(
+            competitions.Competitions.id == id).first()
+        array_group = competition.groups_description[2:].split('%%')
+        array = []
+        for i in range(competition.groups_count):
+            array_elements = array_group[i].split('$$')
+            string_year = f'{array_elements[0]}-{array_elements[1]} лет.'
+            string_count_people = f'{array_elements[2]}'
+            string_distance = f'{array_elements[3]} км.'
+            string_time = f'{array_elements[4][:-3]}.'
+            string_money = f'{array_elements[5]}'
+            array.append(
+                [string_year, string_count_people, string_distance, string_time, string_money])
+        return render_template('single_competition.html', competition=competition, groups_array=array)
+    except Exception:
+        return render_template('not_found.html')
 
 
 @app.route('/create_competition', methods=['GET', 'POST'])
@@ -486,7 +489,8 @@ def register_to_competition(name, id, number, kol_vo_player):
                            competition_id=competition_id, kol_vo_player=kol_vo_player)
 
 
-@app.route("/register_command_to_competition/<string:name>/<int:id>/<int:number>/<int:kol_vo_player>", methods=['GET', 'POST'])
+@app.route("/register_command_to_competition/<string:name>/<int:id>/<int:number>/<int:kol_vo_player>",
+           methods=['GET', 'POST'])
 @login_required
 def register_command_to_competition(name, id, number, kol_vo_player):
     session = db_session.create_session()
@@ -497,8 +501,8 @@ def register_command_to_competition(name, id, number, kol_vo_player):
     our_user = session.query(users.User).filter(users.User.id == id).first()
     all_users = session.query(users.User)
     all_users_list = []
-    #Как команда доолжна выглядеть в json:
-    #{"all_users":[],
+    # Как команда доолжна выглядеть в json:
+    # {"all_users":[],
     # "Группа1": [["Тигры", 1, 2, 3], ["Львы", 4, 5, 6]]
     # }
     for user in all_users:
@@ -572,7 +576,8 @@ def notifications():
     for notification in notifications.split("%%"):
         type = int(notification.split(";;")[0])
         value = notification.split(";;")[1:]
-        competition = session.query(competitions.Competitions).filter(competitions.Competitions.id == int(value[0].split("competition")[1])).first()
+        competition = session.query(competitions.Competitions).filter(
+            competitions.Competitions.id == int(value[0].split("competition")[1])).first()
         command_name = value[1]
         players = []
         for player_id in value[2:]:
@@ -580,7 +585,6 @@ def notifications():
         notifications_list += [[type, competition, command_name, players]]
         print([type, competition, command_name, players])
     return render_template("notifications.html", notifications_list=notifications_list)
-
 
 
 @app.route("/unregister/<string:name>/<int:id>/<string:group>")

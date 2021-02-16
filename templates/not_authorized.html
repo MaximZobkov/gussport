@@ -2,12 +2,15 @@
 
 
 {% block content %}
-<div class="container mt-4">
-    <div class="card mb-4 card_register">
-        <div class="card-title">
-            <h1 align="center">Вы не авторизованны на этом сайте, и поэтому не можете посещать эти страницы</h1>
-            <a href="/login"><h4 align="center">Вы можете авторизоваться здесь</h4></a>
+    <div class="container mt-4">
+        <div class="card mb-4 card_register">
+            <div class="card-title">
+                <h1 align="center">Вы не авторизованы!</h1>
+                <div align="center">
+                    <img src="../static/images/other-image/no_logon.png"/>
+                </div>
+            </div>
+            <a class="btn btn-white" href="/login">Вы можете авторизоваться здесь</a>
         </div>
     </div>
-</div>
 {% endblock %}
