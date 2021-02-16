@@ -4,11 +4,11 @@
     <script>
         function tableSearch() {
             var phrase = document.getElementById('search-text');
-            var table = document.getElementById('info-table');
+            var table = document.getElementsByName('users_table')[0];
             var regPhrase = new RegExp(phrase.value, 'i');
             var flag = false;
             console.log(table.rows.length);
-            for (var i = 1; i < table.rows.length; i++) {
+            for (var i = 1; i < 6; i++) {
                 flag = false;
                 for (var j = table.rows[i].cells.length - 1; j >= 0; j--) {
                     flag = regPhrase.test(table.rows[i].cells[j].innerHTML);
@@ -26,12 +26,13 @@
     <script>
         function show_table(id, table_name, user_id) {
             var elem = document.getElementsByName(table_name)[0];
-            if (elem) {
-                if (elem.style.display == "inline-block") {
+            var window = document.getElementById("openModal");
+            if (window) {
+                if (window.style.display == "none") {
                     elem.id = id;
-                    elem.style.display = "block";
+                    window.style.display = "inline-block";
                 } else {
-                    elem.style.display = "inline-block";
+                    window.style.display = "inline-block";
                     var name1 = 'player' + String(elem.id);
                     var name2 = 'id_player' + String(elem.id);
                     var normal_user_name = document.getElementById(String(user_id) + '_1').textContent + ' ' + document.getElementById(String(user_id) + '_2').textContent + ' ' + document.getElementById(String(user_id) + '_3').textContent;
@@ -40,10 +41,19 @@
                     var third_elem = document.getElementById(name2);
                     third_elem.value = user_id;
                     elem.id = 0;
+                    window.style.display = "none";
                 }
             }
         }
     </script>
+<script>
+    function close_table(name) {
+        var elem = document.getElementById(name);
+        if (elem){
+            elem.style.display = "none";
+        }
+    }
+</script>
     <div class="container mt-4">
         <div class="card mb-4 card_register">
             <div class="card-title">
@@ -59,7 +69,7 @@
                     <div style="width: 100%;">
                         {{ form.id_player1(class="form-control", id="id_player1", style="display: none;") }}
                         {{ form.player1.label }}
-                        {{ form.player1(class="form-control", id="player1") }}
+                        {{ form.player1(class="form-control", id="player1", disabled="disabled") }}
                         <a href="#openModal" onclick="show_table(1, 'users_table', 0);">Выбрать
                             пользователя</a><br>
                     </div>
@@ -67,7 +77,7 @@
                     <p>
                         {{ form.id_player2(class="form-control", id="id_player2", style="display: none;") }}
                         {{ form.player2.label }}
-                        {{ form.player2(class="form-control", id="player2", style="width: 100%;") }}
+                        {{ form.player2(class="form-control", id="player2", disabled="disabled") }}
                         <a href="#openModal" onclick="show_table(2, 'users_table', 0)">Выбрать
                             пользователя</a><br>
                     </p>
@@ -75,8 +85,8 @@
                         <p>
                             {{ form.id_player3(class="form-control", id="id_player3", style="display: none;") }}
                             {{ form.player3.label }}
-                            {{ form.player3(class="form-control", id="player3") }}
-                            <a href="#" onclick="show_table(3, 'users_table', 0)">Выбрать
+                            {{ form.player3(class="form-control", id="player3", disabled="disabled") }}
+                            <a href="#openModal" onclick="show_table(3, 'users_table', 0)">Выбрать
                                 пользователя</a><br>
                         </p>
                     {% endif %}
@@ -84,8 +94,8 @@
                         <p>
                             {{ form.id_player4(class="form-control", id="id_player4", style="display: none;") }}
                             {{ form.player4.label }}
-                            {{ form.player4(class="form-control", id="player4") }}
-                            <a href="#" onclick="show_table(4, 'users_table', 0)">Выбрать
+                            {{ form.player4(class="form-control", id="player4", disabled="disabled") }}
+                            <a href="#openModal" onclick="show_table(4, 'users_table', 0)">Выбрать
                                 пользователя</a><br>
                         </p>
                     {% endif %}
@@ -93,21 +103,21 @@
                         <p>
                             {{ form.id_player5(class="form-control", id="id_player5", style="display: none;") }}
                             {{ form.player5.label }}
-                            {{ form.player5(class="form-control", id="player5") }}
-                            <a href="#" onclick="show_table(5, 'users_table', 0)">Выбрать
+                            {{ form.player5(class="form-control", id="player5", disabled="disabled") }}
+                            <a href="#openModal" onclick="show_table(5, 'users_table', 0)">Выбрать
                                 пользователя</a><br>
                         </p>
                     {% endif %}
                     <p>{{ form.submit(type="submit", class="btn btn-outline-dark") }}</p>
                 </form>
                 <a href="/competition/{{ competition_id }}">Вернуться к странице соревнования</a>
-                <div id="openModal" class="modalDialog">
+                <div id="openModal" class="modalDialog" style="display: none;">
                     <div>
                         <input class="form-control" type="text" placeholder="Поиск..." id="search-text"
                                onkeyup="tableSearch()">
-                        <a href="#close" title="Закрыть" class="close">X</a>
+                        <a href="#close" title="Закрыть" class="close" onclick="close_table('openModal'); return false;">X</a>
                         <table name="users_table" class="table table-striped" id="info-table"
-                               style="display: inline-block; width: 100%">
+                               style="width: 100%">
                             <tr>
                                 <th style="border: 1px solid grey; width: 25%">Фамилия</th>
                                 <th style="border: 1px solid grey; width: 25%">Имя</th>

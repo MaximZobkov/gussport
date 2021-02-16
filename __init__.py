@@ -76,8 +76,10 @@ class CreateCompetitionForm(FlaskForm):
     registration_start = DateField('Дата начала регистрации')
     registration_end = DateField('Дата окончания регистрации')
     team_competition = SelectField('Тип соревнования', validators=[DataRequired()],
-                                   choices=[('Индивидуальное', "Индивидуальное"), ('Командное', 'Командное')])
-    kol_vo_player = IntegerField('Количество участников в команде', validators=[DataRequired()], default=1)
+                                   choices=[('Индивидуальное', "Индивидуальное"),
+                                            ('Командное', 'Командное')])
+    kol_vo_player = IntegerField('Количество участников в команде', validators=[DataRequired()],
+                                 default=1)
     type = SelectField('Тип соревнования', validators=[DataRequired()],
                        choices=[('Триатлон', 'Триатлон'), ('Дуатлон', "Дуатлон"),
                                 ('Лыжный Масс-старт', "Лыжный Масс-старт"),
@@ -176,9 +178,11 @@ def recovery_password():
                                    message="Пользователя с данной почтой не существует")
         elif form.code.data.strip() == str(code).strip() and flag == 1:
             flag = 2
-            return render_template('password_recovery.html', form=form, type="password", message="OK")
+            return render_template('password_recovery.html', form=form, type="password",
+                                   message="OK")
         elif form.code.data.strip() != str(code).strip() and flag == 1:
-            return render_template('password_recovery.html', form=form, type="code", message="Неверный код")
+            return render_template('password_recovery.html', form=form, type="code",
+                                   message="Неверный код")
     return render_template('password_recovery.html', form=form, type="email", message='OK')
 
 
@@ -223,9 +227,11 @@ def profile(id):
         flag = 0
     age = get_age(user.date_of_birth)
     if current_user.id == id:
-        return render_template("profile.html", users_competition=users_competition, flag=flag, user=user, age=age,
+        return render_template("profile.html", users_competition=users_competition, flag=flag,
+                               user=user, age=age,
                                profile=True)
-    return render_template("profile.html", users_competition=users_competition, flag=flag, user=user, age=age,
+    return render_template("profile.html", users_competition=users_competition, flag=flag,
+                           user=user, age=age,
                            profile=False)
 
 
@@ -361,7 +367,8 @@ def single_competition(id):
             string_money = f'{array_elements[5]}'
             array.append(
                 [string_year, string_count_people, string_distance, string_time, string_money])
-        return render_template('single_competition.html', competition=competition, groups_array=array)
+        return render_template('single_competition.html', competition=competition,
+                               groups_array=array)
     except Exception:
         return render_template('not_found.html')
 
@@ -396,7 +403,8 @@ def create_competition():
             data = json.load(file)
         if competition.team_competition == "Командное":
             data["failed_competitions"].update(
-                [("competition" + str(competition.id), {"all_users": [], "registration": 0, "awaiting_confirmation": []})])
+                [("competition" + str(competition.id),
+                  {"all_users": [], "registration": 0, "awaiting_confirmation": []})])
         else:
             data["failed_competitions"].update(
                 [("competition" + str(competition.id), {"all_users": [], "registration": 0})])
@@ -450,7 +458,8 @@ def groups_description(id, count, number):
     return render_template("groups_description.html", form=form, count=count, number=number)
 
 
-@app.route("/register_to_competition/<string:name>/<int:id>/<string:group_name>/<int:kol_vo_player>")
+@app.route(
+    "/register_to_competition/<string:name>/<int:id>/<string:group_name>/<int:kol_vo_player>")
 @login_required
 def register_to_competition(name, id, group_name, kol_vo_player):
     session = db_session.create_session()
@@ -494,7 +503,9 @@ def register_to_competition(name, id, group_name, kol_vo_player):
                            competition_id=competition_id, kol_vo_player=kol_vo_player)
 
 
-@app.route("/register_command_to_competition/<string:name>/<int:id>/<string:group_name>/<int:kol_vo_player>", methods=['GET', 'POST'])
+@app.route(
+    "/register_command_to_competition/<string:name>/<int:id>/<string:group_name>/<int:kol_vo_player>",
+    methods=['GET', 'POST'])
 @login_required
 def register_command_to_competition(name, id, group_name, kol_vo_player):
     session = db_session.create_session()
@@ -505,8 +516,8 @@ def register_command_to_competition(name, id, group_name, kol_vo_player):
     our_user = session.query(users.User).filter(users.User.id == id).first()
     all_users = session.query(users.User)
     all_users_list = []
-    #Как команда доолжна выглядеть в json:
-    #{"all_users":[],
+    # Как команда доолжна выглядеть в json:
+    # {"all_users":[],
     # "Группа1": [["Тигры", 1, 2, 3], ["Львы", 4, 5, 6]],
     # "awaiting_confirmation": [["Тигры", "Группа1", 1, 2, 3]]
     # }
@@ -519,19 +530,24 @@ def register_command_to_competition(name, id, group_name, kol_vo_player):
         # тип 1 - заявка одобрена
         # тип 2- заявка отвергнута
         notification = "0;;" + name + ";;" + group_name + ";;" + form.name.data + ";;"
-        first_player = session.query(users.User).filter(users.User.id == form.id_player1.data).first()
+        first_player = session.query(users.User).filter(
+            users.User.id == form.id_player1.data).first()
         notification = notification + str(form.id_player1.data) + ";;"
         if kol_vo_player >= 2:
-            second_player = session.query(users.User).filter(users.User.id == form.id_player2.data).first()
+            second_player = session.query(users.User).filter(
+                users.User.id == form.id_player2.data).first()
             notification = notification + str(form.id_player2.data) + ";;"
         if kol_vo_player >= 3:
-            third_player = session.query(users.User).filter(users.User.id == form.id_player3.data).first()
+            third_player = session.query(users.User).filter(
+                users.User.id == form.id_player3.data).first()
             notification = notification + str(form.id_player3.data) + ";;"
         if kol_vo_player >= 4:
-            fourth_player = session.query(users.User).filter(users.User.id == form.id_player4.data).first()
+            fourth_player = session.query(users.User).filter(
+                users.User.id == form.id_player4.data).first()
             notification = notification + str(form.id_player4.data) + ";;"
         if kol_vo_player >= 5:
-            fifth_player = session.query(users.User).filter(users.User.id == form.id_player5.data).first()
+            fifth_player = session.query(users.User).filter(
+                users.User.id == form.id_player5.data).first()
             notification = notification + str(form.id_player5.data) + ";;"
         notification = notification.rstrip(";;")
         if first_player.id != id:
@@ -564,6 +580,15 @@ def register_command_to_competition(name, id, group_name, kol_vo_player):
             else:
                 fifth_player.notifications = fifth_player.notifications + "%%" + notification
             session.merge(fifth_player)
+        from_json = notification.split(";;")[1:]
+        for i in range(3, len(from_json)):
+            if int(from_json[i]) == id:
+                from_json[i] = [int(from_json[i]), 1]
+            else:
+                from_json[i] = [int(from_json[i]), 0]
+        data["failed_competitions"][name]["awaiting_confirmation"] += [from_json]
+        with open("static/json/competition.json", "w") as file:
+            json.dump(data, file)
         session.commit()
         return redirect(f"/competition/{competition_id}")
     return render_template("register_command_to_competition.html", form=form, name=name, id=id,
@@ -579,26 +604,81 @@ def notifications():
     notifications = user.notifications
     notifications_list = []
     if notifications is None:
-        return render_template("notifications.html", notifications_list=notifications_list, no_notification=True)
+        return render_template("notifications.html", notifications_list=notifications_list,
+                               no_notification=True)
     for notification in notifications.split("%%"):
         type = int(notification.split(";;")[0])
         value = notification.split(";;")[1:]
         if type == 0:
-            competition = session.query(competitions.Competitions).filter(competitions.Competitions.id == int(value[0].split("competition")[1])).first()
+            competition = session.query(competitions.Competitions).filter(
+                competitions.Competitions.id == int(value[0].split("competition")[1])).first()
             group_name = value[1]
             command_name = value[2]
             players = []
             for player_id in value[3:]:
-                players += [session.query(users.User).filter(users.User.id == int(player_id)).first()]
-            notifications_list += [[type, competition, command_name, players]]
+                players += [
+                    session.query(users.User).filter(users.User.id == int(player_id)).first()]
+            notifications_list += [[type, competition, command_name, players, notification]]
             print([type, competition, command_name, players])
-    return render_template("notifications.html", notifications_list=notifications_list, no_notification=False)
+    return render_template("notifications.html", notifications_list=notifications_list,
+                           no_notification=False)
 
 
-@app.route("/work_with_notifications/<int:user_id>/")
+@app.route("/work_with_notifications/<int:user_id>/<int:flag>/<string:application>")
 @login_required
-def work_with_notifications():
-
+def work_with_notifications(user_id, flag, application):
+    if current_user.id != user_id:
+        return redirect("/")
+    sessions = db_session.create_session()
+    user = sessions.query(users.User).filter(users.User.id == user_id).first()
+    with open("static/json/competition.json") as file:
+        data = json.load(file)
+    user.notifications = "%%".join(user.notifications.split(application + "%%"))
+    print(application)
+    value = application.split(";;")[1:]
+    print(value)
+    competition_url = value[0]
+    group_name = value[1]
+    command_name = value[2]
+    players = [int(id) for id in value[3:]]
+    value[3:] = players
+    list_of_application = data["failed_competitions"][competition_url]["awaiting_confirmation"]
+    print(list_of_application, 1111111111)
+    for ind in range(len(list_of_application)):
+        app = list_of_application[ind]
+        if app[0] == competition_url and app[1] == group_name and app[2] == command_name:
+            #Если что ошибки тут
+            print(app,33333333333)
+            for i in range(3, len(app)):
+                if app[i][0] != value[i]:
+                    continue
+            print(4444444)
+            for i in range(3, len(app)):
+                if app[i][0] == user_id:
+                    app[i][1] = 1
+            data["failed_competitions"][competition_url]["awaiting_confirmation"][ind] = app
+            print(data["failed_competitions"][competition_url]["awaiting_confirmation"])
+            kol = 0
+            for i in range(3, len(app)):
+                kol += app[i][1]
+            print(kol, 5555555)
+            if kol == len(app) - 3:
+                print(6666666666)
+                data["failed_competitions"][competition_url]["awaiting_confirmation"] = \
+                    data["failed_competitions"][competition_url]["awaiting_confirmation"][:ind] + \
+                    data["failed_competitions"][competition_url]["awaiting_confirmation"][ind + 1:]
+                if flag == 1:
+                    data["failed_competitions"][competition_url][group_name] += [command_name, *players]
+                    # А тут неплохо бы отправлять всем уведомления о зачислении команды
+                else:
+                    # А тут неплохо бы отправлять всем уведомления о незачислении команды
+                    #Только это нужно делать не тут
+                    pass
+                with open("static/json/competition.json", "w") as file:
+                    json.dump(data, file)
+            break
+    sessions.merge(user)
+    sessions.commit()
     return redirect("/notifications")
 
 
@@ -630,8 +710,9 @@ def table_of_users(name):
         if "all_users" != key and key != "registration":
             if len(mas[key]) != 0:
                 array_users += [
-                    [get_category(key)] + [sessions.query(users.User).filter(users.User.id == id).first() for id in
-                                           mas[key]]]
+                    [get_category(key)] + [
+                        sessions.query(users.User).filter(users.User.id == id).first() for id in
+                        mas[key]]]
     print(array_users)
     return render_template("table_of_registered_users.html", array_users=array_users)
 
@@ -667,7 +748,8 @@ def check_all_competitions():
     keys = upcoming_competitions.keys()
     go_to_past = []
     for key in keys:
-        competition = session.query(competitions.Competitions).filter(competitions.Competitions.url == key).first()
+        competition = session.query(competitions.Competitions).filter(
+            competitions.Competitions.url == key).first()
         date_end = get_data(competition.registration_end)
         date_start = get_data(competition.registration_start)
         date_event = get_data(competition.event_date_start)
@@ -686,13 +768,16 @@ def check_all_competitions():
             continue
         if competition.registration == "00" and (date_start[2] < today_year or (
                 date_start[2] == today_year and date_start[1] < today_month) or (
-                                                         date_start[2] == today_year and date_start[
-                                                     1] == today_month and date_start[0] <= today_day)):
+                                                         date_start[2] == today_year and
+                                                         date_start[
+                                                             1] == today_month and date_start[
+                                                             0] <= today_day)):
             competition.registration = "11"
             data_copy["failed_competitions"][key]["registration"] = 1
         if competition.registration == "11" and (date_end[2] < today_year or (
                 date_end[2] == today_year and date_end[1] < today_month) or (
-                                                         date_end[2] == today_year and date_end[1] == today_month and
+                                                         date_end[2] == today_year and date_end[
+                                                     1] == today_month and
                                                          date_end[0] < today_day)):
             data_copy["failed_competitions"][key]["registration"] = 0
             competition.registration = "01"
@@ -888,7 +973,8 @@ def login():
 def index():
     sessions = db_session.create_session()
     all_news = sessions.query(news.News)
-    competitions_list = sessions.query(competitions.Competitions).filter(competitions.Competitions.endspiel == 0)
+    competitions_list = sessions.query(competitions.Competitions).filter(
+        competitions.Competitions.endspiel == 0)
     return render_template("index.html", news_list=all_news, competitions_list=competitions_list)
 
 

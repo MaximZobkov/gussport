@@ -22,8 +22,10 @@
             {% endfor %}
         </ul>
         </p>
-        <a class="btn btn-success" href="">Принять</a>
-        <a class="btn btn-danger" href="">Отклонить</a>
+        <div>
+            <a class="btn btn-success" style="width: 49%;" href="/work_with_notifications/{{ current_user.id }}/{{ 1 }}/{{ notification[4] }}">Принять</a>
+            <a class="btn btn-danger" style="width: 49%;" href="">Отклонить</a>
+        </div>
         {% endif %}
     </div>
     {% endfor %}
