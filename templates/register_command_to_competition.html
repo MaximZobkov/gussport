@@ -38,21 +38,21 @@
                             <div style="width: 100%;">
                             {{ form.id_player1(class="form-control", id="id_player1", style="display: none;") }}
                             {{ form.player1.label }}
-                            {{ form.player1(class="form-control", id="player1") }}
+                            {{ form.player1(class="form-control", id="player1", disabled="disabled") }}
                             <a href="#" onclick="show_table(1, 'users_table', 0); return false;">Выбрать пользователя</a><br>
                             </div>
                         </p>
                         <p>
                             {{ form.id_player2(class="form-control", id="id_player2", style="display: none;") }}
                             {{ form.player2.label }}
-                            {{ form.player2(class="form-control", id="player2", style="width: 100%;") }}
+                            {{ form.player2(class="form-control", id="player2", disabled="disabled") }}
                             <a href="#" onclick="show_table(2, 'users_table', 0); return false;">Выбрать пользователя</a><br>
                         </p>
                         {% if kol_vo_player >= 3 %}
                             <p>
                                 {{ form.id_player3(class="form-control", id="id_player3", style="display: none;") }}
                                 {{ form.player3.label }}
-                                {{ form.player3(class="form-control", id="player3") }}
+                                {{ form.player3(class="form-control", id="player3", disabled="disabled") }}
                                 <a href="#" onclick="show_table(3, 'users_table', 0); return false;">Выбрать пользователя</a><br>
                             </p>
                         {% endif %}
@@ -60,7 +60,7 @@
                             <p>
                                 {{ form.id_player4(class="form-control", id="id_player4", style="display: none;") }}
                                 {{ form.player4.label }}
-                                {{ form.player4(class="form-control", id="player4") }}
+                                {{ form.player4(class="form-control", id="player4", disabled="disabled") }}
                                 <a href="#" onclick="show_table(4, 'users_table', 0); return false;">Выбрать пользователя</a><br>
                             </p>
                         {% endif %}
@@ -68,7 +68,7 @@
                             <p>
                                 {{ form.id_player5(class="form-control", id="id_player5", style="display: none;") }}
                                 {{ form.player5.label }}
-                                {{ form.player5(class="form-control", id="player5") }}
+                                {{ form.player5(class="form-control", id="player5", disabled="disabled") }}
                                 <a href="#" onclick="show_table(5, 'users_table', 0); return false;">Выбрать пользователя</a><br>
                             </p>
                         {% endif %}

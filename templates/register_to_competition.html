@@ -19,11 +19,11 @@
                                     {% if group[1] != 0 %}
                                         {% if kol_vo_player == 1 %}
                                             <a class="btn" style="background-color: #828282; color: white;"
-                                               href="/register_to_competition/{{ name }}/{{ id }}/{{ loop.index }}/{{ kol_vo_player }}">
+                                               href="/register_to_competition/{{ name }}/{{ id }}/{{ group[2] }}/{{ kol_vo_player }}">
                                                 Зарегистрироваться в эту группу</a>
                                         {% else %}
                                             <a class="btn" style="background-color: #828282; color: white;"
-                                               href="/register_command_to_competition/{{ name }}/{{ id }}/{{ loop.index }}/{{ kol_vo_player }}">
+                                               href="/register_command_to_competition/{{ name }}/{{ id }}/{{ group[2] }}/{{ kol_vo_player }}">
                                                 Зарегистрировать команду</a>
                                         {% endif %}
                                     {% else %}
