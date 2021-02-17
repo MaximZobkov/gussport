@@ -7,8 +7,7 @@
             var table = document.getElementsByName('users_table')[0];
             var regPhrase = new RegExp(phrase.value, 'i');
             var flag = false;
-            console.log(table.rows.length);
-            for (var i = 1; i < 6; i++) {
+            for (var i = 1; i < table.rows.length; i++) {
                 flag = false;
                 for (var j = table.rows[i].cells.length - 1; j >= 0; j--) {
                     flag = regPhrase.test(table.rows[i].cells[j].innerHTML);
@@ -46,14 +45,14 @@
             }
         }
     </script>
-<script>
-    function close_table(name) {
-        var elem = document.getElementById(name);
-        if (elem){
-            elem.style.display = "none";
+    <script>
+        function close_table(name) {
+            var elem = document.getElementById(name);
+            if (elem) {
+                elem.style.display = "none";
+            }
         }
-    }
-</script>
+    </script>
     <div class="container mt-4">
         <div class="card mb-4 card_register">
             <div class="card-title">
@@ -112,10 +111,11 @@
                 </form>
                 <a href="/competition/{{ competition_id }}">Вернуться к странице соревнования</a>
                 <div id="openModal" class="modalDialog" style="display: none;">
-                    <div>
+                    <a href="#close" title="Закрыть" class="close"
+                       onclick="close_table('openModal'); return false;">X</a>
+                    <div class="prokrutka">
                         <input class="form-control" type="text" placeholder="Поиск..." id="search-text"
                                onkeyup="tableSearch()">
-                        <a href="#close" title="Закрыть" class="close" onclick="close_table('openModal'); return false;">X</a>
                         <table name="users_table" class="table table-striped" id="info-table"
                                style="width: 100%">
                             <tr>
