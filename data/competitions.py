@@ -10,9 +10,7 @@ class Competitions(SqlAlchemyBase, SerializerMixin):
     id = sqlalchemy.Column(sqlalchemy.Integer, primary_key=True, autoincrement=True)
     name = sqlalchemy.Column(sqlalchemy.TEXT)
     type = sqlalchemy.Column(sqlalchemy.TEXT)
-    #Командное или нет
     team_competition = sqlalchemy.Column(sqlalchemy.TEXT)
-    #Количество участников
     kol_vo_player = sqlalchemy.Column(sqlalchemy.Integer, default=1)
     short_description = sqlalchemy.Column(sqlalchemy.TEXT)
     image = sqlalchemy.Column(sqlalchemy.TEXT)
@@ -23,7 +21,6 @@ class Competitions(SqlAlchemyBase, SerializerMixin):
     groups_count = sqlalchemy.Column(sqlalchemy.Integer)
     groups_description = sqlalchemy.Column(sqlalchemy.TEXT, default="")
     url = sqlalchemy.Column(sqlalchemy.TEXT)
-    # endspiel: 0-незавершено, 1-завершено
     endspiel = sqlalchemy.Column(sqlalchemy.Integer, default=0)
-    # (регистрация открыта/закрыта)(регистрация была/не было)
     registration = sqlalchemy.Column(sqlalchemy.TEXT, default="00")
+    file = sqlalchemy.Column(sqlalchemy.String)
