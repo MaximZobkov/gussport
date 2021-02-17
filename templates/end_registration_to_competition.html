@@ -4,16 +4,16 @@
     <div class="container mt-4">
         <div class="card mb-4 card_register">
             {% if message == "no age category" %}
-                <div class="card-title">
-                    <h1 align="center">Для данного соревнования нет подходящей вам возрастной категории</h1>
+                <div class="card-title" style="margin: 5px">
+                    <h2 align="center">Для данного соревнования нет подходящей вам возрастной категории</h2>
                 </div>
             {% elif message == "success" %}
-                <div class="card-title">
-                    <h1 align="center">Регистрация успешно завершена</h1>
+                <div class="card-title" style="margin: 5px">
+                    <h2 align="center">Регистрация успешно завершена</h2>
                 </div>
             {% elif message == "stack overflow" %}
-                <div class="card-title">
-                    <h1 align="center">Вы уже зарегистрированны в одну из групп</h1>
+                <div class="card-title" style="margin: 5px">
+                    <h2 align="center">Вы уже зарегистрированы в одну из групп</h2>
                 </div>
             {% endif %}
             <img src="../static/images/other-image/barin.jpg"/>
