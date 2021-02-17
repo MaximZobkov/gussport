@@ -633,7 +633,11 @@ def work_with_notifications(user_id, flag, application):
     user = sessions.query(users.User).filter(users.User.id == user_id).first()
     with open("static/json/competition.json") as file:
         data = json.load(file)
-    user.notifications = "%%".join(user.notifications.split(application + "%%"))
+    print(user.notifications)
+    user.notifications = "".join([(pice[:-2] if (pice != "" and pice[-2:] == "%%") else pice) for pice in user.notifications.split(application)])
+    if user.notifications == "":
+        user.notifications = None
+    print(user.notifications)
     print(application)
     value = application.split(";;")[1:]
     print(value)
@@ -668,7 +672,7 @@ def work_with_notifications(user_id, flag, application):
                     data["failed_competitions"][competition_url]["awaiting_confirmation"][:ind] + \
                     data["failed_competitions"][competition_url]["awaiting_confirmation"][ind + 1:]
                 if flag == 1:
-                    data["failed_competitions"][competition_url][group_name] += [command_name, *players]
+                    data["failed_competitions"][competition_url][group_name] += [[command_name, *players]]
                     # А тут неплохо бы отправлять всем уведомления о зачислении команды
                 else:
                     # А тут неплохо бы отправлять всем уведомления о незачислении команды

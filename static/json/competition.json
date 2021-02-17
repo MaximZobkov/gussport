@@ -17,10 +17,12 @@
       "registration": 1,
       "awaiting_confirmation": [],
       "12:23:35:10:1": [
-        "ChesniyGame",
-        2,
-        3,
-        2
+        [
+          "ChesniyGame",
+          2,
+          3,
+          2
+        ]
       ],
       "24:35:5:15:1": [],
       "12:23:5:5:2": [],
