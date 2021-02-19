@@ -134,7 +134,7 @@
                 <a class="btn" href="/register" style="background-color: #c1caca;"> Зарегистрироваться </a>
             </p>
         {% elif profile %}
-            {% if current_user.notifications != None %}
+            {% if current_user.notifications != None and current_user.notifications != '' %}
                 <p class="mt-1 mb-1">
                     <a class="mr-3" style="font-size: 28px; text-decoration: none;" href="/notifications">&#x1F514;</a>
                 </p>

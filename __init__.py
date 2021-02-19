@@ -340,7 +340,6 @@ def reformat(string_date):
     string = ''
     k = 0
     for x in s[::-1]:
-        print(string)
         if k == 0:
             string += x + ' '
         elif k == 1:
@@ -401,6 +400,12 @@ def create_competition():
             name = "static/images/competition_image/competition_" + str(competition.id) + ".jpg"
             file.save(name)
             competition.image = "/" + name
+        print(str(request.files['file_сomp']), 1)
+        file = request.files['file_сomp']
+        file_extension = str(file).split('application/')[1][:-3]
+        file_name = str(file).split("FileStorage: '")[1][:-25].split('.')[0]
+        file.save(f"static/files/competitions/{file_name}." + file_extension)
+        competition.file = "static/files/competitions/" + file_name + "." + file_extension
         with open("static/json/competition.json") as file:
             data = json.load(file)
         if competition.team_competition == "Командное":
@@ -420,6 +425,27 @@ def create_competition():
                 form.groups_count.data) + "/0")
     return render_template('create_competition.html', title="Создание соревнования", form=form,
                            date_error='OK', time_error='OK')
+
+
+@app.route("/delete_competition/<int:id>")
+def delete_competitions(id):
+    session = db_session.create_session()
+    competition = session.query(competitions.Competitions).filter(
+        competitions.Competitions.id == id).first()
+    with open("static/json/competition.json") as file:
+        data = json.load(file)
+    data["failed_competitions"].pop("competition" + str(id), None)
+    data["past_competitions"].pop("competition" + str(id), None)
+    with open("static/json/competition.json", "w") as file:
+        json.dump(data, file)
+    try:
+        os.remove(f"static/images/competition_image/competition_{id}.jpg")
+        os.remove(competition.file)
+    except Exception:
+        pass
+    session.delete(competition)
+    session.commit()
+    return redirect("/competitions_type")
 
 
 @app.route("/groups_description/<int:id>/<int:count>/<int:number>", methods=['GET', 'POST'])
@@ -472,7 +498,6 @@ def register_to_competition(name, id, group_name, kol_vo_player):
     small_dict = {"Мужской": 1, "Женский": 2}
     stack_overflow = 0
     competition_id = int(name.split("competition")[1])
-    print(group_name)
     if group_name != "no":
         data["failed_competitions"][name][group_name] += [id]
         data["failed_competitions"][name]["all_users"] += [id]
@@ -498,7 +523,6 @@ def register_to_competition(name, id, group_name, kol_vo_player):
         # пользователь не может зарегистрироваться на это соревнование, т.к. нет подходящей возрастной категории
         return render_template("end_registration_to_competition.html", message="no age category",
                                competition_id=competition_id)
-    print(group_list, group_name)
     return render_template('register_to_competition.html', group_list=group_list, name=name, id=id,
                            competition_id=competition_id, kol_vo_player=kol_vo_player)
 
@@ -676,6 +700,7 @@ def work_with_notifications(user_id, flag, application):
     for ind in range(len(list_of_application)):
         app = list_of_application[ind]
         if app[0] == competition_url and app[1] == group_name and app[2] == command_name:
+            # Если что ошибки тут
             #Если что ошибки тут
             print(app,33333333333)
             flag2 = 0
@@ -777,7 +802,6 @@ def table_of_users(name):
                     [get_category(key)] + [
                         sessions.query(users.User).filter(users.User.id == id).first() for id in
                         mas[key]]]
-    print(array_users)
     return render_template("table_of_registered_users.html", array_users=array_users)
 
 
@@ -872,32 +896,11 @@ def get_category(key):
     return category
 
 
-@app.route("/delete_competition/<int:id>")
-def delete_competitions(id):
-    session = db_session.create_session()
-    competition = session.query(competitions.Competitions).filter(
-        competitions.Competitions.id == id).first()
-    with open("static/json/competition.json") as file:
-        data = json.load(file)
-    data["failed_competitions"].pop("competition" + str(id), None)
-    data["past_competitions"].pop("competition" + str(id), None)
-    with open("static/json/competition.json", "w") as file:
-        json.dump(data, file)
-    session.delete(competition)
-    session.commit()
-    try:
-        os.remove(f"static/images/competition_image/competition_{id}.jpg")
-    except Exception:
-        pass
-    return redirect("/competitions_type")
-
-
 def get_age(data):
     date = data.split('-')
     year = int(date[0])
     month = int(date[1])
     day = int(date[2])
-    print(day, month, year)
     today_year = datetime.datetime.now().year
     today_month = datetime.datetime.now().month
     today_day = datetime.datetime.now().day
