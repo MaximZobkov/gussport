@@ -99,11 +99,13 @@ class CreateGroupsForm(FlaskForm):
     age_range_end = IntegerField('Максимальный возраст', validators=[DataRequired()])
     players_count = IntegerField('Максимальное количество участников в группе',
                                  validators=[DataRequired()])
+    commands_count = IntegerField('Максимальное количество команд в группе',
+                                 validators=[DataRequired()])
     distance = IntegerField('Длина дистанции', validators=[DataRequired()])
     group_time_start = TimeField('Время старта группы')
     payment = SelectField('Оплата участия', validators=[DataRequired()],
                           choices=[('1', 'Нет'), ('2', "Есть")])
-    payments_value = IntegerField('Размер оплаты', validators=[DataRequired()])
+    payments_value = IntegerField('Размер оплаты', validators=[DataRequired()], default=0)
 
 
 class CreateNewsForm(FlaskForm):
@@ -114,15 +116,15 @@ class CreateNewsForm(FlaskForm):
 
 class RegisterGroupForm(FlaskForm):
     name = StringField("Название команды", validators=[DataRequired()])
-    player1 = StringField("ФИО участника 1", validators=[DataRequired()])
+    player1 = StringField("ФИО участника 1 этапа", validators=[DataRequired()])
     id_player1 = IntegerField("ID 1", validators=[DataRequired()])
-    player2 = StringField("ФИО участника 2", validators=[DataRequired()])
+    player2 = StringField("ФИО участника 2 этапа", validators=[DataRequired()])
     id_player2 = IntegerField("ID 2", validators=[DataRequired()])
-    player3 = StringField("ФИО участника 3", validators=[DataRequired()])
+    player3 = StringField("ФИО участника 3 этапа", validators=[DataRequired()])
     id_player3 = IntegerField("ID 3", validators=[DataRequired()])
-    player4 = StringField("ФИО участника 4", validators=[DataRequired()])
+    player4 = StringField("ФИО участника 4 этапа", validators=[DataRequired()])
     id_player4 = IntegerField("ID 4", validators=[DataRequired()])
-    player5 = StringField("ФИО участника 5", validators=[DataRequired()])
+    player5 = StringField("ФИО участника 5 этапа", validators=[DataRequired()])
     id_player5 = IntegerField("ID 5", validators=[DataRequired()])
     submit = SubmitField("Завершить регистрацию")
 
@@ -427,13 +429,13 @@ def groups_description(id, count, number):
         return redirect("/")
     sessions = db_session.create_session()
     form = CreateGroupsForm()
+    competition = sessions.query(competitions.Competitions).filter(
+        competitions.Competitions.id == id).first()
     if request.method == "POST":
-        competition = sessions.query(competitions.Competitions).filter(
-            competitions.Competitions.id == id).first()
         competition.groups_description = "%%".join([competition.groups_description,
                                                     "$$".join([str(form.age_range_start.data),
                                                                str(form.age_range_end.data),
-                                                               str(form.players_count.data),
+                                                               (str(form.players_count.data) if competition.team_competition == "Индивидуальное" else str(form.commands_count.data)),
                                                                str(form.distance.data),
                                                                str(form.group_time_start.data),
                                                                str(form.payments_value.data),
@@ -441,8 +443,7 @@ def groups_description(id, count, number):
         with open("static/json/competition.json") as file:
             data = json.load(file)
         group_name_to_dict = str(form.age_range_start.data) + ":" + str(
-            form.age_range_end.data) + ":" + str(
-            form.players_count.data) + ":" + str(form.distance.data) + ":" + str(form.gender.data)
+            form.age_range_end.data) + ":" + (str(form.players_count.data) if competition.team_competition == "Индивидуальное" else str(form.commands_count.data)) + ":" + str(form.distance.data) + ":" + str(form.gender.data)
         data["failed_competitions"][competition.url].update([(group_name_to_dict, [])])
         with open("static/json/competition.json", "w") as file:
             json.dump(data, file)
@@ -455,11 +456,10 @@ def groups_description(id, count, number):
             return redirect(
                 '/groups_description/' + str(competition.id) + "/" + str(count) + "/" + str(
                     number))
-    return render_template("groups_description.html", form=form, count=count, number=number)
+    return render_template("groups_description.html", form=form, count=count, number=number, type=competition.team_competition)
 
 
-@app.route(
-    "/register_to_competition/<string:name>/<int:id>/<string:group_name>/<int:kol_vo_player>")
+@app.route("/register_to_competition/<string:name>/<int:id>/<string:group_name>/<int:kol_vo_player>")
 @login_required
 def register_to_competition(name, id, group_name, kol_vo_player):
     session = db_session.create_session()
@@ -550,31 +550,37 @@ def register_command_to_competition(name, id, group_name, kol_vo_player):
                 users.User.id == form.id_player5.data).first()
             notification = notification + str(form.id_player5.data) + ";;"
         notification = notification.rstrip(";;")
+        was_player = []
         if first_player.id != id:
+            was_player += [first_player.id]
             if first_player.notifications is None:
                 first_player.notifications = notification
             else:
                 first_player.notifications = first_player.notifications + "%%" + notification
             session.merge(first_player)
-        if kol_vo_player >= 2 and second_player.id != id:
+        if kol_vo_player >= 2 and second_player.id != id and not second_player.id in was_player:
+            was_player += [second_player.id]
             if second_player.notifications is None:
                 second_player.notifications = notification
             else:
                 second_player.notifications = second_player.notifications + "%%" + notification
             session.merge(second_player)
-        if kol_vo_player >= 3 and third_player.id != id:
+        if kol_vo_player >= 3 and third_player.id != id and not third_player.id in was_player:
+            was_player += [third_player.id]
             if third_player.notifications is None:
                 third_player.notifications = notification
             else:
                 third_player.notifications = third_player.notifications + "%%" + notification
             session.merge(third_player)
-        if kol_vo_player >= 4 and fourth_player.id != id:
+        if kol_vo_player >= 4 and fourth_player.id != id and not fourth_player.id in was_player:
+            was_player += [fourth_player.id]
             if fourth_player.notifications is None:
                 fourth_player.notifications = notification
             else:
                 fourth_player.notifications = fourth_player.notifications + "%%" + notification
             session.merge(fourth_player)
-        if kol_vo_player >= 5 and fifth_player.id != id:
+        if kol_vo_player >= 5 and fifth_player.id != id and not fifth_player.id in was_player:
+            was_player += [fifth_player.id]
             if fifth_player.notifications is None:
                 fifth_player.notifications = notification
             else:
@@ -603,7 +609,7 @@ def notifications():
     user = session.query(users.User).filter(users.User.id == current_user.id).first()
     notifications = user.notifications
     notifications_list = []
-    if notifications is None:
+    if notifications is None or notifications == "":
         return render_template("notifications.html", notifications_list=notifications_list,
                                no_notification=True)
     for notification in notifications.split("%%"):
@@ -620,6 +626,25 @@ def notifications():
                     session.query(users.User).filter(users.User.id == int(player_id)).first()]
             notifications_list += [[type, competition, command_name, players, notification]]
             print([type, competition, command_name, players])
+        elif type == 1:
+            competition = session.query(competitions.Competitions).filter(
+                competitions.Competitions.id == int(value[0].split("competition")[1])).first()
+            command_name = value[2]
+            players = []
+            for player_id in value[3:]:
+                players += [
+                    session.query(users.User).filter(users.User.id == int(player_id)).first()]
+            notifications_list += [
+                [type, competition, command_name, players, notification]]
+        elif type == 2:
+            competition = session.query(competitions.Competitions).filter(competitions.Competitions.id == int(value[0].split("competition")[1])).first()
+            command_name = value[2]
+            not_accepted = session.query(users.User).filter(users.User.id == int(value[3])).first()
+            players = []
+            for player_id in value[4:]:
+                players += [
+                    session.query(users.User).filter(users.User.id == int(player_id)).first()]
+            notifications_list += [[type, competition, command_name, not_accepted, players, notification]]
     return render_template("notifications.html", notifications_list=notifications_list,
                            no_notification=False)
 
@@ -633,53 +658,88 @@ def work_with_notifications(user_id, flag, application):
     user = sessions.query(users.User).filter(users.User.id == user_id).first()
     with open("static/json/competition.json") as file:
         data = json.load(file)
-    print(user.notifications)
-    user.notifications = "".join([(pice[:-2] if (pice != "" and pice[-2:] == "%%") else pice) for pice in user.notifications.split(application)])
+    user.notifications = "".join([(pice[2:] if (pice != "" and pice[:2] == "%%") else pice) for pice in user.notifications.split(application)])
     if user.notifications == "":
         user.notifications = None
-    print(user.notifications)
-    print(application)
+    type = int(application.split(";;")[0])
+    if type == 1 or type == 2:
+        sessions.merge(user)
+        sessions.commit()
+        return redirect("/notifications")
     value = application.split(";;")[1:]
-    print(value)
     competition_url = value[0]
     group_name = value[1]
     command_name = value[2]
     players = [int(id) for id in value[3:]]
     value[3:] = players
     list_of_application = data["failed_competitions"][competition_url]["awaiting_confirmation"]
-    print(list_of_application, 1111111111)
     for ind in range(len(list_of_application)):
         app = list_of_application[ind]
         if app[0] == competition_url and app[1] == group_name and app[2] == command_name:
             #Если что ошибки тут
             print(app,33333333333)
+            flag2 = 0
             for i in range(3, len(app)):
                 if app[i][0] != value[i]:
-                    continue
+                    flag2 = 1
+                    break
+            if flag2 == 1:
+                continue
             print(4444444)
-            for i in range(3, len(app)):
-                if app[i][0] == user_id:
-                    app[i][1] = 1
-            data["failed_competitions"][competition_url]["awaiting_confirmation"][ind] = app
-            print(data["failed_competitions"][competition_url]["awaiting_confirmation"])
-            kol = 0
-            for i in range(3, len(app)):
-                kol += app[i][1]
-            print(kol, 5555555)
-            if kol == len(app) - 3:
-                print(6666666666)
+            if flag == 0:
+                new_notification = "2;;" + competition_url + ";;" + group_name + ";;" + command_name + ";;" + str(user_id)
+                for player_id in players:
+                    if player_id != user_id:
+                        new_notification += ";;" + str(player_id)
+                was_player = []
+                for player_id in players:
+                    if player_id != user_id and not player_id in was_player:
+                        was_player += [player_id]
+                        player = sessions.query(users.User).filter(users.User.id == player_id).first()
+                        if not player.notifications is None:
+                            player.notifications = "".join([(pice[2:] if (pice != "" and pice[:2] == "%%") else pice) for pice in player.notifications.split(application)])
+                        if player.notifications == "" or player.notifications is None:
+                            player.notifications = new_notification
+                        else:
+                            player.notifications += "%%" + new_notification
                 data["failed_competitions"][competition_url]["awaiting_confirmation"] = \
                     data["failed_competitions"][competition_url]["awaiting_confirmation"][:ind] + \
                     data["failed_competitions"][competition_url]["awaiting_confirmation"][ind + 1:]
-                if flag == 1:
-                    data["failed_competitions"][competition_url][group_name] += [[command_name, *players]]
-                    # А тут неплохо бы отправлять всем уведомления о зачислении команды
-                else:
-                    # А тут неплохо бы отправлять всем уведомления о незачислении команды
-                    #Только это нужно делать не тут
-                    pass
                 with open("static/json/competition.json", "w") as file:
                     json.dump(data, file)
+                break
+            if flag == 1:
+                for i in range(3, len(app)):
+                    if app[i][0] == user_id:
+                        app[i][1] = 1
+                data["failed_competitions"][competition_url]["awaiting_confirmation"][ind] = app
+                print(data["failed_competitions"][competition_url]["awaiting_confirmation"])
+                kol = 0
+                for i in range(3, len(app)):
+                    kol += app[i][1]
+                print(kol, 5555555)
+                if kol == len(app) - 3:
+                    print(6666666666)
+                    data["failed_competitions"][competition_url]["awaiting_confirmation"] = \
+                        data["failed_competitions"][competition_url]["awaiting_confirmation"][:ind] + \
+                        data["failed_competitions"][competition_url]["awaiting_confirmation"][ind + 1:]
+                    data["failed_competitions"][competition_url][group_name] += [[command_name, *players]]
+                    new_notification = "1;;" + competition_url + ";;" + group_name + ";;" + command_name
+                    for player_id in players:
+                        if player_id != user_id:
+                            new_notification += ";;" + str(player_id)
+                    was_player = []
+                    for player_id in players:
+                        if player_id != user_id and not player_id in was_player:
+                            was_player += [player_id]
+                            player = sessions.query(users.User).filter(
+                                users.User.id == player_id).first()
+                            if player.notifications == "" or player.notifications is None:
+                                player.notifications = new_notification
+                            else:
+                                player.notifications += "%%" + new_notification
+                    with open("static/json/competition.json", "w") as file:
+                        json.dump(data, file)
             break
     sessions.merge(user)
     sessions.commit()

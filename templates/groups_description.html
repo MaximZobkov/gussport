@@ -41,10 +41,17 @@
                         {{ form.distance.label }}
                         {{ form.distance(class="form-control") }}
                     </p>
+                    {% if type == "Индивидуальное" %}
                     <p>
                         {{ form.players_count.label }}
                         {{ form.players_count(class="form-control") }}
                     </p>
+                    {% else %}
+                    <p>
+                        {{ form.commands_count.label }}
+                        {{ form.commands_count(class="form-control") }}
+                    </p>
+                    {% endif %}
                     <p>
                         {{ form.group_time_start.label }}
                         {{ form.group_time_start(type="time", class="form-control") }}

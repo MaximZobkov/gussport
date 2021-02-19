@@ -15,11 +15,29 @@
     "competition5": {
       "all_users": [],
       "registration": 1,
-      "awaiting_confirmation": [],
+      "awaiting_confirmation": [
+        [
+          "competition5",
+          "12:23:35:10:1",
+          "Samuel",
+          [
+            1,
+            0
+          ],
+          [
+            5,
+            0
+          ],
+          [
+            1,
+            0
+          ]
+        ]
+      ],
       "12:23:35:10:1": [
         [
-          "ChesniyGame",
-          2,
+          "Findus",
+          3,
           3,
           2
         ]
@@ -27,6 +45,13 @@
       "24:35:5:15:1": [],
       "12:23:5:5:2": [],
       "24:35:3:20:2": []
+    },
+    "competition6": {
+      "all_users": [],
+      "registration": 1,
+      "awaiting_confirmation": [],
+      "12:23:5:20:1": [],
+      "24:35:5:15:2": []
     }
   },
   "past_competitions": {

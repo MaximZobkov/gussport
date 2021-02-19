@@ -1,41 +1,72 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="container">
-        <div class="row">
-            {% if no_notification %}
-                <p>Уведомлений пока что нет</p>
-            {% else %}
-                {% for notification in notifications_list %}
-                    <div class="col-xl-4 col-lg-12 col-sm-12 col-xs-12">
-                        <div class="card mt-1">
-                            {% if notification[0] == 0 %}
-                                <h6 style="margin: 10px" align="center"><b>Вам предлагается вступить в
-                                    команду: {{ notification[2] }}, для участия в
-                                    соревновании
-                                    <a href="/competition/{{ notification[1].id }}">{{ notification[1].name }}</a>.</b>
-                                </h6>
-                                <p style="text-indent: 23px;">
-                                    Состав команды (по этапам):
-                                <ul>
-                                    {% for user in notification[3] %}
-                                        <li>{{ loop.index }}
-                                            этап:<br>{{ user.name }} {{ user.surname }} {{ user.middle_name }}
-                                        </li>
-                                    {% endfor %}
-                                </ul>
-                                </p>
-                                <div>
-                                    <a class="btn btn-success" style="width: 49%;"
-                                       href="/work_with_notifications/{{ current_user.id }}/{{ 1 }}/{{ notification[4] }}">Принять</a>
-                                    <a class="btn btn-danger" style="width: 49%;" href="">Отклонить</a>
-                                </div>
-                            {% endif %}
-                        </div>
-                    </div>
-                {% endfor %}
+<div class="container">
+    <div class="row">
+        {% if no_notification %}
+        <p>Уведомлений пока что нет</p>
+        {% else %}
+        {% for notification in notifications_list %}
+        <div class="col-xl-4 col-lg-12 col-sm-12 col-xs-12">
+            <div class="card mt-1">
+                {% if notification[0] == 0 %}
+                <h6 style="margin: 10px" align="center"><b>Вам предлагается вступить в
+                    команду: {{ notification[2] }}, для участия в
+                    соревновании
+                    <a href="/competition/{{ notification[1].id }}">{{ notification[1].name }}</a>.</b>
+                </h6>
+                <p style="text-indent: 23px;">
+                    Состав команды (по этапам):
+                <ul>
+                    {% for user in notification[3] %}
+                    <li>{{ loop.index }}
+                        этап:<br>{{ user.name }} {{ user.surname }} {{ user.middle_name }}
+                    </li>
+                    {% endfor %}
+                </ul>
+                </p>
+                <div>
+                    <a class="btn btn-success" style="width: 49%;"
+                       href="/work_with_notifications/{{ current_user.id }}/{{ 1 }}/{{ notification[4] }}">Принять</a>
+                    <a class="btn btn-danger" style="width: 49%;"
+                       href="/work_with_notifications/{{ current_user.id }}/{{ 0 }}/{{ notification[4] }}">Отклонить</a>
                 </div>
-            {% endif %}
+                {% elif notification[0] == 1 %}
+                <h6>
+                    Поздравляем, команда {{ notification[2] }} зарегестрирована на соревнование <a href="/competition/{{ notification[1].id }}">{{ notification[1].name }}</a>
+                </h6>
+                <p style="text-indent: 23px;">
+                    Состав команды (по этапам):
+                <ul>
+                    {% for user in notification[3] %}
+                    <li>{{ loop.index }}
+                        этап:<br>{{ user.name }} {{ user.surname }} {{ user.middle_name }}
+                    </li>
+                    {% endfor %}
+                </ul>
+                </p>
+                <a href="/work_with_notifications/{{ current_user.id }}/{{ 1 }}/{{ notification[4] }}">Просмотрено</a>
+                {% elif notification[0] == 2 %}
+                <h6>
+                    Пользователь <a href="/profile/{{ notification[3].id }}">{{ notification[3].name }}</a> отклонил заявку команды {{ notification[2] }} на соревнование <a href="/competition/{{ notification[1].id }}">{{ notification[1].name }}</a>
+                </h6>
+                <p style="text-indent: 23px;">
+                    Состав команды (по этапам):
+                <ul>
+                    {% for user in notification[4] %}
+                    <li>{{ loop.index }}
+                        этап:<br>{{ user.name }} {{ user.surname }} {{ user.middle_name }}
+                    </li>
+                    {% endfor %}
+                </ul>
+                </p>
+                <a href="/work_with_notifications/{{ current_user.id }}/{{ 1 }}/{{ notification[5] }}">Просмотрено</a>
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
     </div>
-    </div>
+    {% endif %}
+</div>
+</div>
 {% endblock %}
