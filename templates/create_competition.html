@@ -2,78 +2,74 @@
 
 
 {% block content %}
-    <div class="container mt-2">
-        <div class="card mb-4 card_register">
-            <div class="card-title">
-                <h1 align="center">Создание соревнования</h1>
-            </div>
-            <div class="card-body">
-                <form action="" method="post" enctype="multipart/form-data">
-                    {{ form.hidden_tag() }}
-                    {{ form.csrf_token }}
-                    <p>
-                        {{ form.name.label }}<br>
-                        {{ form.name(class="form-control") }}
-                    </p>
-                    <p>
-                        {{ form.short_description.label }}<br>
-                        {{ form.short_description(class="form-control") }}
-                    </p>
-                    <h6>Выберите фотографию-фон для соревнования (Фотография должна быть идеально квадратная)</h6>
-                    <div class="form-group">
+<div class="container mt-2">
+    <div class="card mb-4 card_register">
+        <div class="card-title">
+            <h1 align="center">Создание соревнования</h1>
+        </div>
+        <div class="card-body">
+            <form action="" method="post" enctype="multipart/form-data">
+                {{ form.hidden_tag() }}
+                {{ form.csrf_token }}
+                <p>
+                    {{ form.name.label }}<br>
+                    {{ form.name(class="form-control") }}
+                </p>
+                <p>
+                    {{ form.short_description.label }}<br>
+                    {{ form.short_description(class="form-control") }}
+                </p>
+                <h6>Выберите фотографию-фон для соревнования (Фотография должна быть идеально квадратная)</h6>
+                <div class="form-group">
                         <input type="file" class="form-control-file" id="photo" name="file">
-                    </div>
-                    <p>
-                        {{ form.type.label }}
-                        {{ form.type(class="form-control") }}
-                    </p>
-                    <p>
-                        {{ form.team_competition.label }}<br>
-                        {{ form.team_competition(class="form-control", id="type_team", onChange="show('type_team', 'kol_vo_player')") }}
-                    </p>
-                    <p id="kol_vo_player" style="display: none;">
-                        {{ form.kol_vo_player.label }}<br>
-                        {{ form.kol_vo_player(class="form-control") }}
-                    </p>
-                    <p>
-                        {{ form.event_date_start.label }}
-                        {{ form.event_date_start(type="date", class="form-control") }}
-                        {% if date_error != "OK" %}
-                            <a class="alert alert-danger" role="alert">{{ date_error }}</a>
-                        {% endif %}
-                    </p>
-                    <p>
-                        {{ form.event_time_start.label }}
-                        {{ form.event_time_start(type="time", class="form-control") }}
-                        {% if time_error != "OK" %}
-                            <a class="alert alert-danger" role="alert">{{ time_error }}</a>
-                        {% endif %}
-                    </p>
-                    <p>
-                        {{ form.registration_start.label }}
-                        {{ form.registration_start(type="date", class="form-control") }}
-                        {% if date_error != "OK" %}
-                            <a class="alert alert-danger" role="alert">{{ date_error }}</a>
-                        {% endif %}
-                    </p>
-                    <p>
-                        {{ form.registration_end.label }}
-                        {{ form.registration_end(type="date", class="form-control") }}
-                        {% if date_error != "OK" %}
-                            <a class="alert alert-danger" role="alert">{{ date_error }}</a>
-                        {% endif %}
-                    </p>
-                    <p>
-                        {{ form.groups_count.label }} <br>
-                        {{ form.groups_count(class="form-control") }} <br>
-                    </p>
-                    <h6> Загрузите положение соревнования</h6>
-                    <p>
-                        <input type="file" name="file_сomp" class="form-control-file" id="file" accept=".doc, .txt, .rtf, .docx, .pdf" required>
-                    </p>
-                    <p>{{ form.submit(type="submit", class="btn btn-outline-dark") }}</p>
-                </form>
-            </div>
+                </div>
+                <p>
+                    {{ form.type.label }}
+                    {{ form.type(class="form-control") }}
+                </p>
+                <p>
+                    {{ form.team_competition.label }}<br>
+                    {{ form.team_competition(class="form-control", id="type_team", onChange="show('type_team', 'kol_vo_player')") }}
+                </p>
+                <p id="kol_vo_player" style="display: none;">
+                    {{ form.kol_vo_player.label }}<br>
+                    {{ form.kol_vo_player(class="form-control") }}
+                </p>
+                <p>
+                    {{ form.event_date_start.label }}
+                    {{ form.event_date_start(type="date", class="form-control") }}
+                    {% if date_error != "OK" %}
+                        <a class="alert alert-danger" role="alert">{{ date_error }}</a>
+                    {% endif %}
+                </p>
+                <p>
+                    {{ form.event_time_start.label }}
+                    {{ form.event_time_start(type="time", class="form-control") }}
+                    {% if time_error != "OK" %}
+                        <a class="alert alert-danger" role="alert">{{ time_error }}</a>
+                    {% endif %}
+                </p>
+                <p>
+                    {{ form.registration_start.label }}
+                    {{ form.registration_start(type="date", class="form-control") }}
+                    {% if date_error != "OK" %}
+                        <a class="alert alert-danger" role="alert">{{ date_error }}</a>
+                    {% endif %}
+                </p>
+                <p>
+                    {{ form.registration_end.label }}
+                    {{ form.registration_end(type="date", class="form-control") }}
+                    {% if date_error != "OK" %}
+                        <a class="alert alert-danger" role="alert">{{ date_error }}</a>
+                    {% endif %}
+                </p>
+                <p>
+                    {{ form.groups_count.label }} <br>
+                    {{ form.groups_count(class="form-control") }} <br>
+                </p>
+                <p>{{ form.submit(type="submit", class="btn btn-outline-dark") }}</p>
+            </form>
         </div>
     </div>
+</div>
 {% endblock %}
