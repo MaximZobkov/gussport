@@ -401,6 +401,7 @@ def create_competition():
             name = "static/images/competition_image/competition_" + str(competition.id) + ".jpg"
             file.save(name)
             competition.image = "/" + name
+        print(str(request.files['file_сomp']), 1)
         file = request.files['file_сomp']
         file_extension = str(file).split('application/')[1][:-3]
         file_name = str(file).split("FileStorage: '")[1][:-25].split('.')[0]
@@ -888,12 +889,13 @@ def delete_competitions(id):
     data["past_competitions"].pop("competition" + str(id), None)
     with open("static/json/competition.json", "w") as file:
         json.dump(data, file)
-    session.delete(competition)
-    session.commit()
     try:
         os.remove(f"static/images/competition_image/competition_{id}.jpg")
+        os.remove(competition.file)
     except Exception:
         pass
+    session.delete(competition)
+    session.commit()
     return redirect("/competitions_type")
 
 

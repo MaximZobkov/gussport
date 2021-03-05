@@ -27,3 +27,4 @@ class Competitions(SqlAlchemyBase, SerializerMixin):
     endspiel = sqlalchemy.Column(sqlalchemy.Integer, default=0)
     # (регистрация открыта/закрыта)(регистрация была/не было)
     registration = sqlalchemy.Column(sqlalchemy.TEXT, default="00")
+    file = sqlalchemy.Column(sqlalchemy.String)
