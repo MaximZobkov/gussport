@@ -7,6 +7,7 @@
             <div class="card-title">
                 <h1 align="center">Список участников соревнования</h1>
             </div>
+            {% if competition.team_competition == "Индивидуальное" %}
             <table class="table-user" style="width: 100%">
                 <tr>
                     <td><h6>Имя</h6></td>
@@ -31,6 +32,28 @@
                     {% endfor %}
                 {% endfor %}
             </table>
+            {% else %}
+            <table class="table-user" style="width: 100%">
+                <tr>
+                    <td><h6>Название</h6></td>
+                    <td><h6>Состав</h6></td>
+                    <td class="full_table"><h6>Категория</h6></td>
+                </tr>
+                {% for array in array_users %}
+                    {% for command in array[1:] %}
+                        <tr>
+                            <td>{{ command[0] }}</td>
+                            <td>
+                                {% for user in command[1:] %}
+                                    {{ user.name }}{{user.surname}}<br>
+                                {% endfor %}
+                            </td>
+                            <td>{{ array[0] }}</td>
+                        </tr>
+                    {% endfor %}
+                {% endfor %}
+            </table>
+            {% endif %}
         </div>
     </div>
 {% endblock %}

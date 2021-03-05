@@ -1,86 +1,9 @@
-<html>
-<head>
-  <title>jQuery-cropbox</title>
-  <meta http-equiv="X-UA-Compatible" content="IE=edge">
-  <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
-  <link type="text/css" media="screen" rel="stylesheet" href="../jquery.cropbox.css">
-  <style type="text/css">
-    body {
-      font-family : sans-serif;
-      font-size   : 13px;
-    }
-    .results {
-      font-family : monospace;
-      font-size   : 20px;
-    }
-  </style>
-  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery/2.0.3/jquery.min.js"></script>
-  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/hammer.js/1.0.5/hammer.js"></script>
-  <script type="text/javascript" src="//cdnjs.cloudflare.com/ajax/libs/jquery-mousewheel/3.1.6/jquery.mousewheel.js"></script>
-  <script type="text/javascript" src="jquery.cropbox.js"></script>
-  <script type="text/javascript" defer="">
-    $( function () {
-      $( '.cropimage' ).each( function () {
-        var image = $(this),
-            cropwidth = image.attr('cropwidth'),
-            cropheight = image.attr('cropheight'),
-            results = image.next('.results' ),
-            x       = $('.cropX', results),
-            y       = $('.cropY', results),
-            w       = $('.cropW', results),
-            h       = $('.cropH', results),
-            download = results.next('.download').find('a');
+{% extends "base.html" %}
 
-          image.cropbox( {width: cropwidth, height: cropheight, showControls: 'auto' } )
-            .on('cropbox', function( event, results, img ) {
-              x.text( results.cropX );
-              y.text( results.cropY );
-              w.text( results.cropW );
-              h.text( results.cropH );
-              download.attr('href', img.getDataURL());
-            });
-      } );
-
-      $('#select').on('change', function () {
-          var size = parseInt(this.value);
-          $('.cropimage').each(function () {
-            $(this).cropbox({width: size, height: size})
-          });
-      });
-
-    } );
-  </script>
-<link rel="stylesheet" type="text/css" href="chrome-extension://onbkopaoemachfglhlpomhbpofepfpom/styles.css"></head>
-<body style="">
-
-  <div class="cropFrame" style="width: 200px; height: 200px;"><img class="cropimage cropImage" alt="" src="img.jpg" cropwidth="200" cropheight="200" draggable="false" style="display: inline; left: -24px; top: 0px; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); touch-action: none; width: 248px;"><div class="cropControls"><span>Drag to crop</span><a class="cropZoomIn"></a><a class="cropZoomOut"></a></div></div>
-  <div class="results">
-    <b>X</b>: <span class="cropX">92</span>
-    <b>Y</b>: <span class="cropY">0</span>
-    <b>W</b>: <span class="cropW">768</span>
-    <b>H</b>: <span class="cropH">768</span>
-  </div>
-
-  <div class="cropFrame" style="width: 300px; height: 200px;"><img class="cropimage cropImage" alt="" src="img.jpg" cropwidth="300" cropheight="200" draggable="false" style="display: inline; left: -325.5px; top: -155.345px; user-select: none; -webkit-user-drag: none; -webkit-tap-highlight-color: rgba(0, 0, 0, 0); touch-action: none; width: 949px;"><div class="cropControls"><span>Drag to crop</span><a class="cropZoomIn"></a><a class="cropZoomOut"></a></div></div>
-  <div class="results">
-    <b>X</b>: <span class="cropX">325</span>
-    <b>Y</b>: <span class="cropY">155</span>
-    <b>W</b>: <span class="cropW">300</span>
-    <b>H</b>: <span class="cropH">200</span>
-  </div>
-
-  <div class="download">
-    <a href="data:image/png;base64," download="crop.png">Download</a>
-  </div>
-
-  <br>
-
-  <h4>Change size of every cropbox</h4>
-
-  <select id="select">
-    <option value="200" selected="">200</option>
-    <option value="300">300</option>
-  </select>
-
-<div class="mallbery-caa" style="z-index: 2147483647 !important; text-transform: none !important; position: fixed;"></div></body>
-</html>
+{% block content %}
+<div class="container mt-4">
+  <p style="float: left; overflow: hidden; border: 1px solid">
+    <img src="/static/images/avatar_image/avatar_3.jpg" style="margin: 0px -500px -40px -30px;"/>
+  </p>
+</div>
+{% endblock %}

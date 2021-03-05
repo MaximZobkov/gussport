@@ -3,6 +3,7 @@ import os
 import json
 import shutil
 import smtplib
+import xlsxwriter
 from email.header import Header
 from email.mime.text import MIMEText
 from random import randint
@@ -12,6 +13,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, DateField, BooleanField, IntegerField, \
     SelectField, TimeField, TextAreaField
 from wtforms.validators import DataRequired
+from PIL import Image
 
 from data import db_session, users, competitions, news
 
@@ -149,6 +151,17 @@ class RecoveryForm(FlaskForm):
     submit = SubmitField("Отправить")
 
 
+class UploadForm(FlaskForm):
+    is_register = SelectField('Зарегестрирован на сайте', validators=[DataRequired()],
+                          choices=[('1', 'Да'), ('2', "Нет")])
+    number = IntegerField("Ст№", validators=[DataRequired()])
+    FamilyName = StringField("ФамилияИмя", validators=[DataRequired()])
+    city = StringField("Город", validators=[DataRequired()])
+    club = StringField("Клуб", validators=[DataRequired()])
+    group = StringField("Группа", validators=[DataRequired()])
+    finish = TimeField("Финиш", validators=[DataRequired()])
+
+
 @app.route('/recovery_password', methods=['GET', 'POST'])
 def recovery_password():
     global mail_to, flag
@@ -219,7 +232,7 @@ def profile(id):
         if user.id in competition["all_users"]:
             keys = competition.keys()
             for key in keys:
-                if not key in ["all_users", "registration"] and user.id in competition[key]:
+                if not key in ["all_users", "awaiting_confirmation", "registration"] and user.id in competition[key]:
                     full_competition = sessions.query(competitions.Competitions).filter(
                         competitions.Competitions.url == competition_name).first()
                     users_competition += [[full_competition, key]]
@@ -509,8 +522,7 @@ def register_to_competition(name, id, group_name, kol_vo_player):
                            competition_id=competition_id, kol_vo_player=kol_vo_player)
 
 
-@app.route(
-    "/register_command_to_competition/<string:name>/<int:id>/<string:group_name>/<int:kol_vo_player>",
+@app.route("/register_command_to_competition/<string:name>/<int:id>/<string:group_name>/<int:kol_vo_player>",
     methods=['GET', 'POST'])
 @login_required
 def register_command_to_competition(name, id, group_name, kol_vo_player):
@@ -527,8 +539,9 @@ def register_command_to_competition(name, id, group_name, kol_vo_player):
     # "Группа1": [["Тигры", 1, 2, 3], ["Львы", 4, 5, 6]],
     # "awaiting_confirmation": [["Тигры", "Группа1", 1, 2, 3]]
     # }
+    split_group_name = group_name.split(":")
     for user in all_users:
-        if not user.id in data["failed_competitions"][name]["all_users"]:
+        if not user.id in data["failed_competitions"][name]["all_users"] and int(split_group_name[0]) <= get_age(user.date_of_birth) <= int(split_group_name[1]) and (1 if user.gender == "Мужской" else 2) == int(split_group_name[4]):
             all_users_list += [user]
     if request.method == "POST":
         # уведомление: тип;;информация
@@ -730,8 +743,12 @@ def work_with_notifications(user_id, flag, application):
                         data["failed_competitions"][competition_url]["awaiting_confirmation"][:ind] + \
                         data["failed_competitions"][competition_url]["awaiting_confirmation"][ind + 1:]
                     data["failed_competitions"][competition_url][group_name] += [[command_name, *players]]
+                    was_player = []
                     new_notification = "1;;" + competition_url + ";;" + group_name + ";;" + command_name
                     for player_id in players:
+                        if not player_id in was_player:
+                            was_player +=[player_id]
+                            data["failed_competitions"][competition_url]["all_users"] += [player_id]
                         if player_id != user_id:
                             new_notification += ";;" + str(player_id)
                     was_player = []
@@ -776,15 +793,26 @@ def table_of_users(name):
     keys = mas.keys()
     array_users = []
     sessions = db_session.create_session()
-    for key in keys:
-        if "all_users" != key and key != "registration":
-            if len(mas[key]) != 0:
-                array_users += [
-                    [get_category(key)] + [
-                        sessions.query(users.User).filter(users.User.id == id).first() for id in
-                        mas[key]]]
-    print(array_users)
-    return render_template("table_of_registered_users.html", array_users=array_users)
+    competition = sessions.query(competitions.Competitions).filter(competitions.Competitions.url == name).first()
+    if competition.team_competition == "Индивидуальное":
+        for key in keys:
+            if not key in ["all_users", "awaiting_confirmation", "registration"]:
+                if len(mas[key]) != 0:
+                    array_users += [
+                        [get_category(key)] + [
+                            sessions.query(users.User).filter(users.User.id == id).first() for id in
+                            mas[key]]]
+        print(array_users)
+        return render_template("table_of_registered_users.html", array_users=array_users, competition=competition)
+    else:
+        for key in keys:
+            if not key in ["all_users", "awaiting_confirmation", "registration"]:
+                if len(mas[key]) != 0:
+                    array_users += [
+                        [get_category(key)] + [[command[0]] + [sessions.query(users.User).filter(users.User.id == id).first() for id in command[1:]] for command in mas[key]]
+                    ]
+        print(array_users)
+        return render_template("table_of_registered_users.html", array_users=array_users, competition=competition)
 
 
 @app.route('/competitions/<string:type>')
@@ -858,6 +886,77 @@ def check_all_competitions():
         data_copy["past_competitions"].update([(key, new_competition)])
     with open("static/json/competition.json", "w") as file:
         json.dump(data_copy, file)
+
+
+@app.route("/crop_image/<string:link>")
+@login_required
+def crop_image(link):
+    image = Image.open(link)
+    x, y = image.size
+    return render_template("crop_image.html")
+
+
+@app.route("/upload_to_excel_with_form/<int:competition_id>", methods=["GET", "POST"])
+@login_required
+def upload(competition_id):
+    if current_user.role == "user":
+        redirect("/")
+    session = db_session.create_session()
+    users_spis = session.query(users.User)
+    form = UploadForm()
+
+
+@app.route("/download_excel_form/<int:competition_id>")
+@login_required
+def create_excel_file(competition_id):
+    if current_user.role != "admin":
+        return redirect('/')
+    session = db_session.create_session()
+    competition = session.query(competitions.Competitions).filter(competitions.Competitions.id == competition_id).first()
+    with open("static/json/competition.json") as file:
+        data = json.load(file)
+    users_id_list_by_group = data["failed_competitions"][competition.url]
+    for key in users_id_list_by_group.keys():
+        if not key in ["all_users", "awaiting_confirmation", "registration"]:
+            users_list = []
+            for user_id in users_id_list_by_group[key]:
+                users_list += [session.query(users.User).filter(users.User.id == user_id).first()]
+            users_id_list_by_group[key] = users_list
+    file_name = f"static/files/competition{ competition_id }/report{competition_id}.xlsx"
+    workbook = xlsxwriter.Workbook(file_name)
+    worksheet = workbook.add_worksheet()
+    worksheet.protect()
+    bold = workbook.add_format({'bold': True})
+    #hidden = workbook.add_format({'hidden': True})
+    locked = workbook.add_format({'locked': True})
+    unlocked = workbook.add_format({'locked': False})
+    worksheet.set_column(1, 1, None, locked, {'hidden': 1})
+    item_from_collumn = ["Группа", "ID", "ФамилияИмя", "ГодРож.", "Город/НП", "Ст_№",
+                         "ДопРезульт(ЕслиЕстьТоДобавтьеСтолбцыВместоЭтого)", "ИтоговыйРезультат"]
+    for i in range(len(item_from_collumn)):
+        if i != 6:
+            worksheet.write(0, i, item_from_collumn[i], locked)
+        else:
+            worksheet.write(0, i, item_from_collumn[i], unlocked)
+    row = 1
+    col = 0
+    for key in users_id_list_by_group.keys():
+        if not key in ["all_users", "awaiting_confirmation", "registration"]:
+            worksheet.write(row, col, key)
+            row += 1
+            for user in users_id_list_by_group[key]:
+                worksheet.write(row, 1, user.id, locked)
+                worksheet.write(row, 2, user.name + user.surname, locked)
+                worksheet.write(row, 3, user.date_of_birth, locked)
+                worksheet.write(row, 4, user.residence_name, locked)
+                worksheet.write(row, 5, None, unlocked)
+                worksheet.write(row, 6, None, unlocked)
+                row += 1
+            #worksheet.set_row(row, row, None, unlocked)
+            row += 1
+    worksheet.set_column(0, 7, 20)
+    workbook.close()
+    return render_template('download_file.html', file_name=file_name)
 
 
 def get_data(date):
