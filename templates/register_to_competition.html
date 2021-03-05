@@ -1,41 +1,41 @@
 {% extends "base.html" %}
 
 {% block content %}
-    <div class="container mt-4">
-        <div class="card mb-4 card_register">
-            <div class="card-title">
-                <h1 align="center">Выберите группу</h1>
-            </div>
-            <div class="card-body">
-                <div class="row">
-                    {% for group in group_list %}
-                        <div class="col-xl-4 col-lg-4 col-sm-6 col-xs-12">
-                            <div class="container mt-4">
-                                <div class="card card-color" style="background-color: white; padding: 5px">
-                                    <h6>Возраст: {{ group[0][0] }}-{{ group[0][1] }} лет.</h6>
-                                    <h6>Количество человек: {{ group[0][2] }}</h6>
-                                    <h6>Дистанция: {{ group[0][3] }} км.</h6>
-                                    <h6>Осталось мест: {{ group[1] }}</h6>
-                                    {% if group[1] != 0 %}
-                                        {% if kol_vo_player == 1 %}
-                                            <a class="btn" style="background-color: #828282; color: white;"
-                                               href="/register_to_competition/{{ name }}/{{ id }}/{{ group[2] }}/{{ kol_vo_player }}">
-                                                Зарегистрироваться в эту группу</a>
-                                        {% else %}
-                                            <a class="btn" style="background-color: #828282; color: white;"
-                                               href="/register_command_to_competition/{{ name }}/{{ id }}/{{ group[2] }}/{{ kol_vo_player }}">
-                                                Зарегистрировать команду</a>
-                                        {% endif %}
-                                    {% else %}
-                                        <p>Группа заполнена</p>
-                                    {% endif %}
-                                </div>
-                            </div>
+<div class="container mt-4">
+    <div class="card mb-4 card_register">
+        <div class="card-title">
+            <h1 align="center">Выберите группу</h1>
+        </div>
+        <div class="card-body">
+            <div class="row">
+                {% for group in group_list %}
+                <div class="col-xl-4 col-lg-4 col-sm-6 col-xs-12">
+                    <div class="container mt-4">
+                        <div class="card card-color" style="background-color: white; padding: 5px">
+                            <h6>Возраст: {{ group[0][0] }}-{{ group[0][1] }} лет.</h6>
+                            <h6>Количество человек: {{ group[0][2] }}</h6>
+                            <h6>Дистанция: {{ group[0][3] }} км.</h6>
+                            <h6>Осталось мест: {{ group[1] }}</h6>
+                            {% if group[1] != 0 %}
+                            {% if kol_vo_player == 1 %}
+                            <a class="btn" style="background-color: #828282; color: white;"
+                               href="/register_to_competition/{{ name }}/{{ id }}/{{ group[2] }}/{{ kol_vo_player }}">
+                                Зарегистрироваться в эту группу</a>
+                            {% else %}
+                            <a class="btn" style="background-color: #828282; color: white;"
+                               href="/register_command_to_competition/{{ name }}/{{ id }}/{{ group[2] }}/{{ kol_vo_player }}">
+                                Зарегистрировать команду</a>
+                            {% endif %}
+                            {% else %}
+                            <p>Группа заполнена</p>
+                            {% endif %}
                         </div>
-                    {% endfor %}
-                    <a href="/competition/{{ competition_id }}">Вернуться к странице соревнования</a>
+                    </div>
                 </div>
+                {% endfor %}
             </div>
         </div>
+        <a class="btn btn-light" href="/competition/{{ competition_id }}">Вернуться к странице соревнования</a>
     </div>
+</div>
 {% endblock %}

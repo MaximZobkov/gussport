@@ -401,6 +401,11 @@ def create_competition():
             name = "static/images/competition_image/competition_" + str(competition.id) + ".jpg"
             file.save(name)
             competition.image = "/" + name
+        file = request.files['file_сomp']
+        file_extension = str(file).split('application/')[1][:-3]
+        file_name = str(file).split("FileStorage: '")[1][:-25].split('.')[0]
+        file.save(f"static/files/competitions/{file_name}." + file_extension)
+        competition.file = "static/files/competitions/" + file_name + "." + file_extension
         with open("static/json/competition.json") as file:
             data = json.load(file)
         if competition.team_competition == "Командное":
@@ -450,7 +455,7 @@ def groups_description(id, count, number):
         sessions.merge(competition)
         sessions.commit()
         number += 1
-        if number == count:
+        if number >= count:
             return redirect('/')
         else:
             return redirect(

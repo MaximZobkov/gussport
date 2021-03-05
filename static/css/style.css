@@ -158,12 +158,45 @@ p.single_comp {
     margin: auto;
 }
 
+.btn-group button {
+    background-color: #4CAF50;
+    border: 1px solid green;
+    color: white;
+    padding: 10px 24px;
+    cursor: pointer;
+    width: 100%;
+    display: block;
+}
+
+.btn-group button:not(:last-child) {
+    border-bottom: none;
+}
+
+.btn-group button:hover {
+    background-color: #3e8e41;
+}
+
 div.card-new {
     width: 70%;
     float: left;
 }
 
 div.card-calendar {
+    width: 28%;
+    float: right;
+}
+
+div.card-button {
+    width: 29%;
+    float: right;
+}
+
+.competition_info {
+    width: 70%;
+    float: left;
+}
+
+.card-competition_button {
     width: 28%;
     float: right;
 }
@@ -194,6 +227,7 @@ div.card-calendar {
     width: 24%;
 }
 
+
 @media (orientation: portrait) {
     .card-img-news {
         width: 100%;
@@ -213,10 +247,17 @@ div.card-calendar {
         margin-left: 15px;
     }
 
+    div.card-button {
+        width: 100%;
+        float: none;
+    }
+
     .file_new_name {
         width: 40%;
     }
-
+    .full-screen {
+        width: 100%;
+    }
     .full_table {
         display: none;
     }
@@ -300,34 +341,36 @@ nav::after {
 .close:hover {
     background: #00d9ff;
 }
+
 .modalDialog:target {
-	display: block;
-	pointer-events: auto;
+    display: block;
+    pointer-events: auto;
 }
 
 .modalDialog > div {
-	width: 400px;
-	position: relative;
-	margin: 10% auto;
-	padding: 5px 20px 13px 20px;
-	border-radius: 10px;
-	background: #fff;
-	background: -moz-linear-gradient(#fff, #999);
-	background: -webkit-linear-gradient(#fff, #999);
-	background: -o-linear-gradient(#fff, #999);
+    width: 400px;
+    position: relative;
+    margin: 10% auto;
+    padding: 5px 20px 13px 20px;
+    border-radius: 10px;
+    background: #fff;
+    background: -moz-linear-gradient(#fff, #999);
+    background: -webkit-linear-gradient(#fff, #999);
+    background: -o-linear-gradient(#fff, #999);
 }
+
 .modalDialog {
-	position: fixed;
-	font-family: Arial, Helvetica, sans-serif;
-	top: 0;
-	right: 0;
-	bottom: 0;
-	left: 0;
-	background: rgba(0,0,0,0.8);
-	z-index: 99999;
-	-webkit-transition: opacity 400ms ease-in;
-	-moz-transition: opacity 400ms ease-in;
-	transition: opacity 400ms ease-in;
-	display: none;
-	pointer-events: none;
+    position: fixed;
+    font-family: Arial, Helvetica, sans-serif;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background: rgba(0, 0, 0, 0.8);
+    z-index: 99999;
+    -webkit-transition: opacity 400ms ease-in;
+    -moz-transition: opacity 400ms ease-in;
+    transition: opacity 400ms ease-in;
+    display: none;
+    pointer-events: none;
 }
