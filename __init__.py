@@ -14,7 +14,6 @@ from wtforms import StringField, PasswordField, SubmitField, DateField, BooleanF
     SelectField, TimeField, TextAreaField
 from wtforms.validators import DataRequired
 from PIL import Image
-
 from data import db_session, users, competitions, news
 
 app = Flask(__name__)
@@ -102,7 +101,7 @@ class CreateGroupsForm(FlaskForm):
     players_count = IntegerField('Максимальное количество участников в группе',
                                  validators=[DataRequired()])
     commands_count = IntegerField('Максимальное количество команд в группе',
-                                 validators=[DataRequired()])
+                                  validators=[DataRequired()])
     distance = IntegerField('Длина дистанции', validators=[DataRequired()])
     group_time_start = TimeField('Время старта группы')
     payment = SelectField('Оплата участия', validators=[DataRequired()],
@@ -153,7 +152,7 @@ class RecoveryForm(FlaskForm):
 
 class UploadForm(FlaskForm):
     is_register = SelectField('Зарегестрирован на сайте', validators=[DataRequired()],
-                          choices=[('1', 'Да'), ('2', "Нет")])
+                              choices=[('1', 'Да'), ('2', "Нет")])
     number = IntegerField("Ст№", validators=[DataRequired()])
     FamilyName = StringField("ФамилияИмя", validators=[DataRequired()])
     city = StringField("Город", validators=[DataRequired()])
@@ -454,7 +453,9 @@ def groups_description(id, count, number):
         competition.groups_description = "%%".join([competition.groups_description,
                                                     "$$".join([str(form.age_range_start.data),
                                                                str(form.age_range_end.data),
-                                                               (str(form.players_count.data) if competition.team_competition == "Индивидуальное" else str(form.commands_count.data)),
+                                                               (str(
+                                                                   form.players_count.data) if competition.team_competition == "Индивидуальное" else str(
+                                                                   form.commands_count.data)),
                                                                str(form.distance.data),
                                                                str(form.group_time_start.data),
                                                                str(form.payments_value.data),
@@ -462,7 +463,9 @@ def groups_description(id, count, number):
         with open("static/json/competition.json") as file:
             data = json.load(file)
         group_name_to_dict = str(form.age_range_start.data) + ":" + str(
-            form.age_range_end.data) + ":" + (str(form.players_count.data) if competition.team_competition == "Индивидуальное" else str(form.commands_count.data)) + ":" + str(form.distance.data) + ":" + str(form.gender.data)
+            form.age_range_end.data) + ":" + (str(
+            form.players_count.data) if competition.team_competition == "Индивидуальное" else str(
+            form.commands_count.data)) + ":" + str(form.distance.data) + ":" + str(form.gender.data)
         data["failed_competitions"][competition.url].update([(group_name_to_dict, [])])
         with open("static/json/competition.json", "w") as file:
             json.dump(data, file)
@@ -475,7 +478,8 @@ def groups_description(id, count, number):
             return redirect(
                 '/groups_description/' + str(competition.id) + "/" + str(count) + "/" + str(
                     number))
-    return render_template("groups_description.html", form=form, count=count, number=number, type=competition.team_competition)
+    return render_template("groups_description.html", form=form, count=count, number=number,
+                           type=competition.team_competition)
 
 
 @app.route("/register_to_competition/<string:name>/<int:id>/<string:group_name>/<int:kol_vo_player>")
@@ -523,7 +527,7 @@ def register_to_competition(name, id, group_name, kol_vo_player):
 
 
 @app.route("/register_command_to_competition/<string:name>/<int:id>/<string:group_name>/<int:kol_vo_player>",
-    methods=['GET', 'POST'])
+           methods=['GET', 'POST'])
 @login_required
 def register_command_to_competition(name, id, group_name, kol_vo_player):
     session = db_session.create_session()
@@ -541,7 +545,9 @@ def register_command_to_competition(name, id, group_name, kol_vo_player):
     # }
     split_group_name = group_name.split(":")
     for user in all_users:
-        if not user.id in data["failed_competitions"][name]["all_users"] and int(split_group_name[0]) <= get_age(user.date_of_birth) <= int(split_group_name[1]) and (1 if user.gender == "Мужской" else 2) == int(split_group_name[4]):
+        if not user.id in data["failed_competitions"][name]["all_users"] and int(split_group_name[0]) <= get_age(
+                user.date_of_birth) <= int(split_group_name[1]) and (1 if user.gender == "Мужской" else 2) == int(
+            split_group_name[4]):
             all_users_list += [user]
     if request.method == "POST":
         # уведомление: тип;;информация
@@ -656,7 +662,8 @@ def notifications():
             notifications_list += [
                 [type, competition, command_name, players, notification]]
         elif type == 2:
-            competition = session.query(competitions.Competitions).filter(competitions.Competitions.id == int(value[0].split("competition")[1])).first()
+            competition = session.query(competitions.Competitions).filter(
+                competitions.Competitions.id == int(value[0].split("competition")[1])).first()
             command_name = value[2]
             not_accepted = session.query(users.User).filter(users.User.id == int(value[3])).first()
             players = []
@@ -677,7 +684,8 @@ def work_with_notifications(user_id, flag, application):
     user = sessions.query(users.User).filter(users.User.id == user_id).first()
     with open("static/json/competition.json") as file:
         data = json.load(file)
-    user.notifications = "".join([(pice[2:] if (pice != "" and pice[:2] == "%%") else pice) for pice in user.notifications.split(application)])
+    user.notifications = "".join(
+        [(pice[2:] if (pice != "" and pice[:2] == "%%") else pice) for pice in user.notifications.split(application)])
     if user.notifications == "":
         user.notifications = None
     type = int(application.split(";;")[0])
@@ -695,8 +703,8 @@ def work_with_notifications(user_id, flag, application):
     for ind in range(len(list_of_application)):
         app = list_of_application[ind]
         if app[0] == competition_url and app[1] == group_name and app[2] == command_name:
-            #Если что ошибки тут
-            print(app,33333333333)
+            # Если что ошибки тут
+            print(app, 33333333333)
             flag2 = 0
             for i in range(3, len(app)):
                 if app[i][0] != value[i]:
@@ -706,7 +714,8 @@ def work_with_notifications(user_id, flag, application):
                 continue
             print(4444444)
             if flag == 0:
-                new_notification = "2;;" + competition_url + ";;" + group_name + ";;" + command_name + ";;" + str(user_id)
+                new_notification = "2;;" + competition_url + ";;" + group_name + ";;" + command_name + ";;" + str(
+                    user_id)
                 for player_id in players:
                     if player_id != user_id:
                         new_notification += ";;" + str(player_id)
@@ -716,7 +725,9 @@ def work_with_notifications(user_id, flag, application):
                         was_player += [player_id]
                         player = sessions.query(users.User).filter(users.User.id == player_id).first()
                         if not player.notifications is None:
-                            player.notifications = "".join([(pice[2:] if (pice != "" and pice[:2] == "%%") else pice) for pice in player.notifications.split(application)])
+                            player.notifications = "".join(
+                                [(pice[2:] if (pice != "" and pice[:2] == "%%") else pice) for pice in
+                                 player.notifications.split(application)])
                         if player.notifications == "" or player.notifications is None:
                             player.notifications = new_notification
                         else:
@@ -747,7 +758,7 @@ def work_with_notifications(user_id, flag, application):
                     new_notification = "1;;" + competition_url + ";;" + group_name + ";;" + command_name
                     for player_id in players:
                         if not player_id in was_player:
-                            was_player +=[player_id]
+                            was_player += [player_id]
                             data["failed_competitions"][competition_url]["all_users"] += [player_id]
                         if player_id != user_id:
                             new_notification += ";;" + str(player_id)
@@ -809,32 +820,27 @@ def table_of_users(name):
             if not key in ["all_users", "awaiting_confirmation", "registration"]:
                 if len(mas[key]) != 0:
                     array_users += [
-                        [get_category(key)] + [[command[0]] + [sessions.query(users.User).filter(users.User.id == id).first() for id in command[1:]] for command in mas[key]]
+                        [get_category(key)] + [
+                            [command[0]] + [sessions.query(users.User).filter(users.User.id == id).first() for id in
+                                            command[1:]] for command in mas[key]]
                     ]
         print(array_users)
         return render_template("table_of_registered_users.html", array_users=array_users, competition=competition)
 
 
-@app.route('/competitions/<string:type>')
-def all_competitions(type):
+@app.route('/competitions')
+def all_competitions():
     check_all_competitions()
     session = db_session.create_session()
     competitions_list = session.query(competitions.Competitions)
-    normal_type = "Командное" if type == "team" else "Индивидуальное"
     failed_list = []
     past_list = []
     for competition in competitions_list:
-        if competition.team_competition == normal_type:
-            if competition.endspiel == 0:
-                failed_list += [competition]
-            else:
-                past_list += [competition]
+        if competition.endspiel == 0:
+            failed_list += [competition]
+        else:
+            past_list += [competition]
     return render_template('competitions.html', failed_list=failed_list, past_list=past_list)
-
-
-@app.route('/competitions_type')
-def competition_type():
-    return render_template('type_competition.html')
 
 
 def check_all_competitions():
@@ -912,7 +918,8 @@ def create_excel_file(competition_id):
     if current_user.role != "admin":
         return redirect('/')
     session = db_session.create_session()
-    competition = session.query(competitions.Competitions).filter(competitions.Competitions.id == competition_id).first()
+    competition = session.query(competitions.Competitions).filter(
+        competitions.Competitions.id == competition_id).first()
     with open("static/json/competition.json") as file:
         data = json.load(file)
     users_id_list_by_group = data["failed_competitions"][competition.url]
@@ -922,12 +929,12 @@ def create_excel_file(competition_id):
             for user_id in users_id_list_by_group[key]:
                 users_list += [session.query(users.User).filter(users.User.id == user_id).first()]
             users_id_list_by_group[key] = users_list
-    file_name = f"static/files/competition{ competition_id }/report{competition_id}.xlsx"
+    file_name = f"static/files/competition{competition_id}/report{competition_id}.xlsx"
     workbook = xlsxwriter.Workbook(file_name)
     worksheet = workbook.add_worksheet()
     worksheet.protect()
     bold = workbook.add_format({'bold': True})
-    #hidden = workbook.add_format({'hidden': True})
+    # hidden = workbook.add_format({'hidden': True})
     locked = workbook.add_format({'locked': True})
     unlocked = workbook.add_format({'locked': False})
     worksheet.set_column(1, 1, None, locked, {'hidden': 1})
@@ -952,7 +959,7 @@ def create_excel_file(competition_id):
                 worksheet.write(row, 5, None, unlocked)
                 worksheet.write(row, 6, None, unlocked)
                 row += 1
-            #worksheet.set_row(row, row, None, unlocked)
+            # worksheet.set_row(row, row, None, unlocked)
             row += 1
     worksheet.set_column(0, 7, 20)
     workbook.close()
