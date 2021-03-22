@@ -13,7 +13,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, DateField, BooleanField, IntegerField, \
     SelectField, TimeField, TextAreaField
 from wtforms.validators import DataRequired
-from PIL import Image
+#from PIL import Image
 
 from data import db_session, users, competitions, news
 
