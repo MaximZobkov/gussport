@@ -374,7 +374,8 @@ def single_competition(id):
         array = []
         for i in range(competition.groups_count):
             array_elements = array_group[i].split('$$')
-            string_year = f'{array_elements[0]}-{array_elements[1]} лет.'
+            gender = "М" if int(array_elements[6]) == 1 else "Ж"
+            string_year = f'{gender} {array_elements[0]}-{array_elements[1]} лет.'
             string_count_people = f'{array_elements[2]}'
             string_distance = f'{array_elements[3]} км.'
             string_time = f'{array_elements[4][:-3]}.'

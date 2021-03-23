@@ -12,6 +12,11 @@
                 <div class="col-xl-4 col-lg-4 col-sm-6 col-xs-12">
                     <div class="container mt-4">
                         <div class="card card-color" style="background-color: white; padding: 5px">
+                            {% if group[0][4] == '1' %}
+                            <h6>Категория: мужчины</h6>
+                            {% else %}
+                            <h6>Категория: женщины</h6>
+                            {% endif %}
                             <h6>Возраст: {{ group[0][0] }}-{{ group[0][1] }} лет.</h6>
                             <h6>Количество человек: {{ group[0][2] }}</h6>
                             <h6>Дистанция: {{ group[0][3] }} км.</h6>

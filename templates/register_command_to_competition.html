@@ -46,6 +46,17 @@
         }
     </script>
     <script>
+        function add_me(id, user_id) {
+            var name1 = 'player' + String(id);
+            var name2 = 'id_player' + String(id);
+            var normal_user_name = document.getElementById(String(user_id) + '_1').textContent + ' ' + document.getElementById(String(user_id) + '_2').textContent + ' ' + document.getElementById(String(user_id) + '_3').textContent;
+            var second_elem = document.getElementById(name1);
+            second_elem.value = normal_user_name;
+            var third_elem = document.getElementById(name2);
+            third_elem.value = user_id;
+        }
+    </script>
+    <script>
         function close_table(name) {
             var elem = document.getElementById(name);
             if (elem) {
@@ -61,50 +72,74 @@
             <div class="card-body">
                 <form action="" method="post" enctype="multipart/form-data">
                     <p>
-                        {{ form.name.label }}<br>
+                        {{ form.name.label }}
                         {{ form.name(class="form-control") }}
                     </p>
                     <p>
-                    <div style="width: 100%;">
                         {{ form.id_player1(class="form-control", id="id_player1", style="display: none;") }}
                         {{ form.player1.label }}
-                        {{ form.player1(class="form-control", id="player1", disabled="disabled") }}
+                        <div style="display: flex;">
+                            <div style="width: 90%;" class="mr-3">
+                                {{ form.player1(class="form-control", id="player1", disabled="disabled") }}
+                            </div>
+                            <a class="btn btn-secondary" style="width:10%; float: left" href="#addMe" onclick="add_me(1, {{ current_user.id }})">Я</a>
+                        </div>
+
                         <a href="#openModal" onclick="show_table(1, 'users_table', 0);">Выбрать
-                            пользователя</a><br>
-                    </div>
+                            пользователя</a>
                     </p>
                     <p>
                         {{ form.id_player2(class="form-control", id="id_player2", style="display: none;") }}
                         {{ form.player2.label }}
-                        {{ form.player2(class="form-control", id="player2", disabled="disabled") }}
+                        <div style="display: flex;">
+                            <div style="width: 90%;" class="mr-3">
+                                {{ form.player2(class="form-control", id="player2", disabled="disabled") }}
+                            </div>
+                            <a class="btn btn-secondary" style="width:10%; float: left" href="#addMe" onclick="add_me(2, {{ current_user.id }})">Я</a>
+                        </div>
                         <a href="#openModal" onclick="show_table(2, 'users_table', 0)">Выбрать
-                            пользователя</a><br>
+                            пользователя</a>
                     </p>
                     {% if kol_vo_player >= 3 %}
                         <p>
                             {{ form.id_player3(class="form-control", id="id_player3", style="display: none;") }}
                             {{ form.player3.label }}
-                            {{ form.player3(class="form-control", id="player3", disabled="disabled") }}
+                            <div style="display: flex;">
+                                <div style="width: 90%;" class="mr-3">
+                                    {{ form.player3(class="form-control", id="player3", disabled="disabled") }}
+                                </div>
+                                <a class="btn btn-secondary" style="width:10%; float: left" href="#addMe" onclick="add_me(3, {{ current_user.id }})">Я</a>
+                            </div>
                             <a href="#openModal" onclick="show_table(3, 'users_table', 0)">Выбрать
-                                пользователя</a><br>
+                                пользователя</a>
                         </p>
                     {% endif %}
                     {% if kol_vo_player >= 4 %}
                         <p>
                             {{ form.id_player4(class="form-control", id="id_player4", style="display: none;") }}
                             {{ form.player4.label }}
-                            {{ form.player4(class="form-control", id="player4", disabled="disabled") }}
+                            <div style="display: flex;">
+                                <div style="width: 90%;" class="mr-3">
+                                    {{ form.player4(class="form-control", id="player4", disabled="disabled") }}
+                                </div>
+                                <a class="btn btn-secondary" style="width:10%; float: left" href="#addMe" onclick="add_me(4, {{ current_user.id }})">Я</a>
+                            </div>
                             <a href="#openModal" onclick="show_table(4, 'users_table', 0)">Выбрать
-                                пользователя</a><br>
+                                пользователя</a>
                         </p>
                     {% endif %}
                     {% if kol_vo_player == 5 %}
                         <p>
                             {{ form.id_player5(class="form-control", id="id_player5", style="display: none;") }}
                             {{ form.player5.label }}
-                            {{ form.player5(class="form-control", id="player5", disabled="disabled") }}
+                            <div style="display: flex;">
+                                <div style="width: 90%;" class="mr-3">
+                                    {{ form.player5(class="form-control", id="player5", disabled="disabled") }}
+                                </div>
+                                <a class="btn btn-secondary" style="width:10%; float: left" href="#addMe" onclick="add_me(5, {{ current_user.id }})">Я</a>
+                            </div>
                             <a href="#openModal" onclick="show_table(5, 'users_table', 0)">Выбрать
-                                пользователя</a><br>
+                                пользователя</a>
                         </p>
                     {% endif %}
                     <p>{{ form.submit(type="submit", class="btn btn-outline-dark") }}</p>
