@@ -1,3 +1,4 @@
+
 .card-register {
     margin: 20px;
     width: 90%;
@@ -5,6 +6,9 @@
 
 .navbar_margin {
     margin: 0;
+}
+.pro_horizon {
+    overflow: auto;
 }
 
 .btn-group-vertical {
@@ -374,3 +378,4 @@ nav::after {
     display: none;
     pointer-events: none;
 }
+

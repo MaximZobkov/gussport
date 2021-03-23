@@ -17,20 +17,6 @@
                     {% endif %}
                 </div>
             {% endfor %}
-            <!--<br><h2>Прошедшие соревнования</h2><br>
-            {% for competition in past_list %}
-                <div class="col-xl-6 col-lg-6 col-sm-12 col-xs-12">
-                    <div class="card competitions_lst">
-                        <img class="card-img-top" src='{{ competition.image }}'>
-                        <div class="centered"><h1>{{ competition.name }}</h1></div>
-                        <div class="top-top"><a class="btn btn-primary">{{ competition.event_date_start }}</a></div>
-                        <div class="top-bottom"><a href="/competition/{{ competition.id }}" class="btn btn-primary">Подробнее</a></div>
-                    </div>
-                    {% if current_user.role == "admin" %}
-                        <a class="btn btn-dark" href="/delete_competition/{{ competition.id }}">Удалить соревнование</a>
-                    {% endif %}
-                </div>
-            {% endfor %}-->
         </div>
     </div>
 {% endblock %}

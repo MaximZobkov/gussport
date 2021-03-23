@@ -374,7 +374,7 @@ def single_competition(id):
         array = []
         for i in range(competition.groups_count):
             array_elements = array_group[i].split('$$')
-            gender = "М" if int(array_elements[6]) == 1 else "Ж"
+            gender = "Мужская" if int(array_elements[6]) == 1 else "Женская"
             string_year = f'{gender} {array_elements[0]}-{array_elements[1]} лет.'
             string_count_people = f'{array_elements[2]}'
             string_distance = f'{array_elements[3]} км.'
@@ -547,8 +547,8 @@ def register_command_to_competition(name, id, group_name, kol_vo_player):
     split_group_name = group_name.split(":")
     for user in all_users:
         if not user.id in data["failed_competitions"][name]["all_users"] and int(split_group_name[0]) <= get_age(
-                user.date_of_birth) <= int(split_group_name[1]) and (1 if user.gender == "Мужской" else 2) == int(
-            split_group_name[4]):
+                user.date_of_birth) <= int(split_group_name[1]) and (1 if user.gender == "Мужской" else 2) ==\
+                int(split_group_name[4]):
             all_users_list += [user]
     if request.method == "POST":
         # уведомление: тип;;информация
@@ -939,7 +939,7 @@ def create_excel_file(competition_id):
     locked = workbook.add_format({'locked': True})
     unlocked = workbook.add_format({'locked': False})
     worksheet.set_column(1, 1, None, locked, {'hidden': 1})
-    item_from_collumn = ["Группа", "ID", "ФамилияИмя", "ГодРож.", "Город/НП", "Ст_№",
+    item_from_collumn = ["Группа", "ID", "Фамилия Имя", "Год Рож.", "Город/НП", "Ст_№",
                          "ДопРезульт(ЕслиЕстьТоДобавтьеСтолбцыВместоЭтого)", "ИтоговыйРезультат"]
     for i in range(len(item_from_collumn)):
         if i != 6:
