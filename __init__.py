@@ -1003,7 +1003,7 @@ def delete_competitions(id):
         pass
     session.delete(competition)
     session.commit()
-    return redirect("/competitions_type")
+    return redirect("/competitions")
 
 
 def get_age(data):
