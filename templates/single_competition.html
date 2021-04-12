@@ -4,23 +4,24 @@
 {% block content %}
 <div class="container mt-4">
     <div class="card card-new bg-white">
-        <h3 align="center"
+        <h3 align="center" class="mt-2"
             style="padding-right: 5px; padding-left: 5px;"> {{ competition.name }}</h3> <br>
         <span class="single_comp">
                         {% for text in competition.short_description.split('\n') %}
                             <p style="text-indent: 10px; padding-right: 5px; padding-left: 5px;"> {{ text }} </p>
                         {% endfor %}
                         </span>
-        <p style="padding-right: 5px; padding-left: 5px;"><b>Тип
+        <span style="padding-right: 5px; padding-left: 5px;"><b>Тип
             соревнования:</b> {{ competition.type }}
-        </p>
-        <p style="padding-right: 5px; padding-left: 5px;"><b>Дата
+        </span>
+        <span style="padding-right: 5px; padding-left: 5px;"><b>Дата
             проведения: </b> {{ competition.event_date_start }} года
-            в {{ competition.event_time_start }} </p>
-        <p style="padding-right: 5px; padding-left: 5px;"><b>Начало регистрации на
-            соревнования: </b> {{ competition.registration_start }} </p>
-        <p style="padding-right: 5px; padding-left: 5px;"><b>Последний день
-            регистрации: </b> {{ competition.registration_end }} </p>
+            в {{ competition.event_time_start }} </span>
+        <span style="padding-right: 5px; padding-left: 5px;"><b>Начало регистрации на
+            соревнования: </b> {{ competition.registration_start }} </span>
+        <span style="padding-right: 5px; padding-left: 5px;"><b>Последний день
+            регистрации: </b> {{ competition.registration_end }} </span>
+        <br>
         <div class="pro_horizon">
             <table style="padding: 5px; width:100%">
                 <tr>

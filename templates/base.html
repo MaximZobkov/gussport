@@ -8,6 +8,108 @@
           href="https://cdn.jsdelivr.net/npm/bootstrap@4.5.3/dist/css/bootstrap.min.css"
           integrity="sha384-TX8t27EcRE3e/ihU7zmQxVncDAy5uIKz4rEkgIXeMed4M0jlfIDPvg6uqKI2xXr2">
     <title> GusSport </title>
+    <style>
+        .custom-toggler.navbar-toggler {
+            border-color: blue;
+        }
+
+        .custom-toggler .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml;charset=utf8,%3Csvg viewBox='0 0 32 32' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath stroke='rgba(0, 0, 255, 1)' stroke-width='2' stroke-linecap='round' stroke-miterlimit='10' d='M4 8h24M4 16h24M4 24h24'/%3E%3C/svg%3E");
+        }
+
+        .navbar-head {
+            font-family: "Segoe script", sans-serif;
+            font-weight: bold;
+            color: #00f;
+            align-items: center;
+        }
+
+        .prokrutka {
+            height: 65%;
+            width: 83%;
+            background: #fff;
+            border: 1px solid #C1C1C1;
+            overflow-y: scroll;
+        }
+
+        .modalDialog {
+            position: fixed;
+            font-family: Arial, Helvetica, sans-serif;
+            top: 0;
+            right: 0;
+            bottom: 0;
+            left: 0;
+            background: rgba(0, 0, 0, 0.95);
+            z-index: 99999;
+            -webkit-transition: opacity 400ms ease-in;
+            -moz-transition: opacity 400ms ease-in;
+            transition: opacity 400ms ease-in;
+            display: none;
+            pointer-events: none;
+        }
+
+        .modalDialog:target {
+            display: block;
+            pointer-events: auto;
+        }
+
+        nav::after {
+            border-bottom: 1px solid blue;
+            content: '';
+            position: absolute;
+            left: 0;
+            right: 0;
+            width: 100%;
+            bottom: 0;
+            margin: 0 auto;
+        }
+
+        .modalDialog > div {
+            width: 80%;
+            height: 60%;
+            position: relative;
+            margin: 10% auto;
+            padding: 5px 20px 13px 20px;
+            border-radius: 10px;
+            background: #fff;
+        }
+
+
+        @media (orientation: portrait) {
+            .modalDialog > div {
+                width: 95%;
+                height: 70%;
+                position: relative;
+                margin: 10% auto;
+                padding: 5px 20px 13px 20px;
+                border-radius: 10px;
+                background: #fff;
+            }
+
+            .prokrutka {
+                height: 80%;
+                width: 95%;
+                background: #fff;
+                border: 5px solid white;
+                overflow-y: scroll;
+            }
+        }
+
+        .close {
+            color: rgba(255, 255, 255, 0.8);
+            line-height: 25px;
+            position: absolute;
+            right: 10px;
+            text-align: center;
+            top: 10px;
+            width: 24px;
+            text-decoration: none;
+        }
+
+        .close:hover {
+            color: #fff;
+        }
+    </style>
 </head>
 <body style="background-color: #f5f5f5">
 <nav class="navbar navbar-expand-lg sticky-top navbar_margin bg-white">
@@ -25,37 +127,37 @@
         </p>
         <!--<a href="https://vk.com/scbarro" class="btn btn-dark mr-2">Группа ВКонтакте</a>-->
         {% if current_user.role == "admin" %}
-            <p class="mt-1 mb-1">
-                <a href="/user_management" class="btn mr-2">Пользователи</a>
-            </p>
-            <p class="mt-1 mb-1">
-                <a href="/create_competition" class="btn mr-2">Создание
-                    соревнований</a>
-            </p>
-            <p class="mt-1 mb-1">
-                <a class="btn  mr-1" href="/create_news">Добавить новость</a>
-            </p>
+        <p class="mt-1 mb-1">
+            <a href="/user_management" class="btn mr-2">Пользователи</a>
+        </p>
+        <p class="mt-1 mb-1">
+            <a href="/create_competition" class="btn mr-2">Создание
+                соревнований</a>
+        </p>
+        <p class="mt-1 mb-1">
+            <a class="btn  mr-1" href="/create_news">Добавить новость</a>
+        </p>
         {% endif %}
         {% if not current_user.is_authenticated %}
-            <p class="mt-1 mb-1">
-                <a class="btn mr-1" href="/login" style="background-color: #c1caca;"> Войти </a>
-            </p>
-            <p class="mt-1 mb-1">
-                <a class="btn" href="/register" style="background-color: #c1caca;"> Зарегистрироваться </a>
-            </p>
+        <p class="mt-1 mb-1">
+            <a class="btn mr-1" href="/login" style="background-color: #c1caca;"> Войти </a>
+        </p>
+        <p class="mt-1 mb-1">
+            <a class="btn" href="/register" style="background-color: #c1caca;"> Зарегистрироваться </a>
+        </p>
         {% elif profile %}
-            {% if current_user.notifications != None %}
-                <p class="mt-1 mb-1">
-                    <a class="mr-3" style="font-size: 28px; text-decoration: none;" href="/notifications">&#x1F514;</a>
-                </p>
-            {% else %}
-                <p class="mt-1 mb-1">
-                    <a class="mr-3" style="font-size: 28px; text-decoration: none;" href="/notifications">&#x1F515;</a>
-                </p>
-            {% endif %}
-            <a class="btn" style="background-color: #c1caca;" href="/logout">Выйти из учётной записи</a>
+        {% if current_user.notifications != None %}
+        <p class="mt-1 mb-1">
+            <a class="mr-3" style="font-size: 28px; text-decoration: none;" href="/notifications">&#x1F514;</a>
+        </p>
         {% else %}
-            <a class="btn" href="/profile/{{ current_user.id }}" style="background-color: #c1caca;"> Личный кабинет </a>
+        <p class="mt-1 mb-1">
+            <a class="mr-3" style="font-size: 28px; text-decoration: none;" href="/notifications">&#x1F515;</a>
+        </p>
+        {% endif %}
+        <a class="btn" style="background-color: #c1caca;" href="/logout">Выйти из учётной записи</a>
+        {% else %}
+        <a class="btn" href="/profile/{{ current_user.id }}" style="background-color: #c1caca;"> Личный кабинет </a>
         {% endif %}
     </div>
 </nav>

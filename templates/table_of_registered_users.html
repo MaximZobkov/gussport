@@ -2,58 +2,85 @@
 
 
 {% block content %}
-    <div class="container mt-4">
-        <div class="card mb-4">
-            <div class="card-title">
-                <h1 align="center">Список участников соревнования</h1>
-            </div>
-            {% if competition.team_competition == "Индивидуальное" %}
-            <table class="table-user" style="width: 100%">
-                <tr>
-                    <td><h6>Имя</h6></td>
-                    <td><h6>Фамилия</h6></td>
-                    <td><h6>Населенный пункт</h6></td>
-                    <td class="full_table"><h6>Клуб</h6></td>
-                    <td class="full_table"><h6>Категория</h6></td>
-                </tr>
-                {% for array in array_users %}
-                    {% for user in array[1:] %}
-                        <tr>
-                            <td>{{ user.name }}</td>
-                            <td>{{ user.surname }}</td>
-                            <td>{{ user.residence_type[0] }}. {{ user.residence_name }}</td>
-                            {% if user.club %}
-                                <td class="full_table">{{ user.club }}</td>
-                            {% else %}
-                                <td class="full_table">-</td>
-                            {% endif %}
-                                <td class="full_table">{{ array[0] }}</td>
-                        </tr>
-                    {% endfor %}
-                {% endfor %}
-            </table>
-            {% else %}
-            <table class="table-user" style="width: 100%">
-                <tr>
-                    <td><h6>Название</h6></td>
-                    <td><h6>Состав</h6></td>
-                    <td class="full_table"><h6>Категория</h6></td>
-                </tr>
-                {% for array in array_users %}
-                    {% for command in array[1:] %}
-                        <tr>
-                            <td><h6 align="center">{{ command[0].capitalize() }}</h6></td>
-                            <td>
-                                {% for user in command[1:] %}
-                                    {{ user.name }} {{user.surname}}<br>
-                                {% endfor %}
-                            </td>
-                            <td>{{ array[0] }}</td>
-                        </tr>
-                    {% endfor %}
-                {% endfor %}
-            </table>
-            {% endif %}
+<script>
+    function tableSearch() {
+        var phrase = document.getElementById('search-text');
+        var table = document.getElementsByName('users_table')[0];
+        var regPhrase = new RegExp(phrase.value, 'i');
+        var flag = false;
+        for (var i = 1; i < table.rows.length; i++) {
+            flag = false;
+            for (var j = table.rows[i].cells.length - 1; j >= 0; j--) {
+                flag = regPhrase.test(table.rows[i].cells[j].innerHTML);
+                if (flag) break;
+            }
+            if (flag) {
+                table.rows[i].style.display = "";
+            } else {
+                table.rows[i].style.display = "none";
+            }
+
+        }
+    }
+</script>
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-title">
+            <h1 align="center">Список участников соревнования</h1>
         </div>
+        <input class="form-control" type="text" placeholder="Поиск..." id="search-text"
+               onkeyup="tableSearch()">
+        {% if competition.team_competition == "Индивидуальное" %}
+        <br>
+        <table name="users_table" class="table"
+               style="width: 100%">
+            <tr>
+                <td><h6>Имя</h6></td>
+                <td><h6>Фамилия</h6></td>
+                <td><h6>Населенный пункт</h6></td>
+                <td class="full_table"><h6>Клуб</h6></td>
+                <td class="full_table"><h6>Категория</h6></td>
+            </tr>
+            {% for array in array_users %}
+            {% for user in array[1:] %}
+            <tr>
+                <td>{{ user.name }}</td>
+                <td>{{ user.surname }}</td>
+                <td>{{ user.residence_type[0] }}. {{ user.residence_name }}</td>
+                {% if user.club %}
+                <td class="full_table">{{ user.club }}</td>
+                {% else %}
+                <td class="full_table">-</td>
+                {% endif %}
+                <td class="full_table">{{ array[0] }}</td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+        </table>
+        {% else %}
+        <br>
+        <table name="users_table" class="table"
+               style="width: 100%">
+            <tr>
+                <td><h6>Название</h6></td>
+                <td><h6>Состав</h6></td>
+                <td class="full_table"><h6>Категория</h6></td>
+            </tr>
+            {% for array in array_users %}
+            {% for command in array[1:] %}
+            <tr>
+                <td><h6 align="center">{{ command[0].capitalize() }}</h6></td>
+                <td>
+                    {% for user in command[1:] %}
+                    {{ user.name }} {{user.surname}}<br>
+                    {% endfor %}
+                </td>
+                <td>{{ array[0] }}</td>
+            </tr>
+            {% endfor %}
+            {% endfor %}
+        </table>
+        {% endif %}
     </div>
+</div>
 {% endblock %}
