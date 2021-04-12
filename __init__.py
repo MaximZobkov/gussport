@@ -23,6 +23,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 code = 0
 i = 0
+flag_to = 0
 flag = 0
 name = 0
 mail_to = ''
@@ -163,46 +164,46 @@ class UploadForm(FlaskForm):
 
 @app.route('/recovery_password', methods=['GET', 'POST'])
 def recovery_password():
-    global mail_to, flag
+    global mail_to, flag_to
     form = RecoveryForm()
     sessions = db_session.create_session()
     if request.method == 'POST':
         if not (form.repeat_new_password.data is None or form.repeat_new_password.data == ""):
-            if form.repeat_new_password.data == form.new_password.data and flag == 2:
+            if form.repeat_new_password.data == form.new_password.data and flag_to == 2:
                 user = sessions.query(users.User).filter(users.User.email == mail_to).first()
                 user.set_password(form.new_password.data)
                 sessions.merge(user)
                 sessions.commit()
-                flag = 0
+                flag_to = 0
                 return redirect("/login")
-            elif form.repeat_new_password.data != form.new_password.data and flag == 2:
+            elif form.repeat_new_password.data != form.new_password.data and flag_to == 2:
                 result = check_password(form.new_password.data)
                 return render_template('password_recovery.html', form=form, type="password",
                                        message=result)
         elif sessions.query(users.User).filter(users.User.email ==
-                                               form.email.data.lower()).first() and flag == 0:
+                                               form.email.data.lower()).first() and flag_to == 0:
             send_email(form.email.data.lower())
             mail_to = form.email.data.lower()
-            flag = 1
+            flag_to = 1
             return render_template('password_recovery.html', form=form, type="code", message="OK")
 
         elif sessions.query(users.User).filter(users.User.email ==
-                                               form.email.data.lower()).first() is None and flag == 0:
+                                               form.email.data.lower()).first() is None and flag_to == 0:
             return render_template('password_recovery.html', form=form, type="email",
                                    message="Пользователя с данной почтой не существует")
-        elif form.code.data.strip() == str(code).strip() and flag == 1:
-            flag = 2
+        elif form.code.data.strip() == str(code).strip() and flag_to == 1:
+            flag_to = 2
             return render_template('password_recovery.html', form=form, type="password",
                                    message="OK")
-        elif form.code.data.strip() != str(code).strip() and flag == 1:
+        elif form.code.data.strip() != str(code).strip() and flag_to == 1:
             return render_template('password_recovery.html', form=form, type="code",
                                    message="Неверный код")
     return render_template('password_recovery.html', form=form, type="email", message='OK')
 
 
 def send_email(user_mail):
-    global code, flag
-    flag = 0
+    global code, flag_to
+    flag_to = 0
     code = randint(100000, 1000000)
     subject_msg = 'Восстановление пароля GusSport'
     body = f'Ваш проверочный код: {code}'
@@ -217,6 +218,8 @@ def send_email(user_mail):
 
 @app.route('/profile/<int:id>')
 def profile(id):
+    global flag_to
+    flag_to = 0
     if not current_user.is_authenticated:
         return redirect('/')
     sessions = db_session.create_session()
@@ -251,6 +254,8 @@ def profile(id):
 
 @app.route('/edit_profile/<int:id>', methods=["GET", "POST"])
 def editor_profile(id):
+    global flag_to
+    flag_to = 0
     form = EditForm()
     session = db_session.create_session()
     user = session.query(users.User).filter(users.User.id == id).first()
@@ -287,12 +292,16 @@ def editor_profile(id):
 
 @app.route('/logout')
 def logout():
+    global flag_to
+    flag_to = 0
     logout_user()
     return redirect('/')
 
 
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    global flag_to
+    flag_to = 0
     form = RegisterForm()
     if request.method == "POST":
         result = check_password(form.password.data)
@@ -365,6 +374,8 @@ def reformat(string_date):
 
 @app.route('/competition/<int:id>')
 def single_competition(id):
+    global flag_to
+    flag_to = 0
     try:
         check_all_competitions()
         session = db_session.create_session()
@@ -391,6 +402,8 @@ def single_competition(id):
 @app.route('/create_competition', methods=['GET', 'POST'])
 @login_required
 def create_competition():
+    global flag_to
+    flag_to = 0
     if current_user.role != "admin":
         return redirect("/")
     sessions = db_session.create_session()
@@ -444,6 +457,8 @@ def create_competition():
 @app.route("/groups_description/<int:id>/<int:count>/<int:number>", methods=['GET', 'POST'])
 @login_required
 def groups_description(id, count, number):
+    global flag_to
+    flag_to = 0
     if current_user.role != "admin":
         return redirect("/")
     sessions = db_session.create_session()
@@ -486,6 +501,8 @@ def groups_description(id, count, number):
 @app.route("/register_to_competition/<string:name>/<int:id>/<string:group_name>/<int:kol_vo_player>")
 @login_required
 def register_to_competition(name, id, group_name, kol_vo_player):
+    global flag_to
+    flag_to = 0
     session = db_session.create_session()
     with open("static/json/competition.json") as file:
         data = json.load(file)
@@ -531,6 +548,8 @@ def register_to_competition(name, id, group_name, kol_vo_player):
            methods=['GET', 'POST'])
 @login_required
 def register_command_to_competition(name, id, group_name, kol_vo_player):
+    global flag_to
+    flag_to = 0
     session = db_session.create_session()
     with open("static/json/competition.json") as file:
         data = json.load(file)
@@ -631,6 +650,8 @@ def register_command_to_competition(name, id, group_name, kol_vo_player):
 @app.route("/notifications")
 @login_required
 def notifications():
+    global flag_to
+    flag_to = 0
     session = db_session.create_session()
     user = session.query(users.User).filter(users.User.id == current_user.id).first()
     notifications = user.notifications
@@ -679,6 +700,8 @@ def notifications():
 @app.route("/work_with_notifications/<int:user_id>/<int:flag>/<string:application>")
 @login_required
 def work_with_notifications(user_id, flag, application):
+    global flag_to
+    flag_to = 0
     if current_user.id != user_id:
         return redirect("/")
     sessions = db_session.create_session()
@@ -705,7 +728,6 @@ def work_with_notifications(user_id, flag, application):
         app = list_of_application[ind]
         if app[0] == competition_url and app[1] == group_name and app[2] == command_name:
             # Если что ошибки тут
-            print(app, 33333333333)
             flag2 = 0
             for i in range(3, len(app)):
                 if app[i][0] != value[i]:
@@ -713,7 +735,6 @@ def work_with_notifications(user_id, flag, application):
                     break
             if flag2 == 1:
                 continue
-            print(4444444)
             if flag == 0:
                 new_notification = "2;;" + competition_url + ";;" + group_name + ";;" + command_name + ";;" + str(
                     user_id)
@@ -784,6 +805,8 @@ def work_with_notifications(user_id, flag, application):
 @app.route("/unregister/<string:name>/<int:id>/<string:group>")
 @login_required
 def unregister(name, id, group):
+    global flag_to
+    flag_to = 0
     with open("static/json/competition.json") as file:
         data = json.load(file)
     mas = data["failed_competitions"][name]
@@ -799,6 +822,8 @@ def unregister(name, id, group):
 
 @app.route('/table_of_registered_users/<string:name>')
 def table_of_users(name):
+    global flag_to
+    flag_to = 0
     with open("static/json/competition.json") as file:
         data = json.load(file)
     mas = data["failed_competitions"][name]
@@ -831,6 +856,8 @@ def table_of_users(name):
 
 @app.route('/competitions')
 def all_competitions():
+    global flag_to
+    flag_to = 0
     check_all_competitions()
     session = db_session.create_session()
     competitions_list = session.query(competitions.Competitions)
@@ -845,6 +872,8 @@ def all_competitions():
 
 
 def check_all_competitions():
+    global flag_to
+    flag_to = 0
     session = db_session.create_session()
     with open("static/json/competition.json") as file:
         data = json.load(file)
@@ -898,6 +927,8 @@ def check_all_competitions():
 @app.route("/crop_image/<string:link>")
 @login_required
 def crop_image(link):
+    global flag_to
+    flag_to = 0
     image = Image.open(link)
     x, y = image.size
     return render_template("crop_image.html")
@@ -906,6 +937,8 @@ def crop_image(link):
 @app.route("/upload_to_excel_with_form/<int:competition_id>", methods=["GET", "POST"])
 @login_required
 def upload(competition_id):
+    global flag_to
+    flag_to = 0
     if current_user.role == "user":
         redirect("/")
     session = db_session.create_session()
@@ -916,6 +949,8 @@ def upload(competition_id):
 @app.route("/download_excel_form/<int:competition_id>")
 @login_required
 def create_excel_file(competition_id):
+    global flag_to
+    flag_to = 0
     if current_user.role != "admin":
         return redirect('/')
     session = db_session.create_session()
@@ -968,6 +1003,8 @@ def create_excel_file(competition_id):
 
 
 def get_data(date):
+    global flag_to
+    flag_to = 0
     date = date.split()
     dikt = {'января': 1, 'февраля': 2, 'марта': 3, 'апреля': 4, 'мая': 5, 'июня': 6, 'июля': 7,
             'августа': 8, 'сентября': 9, 'октября': 10, 'ноября': 11, 'декабря': 12}
@@ -975,6 +1012,8 @@ def get_data(date):
 
 
 def get_category(key):
+    global flag_to
+    flag_to = 0
     category_start = key.split(':')
     category = ""
     if category_start[-1] == "1":
@@ -987,6 +1026,8 @@ def get_category(key):
 
 @app.route("/delete_competition/<int:id>")
 def delete_competitions(id):
+    global flag_to
+    flag_to = 0
     session = db_session.create_session()
     competition = session.query(competitions.Competitions).filter(
         competitions.Competitions.id == id).first()
@@ -1007,6 +1048,8 @@ def delete_competitions(id):
 
 
 def get_age(data):
+    global flag_to
+    flag_to = 0
     date = data.split('-')
     year = int(date[0])
     month = int(date[1])
@@ -1024,6 +1067,8 @@ def get_age(data):
 @app.route("/user_management", methods=['GET', 'POST'])
 @login_required
 def user_management():
+    global flag_to
+    flag_to = 0
     if current_user.role != "admin":
         return redirect("/")
     sessions = db_session.create_session()
@@ -1039,6 +1084,8 @@ def user_management():
 @app.route("/redefine_role/<string:role>/<int:id>")
 @login_required
 def redefine_role(role, id):
+    global flag_to
+    flag_to = 0
     if current_user.role != "admin":
         return redirect("/")
     sessions = db_session.create_session()
@@ -1051,6 +1098,8 @@ def redefine_role(role, id):
 
 @app.route("/create_news", methods=['GET', 'POST'])
 def create_news():
+    global flag_to
+    flag_to = 0
     if current_user.role != "admin":
         return redirect("/")
     form = CreateNewsForm()
@@ -1086,6 +1135,8 @@ def create_news():
 
 @app.route("/delete_new/<int:id>")
 def delete_news(id):
+    global flag_to
+    flag_to = 0
     session = db_session.create_session()
     new = session.query(news.News).filter(news.News.id == id).first()
     session.delete(new)
@@ -1103,6 +1154,8 @@ def delete_news(id):
 
 @app.route('/single_new/<int:id>')
 def single_item_new(id):
+    global flag_to
+    flag_to = 0
     session = db_session.create_session()
     new = session.query(news.News).filter(news.News.id == id).first()
     return render_template("single_new.html", new=new)
@@ -1135,6 +1188,8 @@ def check_date(date):
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    global flag_to
+    flag_to = 0
     form = LoginForm()
     if form.validate_on_submit():
         sessions = db_session.create_session()
@@ -1149,6 +1204,8 @@ def login():
 
 @app.route('/')
 def index():
+    global flag_to
+    flag_to = 0
     sessions = db_session.create_session()
     all_news = sessions.query(news.News)
     competitions_list = sessions.query(competitions.Competitions).filter(

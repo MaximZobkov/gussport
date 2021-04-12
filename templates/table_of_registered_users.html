@@ -42,10 +42,10 @@
                 {% for array in array_users %}
                     {% for command in array[1:] %}
                         <tr>
-                            <td>{{ command[0] }}</td>
+                            <td><h6 align="center">{{ command[0].capitalize() }}</h6></td>
                             <td>
                                 {% for user in command[1:] %}
-                                    {{ user.name }}{{user.surname}}<br>
+                                    {{ user.name }} {{user.surname}}<br>
                                 {% endfor %}
                             </td>
                             <td>{{ array[0] }}</td>
