@@ -2,35 +2,60 @@
 
 
 {% block content %}
-    <div class="container mt-4">
-        <div class="card mb-4">
-            <div class="card-title">
-                <h1 align="center">Все пользователи</h1>
-            </div>
-            <table class="table-user" style="width: 100%">
-                <tr>
-                    <td><h5>Имя</h5></td>
-                    <td><h5>Фамилия</h5></td>
-                    <td><h5>Отчество</h5></td>
-                    <td><h5>Роль</h5></td>
-                </tr>
-                {% for user in table %}
-                    <tr>
-                        <td>{{ user[2] }}</td>
-                        <td>{{ user[1] }}</td>
-                        <td>{{ user[3] }}</td>
-                        {% if user[7] == "user" %}
-                            <td>
-                                <a style="width: 100%" href="/redefine_role/admin/{{ user[0] }}" class="btn btn-light">User</a>
-                            </td>
-                        {% else %}
-                            <td>
-                                <a style="width: 100%" href="/redefine_role/user/{{ user[0] }}" class="btn btn-light">Admin</a>
-                            </td>
-                        {% endif %}
-                    </tr>
-                {% endfor %}
-            </table>
+<script>
+    function tableSearch() {
+        var phrase = document.getElementById('search-text');
+        var table = document.getElementsByName('users_table')[0];
+        var regPhrase = new RegExp(phrase.value, 'i');
+        var flag = false;
+        for (var i = 1; i < table.rows.length; i++) {
+            flag = false;
+            for (var j = table.rows[i].cells.length - 1; j >= 0; j--) {
+                flag = regPhrase.test(table.rows[i].cells[j].innerHTML);
+                if (flag) break;
+            }
+            if (flag) {
+                table.rows[i].style.display = "";
+            } else {
+                table.rows[i].style.display = "none";
+            }
+
+        }
+    }
+</script>
+<div class="container mt-4">
+    <div class="card mb-4">
+        <div class="card-title">
+            <h1 align="center">Все пользователи</h1>
         </div>
+        <input class="form-control" type="text" placeholder="Поиск..." id="search-text"
+               onkeyup="tableSearch()">
+        <br>
+        <table name="users_table" class="table"
+               style="width: 100%; height: 100%">
+            <tr>
+                <td><h5>Имя</h5></td>
+                <td><h5>Фамилия</h5></td>
+                <td><h5>Отчество</h5></td>
+                <td><h5>Роль</h5></td>
+            </tr>
+            {% for user in table %}
+            <tr>
+                <td>{{ user[2] }}</td>
+                <td>{{ user[1] }}</td>
+                <td>{{ user[3] }}</td>
+                {% if user[7] == "user" %}
+                <td>
+                    <a style="width: 100%" href="/redefine_role/admin/{{ user[0] }}" class="btn btn-light">User</a>
+                </td>
+                {% else %}
+                <td>
+                    <a style="width: 100%" href="/redefine_role/user/{{ user[0] }}" class="btn btn-light">Admin</a>
+                </td>
+                {% endif %}
+            </tr>
+            {% endfor %}
+        </table>
     </div>
+</div>
 {% endblock %}
