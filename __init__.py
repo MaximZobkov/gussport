@@ -211,7 +211,7 @@ def send_email(user_mail):
     msg['Subject'] = Header(subject_msg, 'utf-8')
     server = smtplib.SMTP('smtp.beget.com:2525')
     server.starttls()
-    server.login('gussport@gusstory.ru', '12345678aA')
+    server.login('gussport@gusstory.ru', '56Vf5mg1')
     server.sendmail('gussport@gusstory.ru', user_mail, msg.as_string())
     server.quit()
 
@@ -924,16 +924,6 @@ def check_all_competitions():
         json.dump(data_copy, file)
 
 
-@app.route("/crop_image/<string:link>")
-@login_required
-def crop_image(link):
-    global flag_to
-    flag_to = 0
-    image = Image.open(link)
-    x, y = image.size
-    return render_template("crop_image.html")
-
-
 @app.route("/upload_to_excel_with_form/<int:competition_id>", methods=["GET", "POST"])
 @login_required
 def upload(competition_id):
@@ -1181,7 +1171,7 @@ def check_password(password):
 
 
 def check_date(date):
-    if int(str(date).split('-')[0]) > 2015:
+    if int(str(date).split('-')[0]) > datetime.datetime.now().year - 6:
         return 'Введенная дата неккоректна'
     return "OK"
 
